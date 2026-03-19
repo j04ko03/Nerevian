@@ -10,6 +10,10 @@ class usuaris extends Model
 {
     //
     protected $table = 'usuaris';
+    protected $primaryKey = 'id';
+    protected $autoIncrement = true;
+    protected $keyType = 'int';
+    public $timestamps = false;
     protected $fillable = ['correu', 'contrasenya', 'nom', 'cognoms', 'telefon'];
 
     public function peticions_registre(): HasOne
