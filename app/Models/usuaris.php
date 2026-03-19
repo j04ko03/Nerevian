@@ -16,9 +16,9 @@ class usuaris extends Model
     public $timestamps = false;
     protected $fillable = ['correu', 'contrasenya', 'nom', 'cognoms', 'telefon'];
 
-    public function peticions_registre(): HasOne
+    public function peticions_registre(): HasMany
     {
-        return $this->hasOne(peticions_registre::class , 'resolt_per');
+        return $this->hasMany(peticions_registre::class , 'resolt_per');
     }
     public function clients(): HasOne
     {
