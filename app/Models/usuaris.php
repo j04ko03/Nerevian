@@ -15,11 +15,10 @@ class usuaris extends Model
     protected $keyType = 'int';
     public $timestamps = false;
     protected $fillable = ['correu', 'contrasenya', 'nom', 'cognoms', 'telefon'];
-    //Por si queremos meter campos por defecto.
-    protected $attributes = [];
-    public function peticions_registre(): HasOne
+
+    public function peticions_registre(): HasMany
     {
-        return $this->hasOne(peticions_registre::class , 'resolt_per');
+        return $this->hasMany(peticions_registre::class , 'resolt_per');
     }
     public function clients(): HasOne
     {
