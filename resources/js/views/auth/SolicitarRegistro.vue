@@ -66,6 +66,30 @@
             </div>
           </div>
 
+          <div class="grid-2">
+            <div class="field">
+              <label for="reg-contrasenya">Contraseña *</label>
+              <input
+                id="reg-contrasenya"
+                v-model="form.contrasenya"
+                type="password"
+                placeholder="••••••••"
+                :class="{ error: errors.contrasenya }"
+              />
+              <span v-if="errors.contrasenya" class="error-msg">{{ errors.contrasenya }}</span>
+            </div>
+
+            <div class="field">
+              <label for="reg-contrasenya-confirm">Confirmar Contraseña *</label>
+              <input
+                id="reg-contrasenya-confirm"
+                v-model="form.contrasenya_confirmation"
+                type="password"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
           <div class="field">
             <label for="reg-missatge">Mensaje o Descripción de Actividad</label>
             <textarea
@@ -105,15 +129,23 @@ const loading     = ref(false)
 const serverError = ref('')
 
 const form = reactive({
-  nom_empresa: '', contacte: '', correu: '', telefon: '', missatge: '',
+  nom_empresa: '', contacte: '', correu: '', telefon: '', missatge: '', contrasenya: '', contrasenya_confirmation: ''
 })
-const errors = reactive({ nom_empresa: '', contacte: '', correu: '' })
+const errors = reactive({ nom_empresa: '', contacte: '', correu: '', contrasenya: '' })
 
 function validate() {
   errors.nom_empresa = form.nom_empresa ? '' : 'El nombre de empresa es obligatorio.'
   errors.contacte    = form.contacte    ? '' : 'La persona de contacto es obligatoria.'
   errors.correu      = form.correu      ? '' : 'El correo es obligatorio.'
-  return !errors.nom_empresa && !errors.contacte && !errors.correu
+  errors.contrasenya = form.contrasenya ? '' : 'La contraseña es obligatoria.'
+  
+  if (form.contrasenya && form.contrasenya !== form.contrasenya_confirmation) {
+    errors.contrasenya = 'Las contraseñas no coinciden.'
+  } else if (form.contrasenya && form.contrasenya.length < 8) {
+    errors.contrasenya = 'La contraseña debe tener al menos 8 caracteres.'
+  }
+
+  return !errors.nom_empresa && !errors.contacte && !errors.correu && !errors.contrasenya
 }
 
 async function handleSubmit() {
@@ -135,7 +167,7 @@ async function handleSubmit() {
 <style scoped>
 .form-wrapper {
   width: 100%;
-  max-width: 550px; /* Slightly wider than login */
+  max-width: 750px; /* Wider form to accommodate more fields */
 }
 
 .nav-header {

@@ -103,6 +103,8 @@ async function handleLogin() {
   border-radius: 12px;
   padding: 2.5rem;
   width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   font-family: 'Inter', sans-serif;
 }

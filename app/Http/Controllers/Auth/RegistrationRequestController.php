@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\peticions_registre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
 class RegistrationRequestController extends Controller
 {
@@ -17,7 +19,10 @@ class RegistrationRequestController extends Controller
             'correu' => 'required|email|max:200',
             'telefon' => 'nullable|string|max:20',
             'missatge' => 'nullable|string|max:500',
+            'contrasenya' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        $validated['contrasenya'] = Hash::make($validated['contrasenya']);
 
         peticions_registre::create([
             ...$validated,

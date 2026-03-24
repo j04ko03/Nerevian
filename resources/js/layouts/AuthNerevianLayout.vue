@@ -31,7 +31,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 450px;
+  max-width: 800px;
   padding: 2rem 1rem;
 }
 
