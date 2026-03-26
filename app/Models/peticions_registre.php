@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class peticions_registre extends Model
 {
@@ -15,7 +16,6 @@ class peticions_registre extends Model
     protected $fillable = ['nom_empresa', 'contacte', 'missatge', 'correu', 'contrasenya', 'telefon'];
     protected $attributes = [
         'estat' => '0',
-        'data_creacio' => now(),
         'resolt_per' => null,
         'data_resolucio' => null,
         'rao_rebuig' => null,
@@ -23,6 +23,6 @@ class peticions_registre extends Model
 
     public function peticions_registre(): BelongsTo
     {
-        return $this->belongsTo(usuaris::class, 'id');
+        return $this->belongsTo(usuaris::class , 'id');
     }
 }

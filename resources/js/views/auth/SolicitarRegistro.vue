@@ -37,7 +37,7 @@
                 id="reg-contacte"
                 v-model="form.contacte"
                 type="text"
-                placeholder="Juan Pérez"
+                placeholder="Juana Doe"
                 :class="{ error: errors.contacte }"
               />
               <span v-if="errors.contacte" class="error-msg">{{ errors.contacte }}</span>
@@ -64,9 +64,7 @@
                 placeholder="+34 600 000 000"
               />
             </div>
-          </div>
 
-          <div class="grid-2">
             <div class="field">
               <label for="reg-contrasenya">Contraseña *</label>
               <input
