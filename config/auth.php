@@ -1,5 +1,8 @@
 <?php
 
+//Le dice a Laravel cómo autenticar usuarios: qué modelo usar, dónde 
+// buscarlos y cómo gestionar el reset de contraseña.
+
 return [
 
     /*
@@ -62,7 +65,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => env('AUTH_MODEL', App\Models\usuaris::class),
         ],
 
         // 'users' => [

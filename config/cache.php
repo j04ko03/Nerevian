@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Str;
 
+// AQUI DECIMOS DONDE QUEREMOS QUE SE VAYA TODA LA CACHE. YO MIGRE UNA TABLA MÁS A LA BBDD PARA METER TODO AHÍ.
+
 return [
 
     /*
@@ -112,6 +114,6 @@ return [
     |
     */
 
-    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
+    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')) . '-cache-'),
 
 ];

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
+
+// PA LA CALLE SI NO ESTÁ AUTH ALGUIEN
 class CheckAuthenticated
 {
     /**

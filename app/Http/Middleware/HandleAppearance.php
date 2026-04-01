@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\Response;
 
+// SE ENCARGA DE COMO SE VE EL FRONT (TEMA VISUAL, OSCURO O CLARO, ETC)
+// SI NO SE LE DICE NADA, SE PONE EN MODO SISTEMA.
+
+// LA VARIABLE SE ENVIA A APP.BLADE.PHP. 
 class HandleAppearance
 {
     /**

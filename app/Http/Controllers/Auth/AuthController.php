@@ -8,12 +8,13 @@ use App\Models\usuaris;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+// PARA LA AUTENTICACIÓN Y ADJUDICCIÓN DE TOKENS
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
         $request->validate([
-            'correu'      => 'required|email',
+            'correu' => 'required|email',
             'contrasenya' => 'required|string',
         ]);
 
@@ -21,11 +22,11 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->contrasenya, $user->contrasenya)) {
             return response()->json([
-                'message' => 'Credenciales incorrectes.'
+                'message' => 'Credenciales incorrectas.'
             ], 401);
         }
 
-        // Eliminar tokens anteriors (una sessió activa per usuari)
+        // Eliminar tokens anteriores (una sesión activa por usuario)
         $user->tokens()->delete();
 
         // Crear el token de Sanctum
@@ -33,7 +34,7 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user'  => new UserResource($user),
+            'user' => new UserResource($user),
         ], 200);
     }
 
@@ -41,7 +42,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Sessió tancada.'], 200);
+        return response()->json(['message' => 'Sesión cerrada.'], 200);
     }
 
     public function me(Request $request)

@@ -1,5 +1,8 @@
 <?php
 
+// TODO: REVISAR PORQUE LO HICE CON LA IA
+// ES PARA SI LLEGAMOS A PONER EL TEMA DE LOS MAILS.
+
 return [
 
     /*
@@ -14,6 +17,8 @@ return [
     |
     */
 
+    // TODO: CAMBIAR MÁS ADELANTE (METER DESTINATARIO Y TAL) PORQUE AHORA 
+    // VERIAMOS LOS RECHAZOS O APROBACIONES EN EL LOG.
     'default' => env('MAIL_MAILER', 'log'),
 
     /*

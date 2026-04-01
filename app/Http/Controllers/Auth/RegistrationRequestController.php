@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
+// PARA LA PETICIÓN DE CUENTA
 class RegistrationRequestController extends Controller
 {
     public function store(Request $request)
@@ -31,7 +32,7 @@ class RegistrationRequestController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Sol·licitud enviada correctament.'
+            'message' => 'Solicitud enviada correctamente.'
         ], 201);
     }
 }

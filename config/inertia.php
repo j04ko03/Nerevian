@@ -1,5 +1,7 @@
 <?php
 
+// CHICHA. ES EL PUENTE ENTRE LARAVEL Y VUE Y PERMITE RENDERIZAR NICE LA PRIMER PÁGINA DEL SERVER.
+// AQUI PODRIAMOS MEJORAR EL TEMA DE SEO Y TIEMPOS DE CARGAS DE LAS COSAS 
 return [
 
     /*
@@ -17,6 +19,7 @@ return [
 
     'ssr' => [
         'enabled' => true,
+        // PUERTO DONDE CORRE EL SERVIDOR NODE.JS DEL RENDERIZADO.
         'url' => 'http://127.0.0.1:13714',
         // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
 

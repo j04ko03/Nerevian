@@ -6,6 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+
+// PA LA CALLE SI ALGUIEN QUE NO ES ADMIN INTENTA METERSE EN X URL
 class EnsureIsAdmin
 {
     /**
@@ -15,7 +17,7 @@ class EnsureIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && (int)$request->user()->rol_id === 1) {
+        if ($request->user() && (int) $request->user()->rol_id === 1) {
             return $next($request);
         }
 

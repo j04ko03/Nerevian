@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
+// EDICION DE UN USUARIO CAMBIO DE CONTRASEÑA Y SEGURIDAD ANTIBRUTEFORCE ATTAKCS
 class PasswordController extends Controller
 {
     /**

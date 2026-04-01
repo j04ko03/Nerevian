@@ -1,5 +1,7 @@
 <?php
 
+// EN CONFIG LARAVEL CENTRALIZA LA CONFIGURACIÓN DE LA APP :)
+
 return [
 
     /*

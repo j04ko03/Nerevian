@@ -1,0 +1,44 @@
+app.php
+APP_ENV=production — activa las reglas de contraseña fuertes del AppServiceProvider y bloquea los comandos destructivos de BD.
+APP_DEBUG=false — el más urgente. Con true, cualquier error expone al navegador tus queries SQL, rutas y variables de entorno con contraseñas incluidas.
+APP_KEY — guárdala en el gestor de secretos de tu plataforma. Si la cambias o la pierdes, todas las sesiones activas quedan inválidas y todo el mundo es desconectado.
+APP_URL — cámbiala al dominio real. Laravel la usa para generar los links en los emails de aprobación/rechazo, si apunta a localhost los links no funcionan.
+
+auth.php
+providers.users.model apunta a App\Models\User que ya no existe. Cámbialo a App\Models\Usuaris. Sin esto Sanctum no puede resolver el usuario autenticado y toda la autenticación está rota.
+
+cors.php
+FRONTEND_URL debe apuntar al dominio real del frontend en producción. Con localhost:5173 el navegador bloquea todas las llamadas a la API y la app no funciona para nadie.
+
+session.php
+SESSION_SECURE_COOKIE=true — sin esto la cookie de sesión puede viajar en HTTP sin cifrar y ser interceptada.
+SESSION_DOMAIN — ponlo con tu dominio real para que la cookie funcione correctamente.
+
+database.php
+Verifica que el .env está en .gitignore y nunca ha llegado al repositorio. Si las credenciales de BD llegan a Git hay que rotarlas todas inmediatamente.
+Para SQL Server es posible que necesites descomentar encrypt y trust_server_certificate en database.php dependiendo de cómo esté configurado el servidor.
+
+mail.php
+Cambia MAIL_MAILER de log a smtp o un servicio como Resend. Con log ningún email llega a nadie — los de aprobación y rechazo de peticiones no funcionarán.
+Cambia MAIL_FROM_ADDRESS a un email real de tu dominio. Los enviados desde hello@example.com irán directos a spam.
+
+queue.php
+Levanta el queue worker en el servidor con Supervisor para que no muera. Sin él, los jobs se encolan pero nunca se procesan — los emails nunca se envían aunque el código sea correcto.
+
+filesystems.php
+Los documentos de operaciones y ofertas deben ir al disco local privado, no al público. Si los subes al disco público cualquiera con la URL puede descargarlos sin autenticarse.
+Ejecuta php artisan storage:link en el servidor o las URLs del disco público no funcionan.
+
+logging.php
+Cambia LOG_CHANNEL=daily y LOG_LEVEL=error. Con debug se loguea todo incluyendo queries SQL completas, lo que puede exponer datos sensibles y llena los logs de ruido.
+
+Comandos finales antes de abrir
+Ejecuta php artisan config:cache y php artisan route:cache para cachear configuración y rutas. Y cuando hagas migraciones en producción necesitas el flag --force porque sin él Laravel pide confirmación interactiva y no se ejecuta.
+
+Los cinco que no puedes saltarte bajo ningún concepto antes de abrir al público:
+APP_DEBUG=false — es el riesgo más inmediato. Con true, cualquier error muestra al navegador tus queries SQL, rutas internas y variables de entorno incluyendo contraseñas.
+auth.php → modelo Usuaris — ya lo sabes, rompe toda la autenticación.
+FRONTEND_URL con el dominio real — sin esto el navegador bloquea todas las llamadas de la API y la app no funciona para nadie.
+SESSION_SECURE_COOKIE=true — sin esto las sesiones viajan en texto plano por HTTP.
+Queue worker levantado — si no hay worker corriendo, los emails de aprobación/rechazo de peticiones se encolan pero nunca se envían. Nadie recibe nada.
+

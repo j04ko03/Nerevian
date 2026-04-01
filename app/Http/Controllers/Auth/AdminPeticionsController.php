@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 
+// VISUALIZACIÓN DE PETICIONES PARA ADMIN
 class AdminPeticionsController extends Controller
 {
     /**
@@ -37,12 +38,12 @@ class AdminPeticionsController extends Controller
 
         // Crear usuario automáticamente con rol 2 (Usuario normal)
         $user = usuaris::create([
-            'nom'         => $peticion->contacte,
-            'cognoms'     => '', // Evitar error de NULL en la BD
-            'correu'      => $peticion->correu,
+            'nom' => $peticion->contacte,
+            'cognoms' => '', // Evitar error de NULL en la BD
+            'correu' => $peticion->correu,
             'contrasenya' => $peticion->contrasenya, // Ya está hasheada en la petición
-            'telefon'     => $peticion->telefon,
-            'rol_id'      => 2, // Rol de usuario normal
+            'telefon' => $peticion->telefon,
+            'rol_id' => 2, // Rol de usuario normal
         ]);
 
         // Eliminar la petición de la base de datos tras la aprobación

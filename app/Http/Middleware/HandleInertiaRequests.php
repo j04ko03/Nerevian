@@ -5,6 +5,11 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
+// LA FLECHA DE CUPIDO ENTRE LARAVEL Y VUE :) (TEMA COMUNICACIÓN).
+// EN DICHA FLECHA SE DECIDE QUÉ INFORMACIÓN IMPORTANTE SE PUEDE 
+// VER EN TODOS LOS COMPONENTES DE VUE. VAMOS, LOS DATOS GLOBALES.
+
+// DE ESTA FORMA SE PUEDEN MINIMIZAR PETICIONES API.
 class HandleInertiaRequests extends Middleware
 {
     /**
@@ -33,6 +38,9 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
+
+    // AQUÍ ESTAMOS DEJANDO QUE TODOS LOS COMPONENTES DE VUE 
+    // PUEDAN VER EL NOMBRE DE LA APP Y EL NAME DEL USUARIO AUTH DEL MOMENTO.
     public function share(Request $request): array
     {
         return [
@@ -41,7 +49,6 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }
 }

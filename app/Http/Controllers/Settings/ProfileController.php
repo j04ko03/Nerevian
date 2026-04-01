@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
+
+
+// EDICION DE UN USUARIO EDITAR PERFIL
 class ProfileController extends Controller
 {
     /**
