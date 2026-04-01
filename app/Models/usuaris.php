@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
@@ -44,5 +45,10 @@ class usuaris extends Authenticatable
     public function operacions(): HasMany
     {
         return $this->hasMany(operacions::class, 'operador_id');
+    }
+
+    public function rols(): BelongsTo
+    {
+        return $this->belongsTo(rols::class, 'rol_id');
     }
 }
