@@ -43,15 +43,18 @@ class AdminPeticionsController extends Controller
             'correu' => $peticion->correu,
             'contrasenya' => $peticion->contrasenya, // Ya está hasheada en la petición
             'telefon' => $peticion->telefon,
-            'rol_id' => 2, // Rol de usuario normal
+            'rol_id' => $peticion->rol_id, // Rol que ha pedido el usuario en la petición de registo
         ]);
 
         // Update la petición de la base de datos tras la aprobación
-        $peticion->update([
-            'estat' => '1',
-            'resolt_per' => $request->user()->id,
-            'data_resolucio' => now(),
-        ]);
+        // $peticion->update([
+        //     'estat' => '1',
+        //     'resolt_per' => $request->user()->id,
+        //     'data_resolucio' => now(),
+        // ]);
+
+        // Delete la petición de la base de datos tras la aprobación
+        $peticion->delete();
 
         return response()->json([
             'message' => 'Petición aprobada y usuario creado correctamente.',
@@ -71,12 +74,15 @@ class AdminPeticionsController extends Controller
         }
 
         // Update la petición de la base de datos tras la rechazación.
-        $peticion->update([
-            'estat' => '1',
-            'rao_rebuig' => $request->rao_rebuig,
-            'resolt_per' => $request->user()->id,
-            'data_resolucio' => now(),
-        ]);
+        // $peticion->update([
+        //     'estat' => '1',
+        //     'rao_rebuig' => $request->rao_rebuig,
+        //     'resolt_per' => $request->user()->id,
+        //     'data_resolucio' => now(),
+        // ]);
+
+        // Delete la petición de la base de datos tras la rechazación.
+        $peticion->delete();
 
         return response()->json(['message' => 'Petición rechazada y eliminada correctamente.']);
     }

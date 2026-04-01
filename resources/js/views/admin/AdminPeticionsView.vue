@@ -15,7 +15,9 @@
 
       <div v-else-if="peticiones.length === 0" class="empty-state">
         <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"></path>
+          <path
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z">
+          </path>
         </svg>
         <h3>No hay peticiones pendientes</h3>
         <p>Todas las solicitudes han sido procesadas.</p>
@@ -40,6 +42,7 @@
                 </div>
                 <div class="company-details">
                   <h3 class="company-name">{{ peticion.nom_empresa }}</h3>
+                  <span class="rol-badge">{{ peticion.rol_id === 2 ? 'Operador' : 'Cliente' }}</span>
                   <span class="time-ago">{{ peticion.data_creacio }}</span>
                 </div>
               </div>
@@ -64,7 +67,9 @@
                 </div>
                 <div class="info-item">
                   <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
                   </svg>
                   <span>{{ peticion.telefon || 'N/A' }}</span>
                 </div>
@@ -112,7 +117,8 @@
           <h3>Confirmar Rechazo</h3>
         </div>
         <div class="modal-body">
-          <p>¿Estás seguro de que deseas rechazar la solicitud de <strong>{{ selectedPeticion?.nom_empresa }}</strong>?</p>
+          <p>¿Estás seguro de que deseas rechazar la solicitud de <strong>{{ selectedPeticion?.nom_empresa }}</strong>?
+          </p>
           <p class="modal-subtext">Esta acción marcará la solicitud como rechazada definitivamente.</p>
         </div>
         <div class="modal-footer">
@@ -136,7 +142,8 @@
           <h3>Confirmar Aprobación</h3>
         </div>
         <div class="modal-body">
-          <p>¿Estás seguro de que deseas aprobar la solicitud de <strong>{{ selectedPeticion?.nom_empresa }}</strong>?</p>
+          <p>¿Estás seguro de que deseas aprobar la solicitud de <strong>{{ selectedPeticion?.nom_empresa }}</strong>?
+          </p>
           <p class="modal-subtext">Se creará un acceso de usuario automáticamente.</p>
         </div>
         <div class="modal-footer">
@@ -299,6 +306,14 @@ onMounted(fetchPeticiones)
   margin: 0 0 0.25rem;
 }
 
+.rol-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid #ffedd5;
+}
+
 .time-ago {
   font-size: 0.85rem;
   color: #94a3b8;
@@ -373,7 +388,8 @@ onMounted(fetchPeticiones)
   gap: 1rem;
 }
 
-.btn-approve, .btn-reject {
+.btn-approve,
+.btn-reject {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -414,7 +430,8 @@ onMounted(fetchPeticiones)
 }
 
 /* States */
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
   text-align: center;
   padding: 4rem 0;
 }
@@ -430,7 +447,9 @@ onMounted(fetchPeticiones)
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-icon {
@@ -478,7 +497,8 @@ onMounted(fetchPeticiones)
   margin-bottom: 1.5rem;
 }
 
-.warning-icon, .success-icon-modal {
+.warning-icon,
+.success-icon-modal {
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -498,7 +518,8 @@ onMounted(fetchPeticiones)
   color: #10b981;
 }
 
-.warning-icon svg, .success-icon-modal svg {
+.warning-icon svg,
+.success-icon-modal svg {
   width: 28px;
   height: 28px;
 }
@@ -540,7 +561,8 @@ onMounted(fetchPeticiones)
   cursor: pointer;
 }
 
-.btn-danger, .btn-approve-modal {
+.btn-danger,
+.btn-approve-modal {
   padding: 0.75rem;
   border-radius: 8px;
   border: none;

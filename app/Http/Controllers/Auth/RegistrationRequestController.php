@@ -21,6 +21,7 @@ class RegistrationRequestController extends Controller
             'telefon' => 'nullable|string|max:20',
             'missatge' => 'nullable|string|max:500',
             'contrasenya' => ['required', 'confirmed', Rules\Password::defaults()],
+            'rol_id' => 'required|integer|exists:rols,id',
         ]);
 
         $validated['contrasenya'] = Hash::make($validated['contrasenya']);
