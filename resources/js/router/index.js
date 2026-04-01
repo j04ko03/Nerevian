@@ -29,6 +29,14 @@ const routes = [
         meta: { requiresAuth: true },
     },
 
+    // ── Admin ─────────────────────────────────────────────
+    {
+        path: '/admin/peticiones',
+        name: 'admin-peticiones',
+        component: () => import('@/views/admin/AdminPeticionsView.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true },
+    },
+
     // Redireccionamiento raíz
     { path: '/', redirect: '/login' },
 ]
@@ -44,6 +52,10 @@ router.beforeEach((to, from, next) => {
 
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         return next({ name: 'login' })
+    }
+
+    if (to.meta.requiresAdmin && !auth.isAdmin) {
+        return next({ name: 'dashboard' })
     }
 
     if (to.meta.guest && auth.isLoggedIn) {

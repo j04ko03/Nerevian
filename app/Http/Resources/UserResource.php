@@ -14,6 +14,7 @@ class UserResource extends JsonResource
             'cognoms' => $this->cognoms,
             'correu'  => $this->correu,
             'rol'     => $this->rols?->nom,
+            'rol_id'  => $this->rol_id,
         ];
     }
 }

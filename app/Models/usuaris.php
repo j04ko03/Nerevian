@@ -19,7 +19,7 @@ class usuaris extends Authenticatable
     protected $autoIncrement = true;
     protected $keyType = 'int';
     public $timestamps = false;
-    protected $fillable = ['correu', 'contrasenya', 'nom', 'cognoms', 'telefon'];
+    protected $fillable = ['correu', 'contrasenya', 'nom', 'cognoms', 'telefon', 'rol_id'];
 
     protected $hidden = ['contrasenya', 'token'];
 
