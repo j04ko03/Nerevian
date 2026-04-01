@@ -46,8 +46,12 @@ class AdminPeticionsController extends Controller
             'rol_id' => 2, // Rol de usuario normal
         ]);
 
-        // Eliminar la petición de la base de datos tras la aprobación
-        $peticion->delete();
+        // Update la petición de la base de datos tras la aprobación
+        $peticion->update([
+            'estat' => '1',
+            'resolt_per' => $request->user()->id,
+            'data_resolucio' => now(),
+        ]);
 
         return response()->json([
             'message' => 'Petición aprobada y usuario creado correctamente.',
@@ -66,8 +70,13 @@ class AdminPeticionsController extends Controller
             return response()->json(['message' => 'Esta petición ya ha sido resuelta.'], 400);
         }
 
-        // Eliminar la petición definitivamente
-        $peticion->delete();
+        // Update la petición de la base de datos tras la rechazación.
+        $peticion->update([
+            'estat' => '1',
+            'rao_rebuig' => $request->rao_rebuig,
+            'resolt_per' => $request->user()->id,
+            'data_resolucio' => now(),
+        ]);
 
         return response()->json(['message' => 'Petición rechazada y eliminada correctamente.']);
     }
