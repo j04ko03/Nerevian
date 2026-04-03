@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
+import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore';
 
 const routes = [
     // ── Auth (públicas) ──────────────────────────────────
@@ -25,7 +25,7 @@ const routes = [
     {
         path: '/dashboard',
         name: 'dashboard',
-        component: () => import('@/views/DashboardView.vue'),
+        component: () => import('@/views/general/DashboardView.vue'),
         meta: { requiresAuth: true },
     },
 
@@ -39,30 +39,30 @@ const routes = [
 
     // Redireccionamiento raíz
     { path: '/', redirect: '/login' },
-]
+];
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
-})
+});
 
 // Guard global: se ejecuta antes de cada cambio de ruta
 router.beforeEach((to, from, next) => {
-    const auth = useAuthStore()
+    const auth = useAuthStore();
 
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
-        return next({ name: 'login' })
+        return next({ name: 'login' });
     }
 
     if (to.meta.requiresAdmin && !auth.isAdmin) {
-        return next({ name: 'dashboard' })
+        return next({ name: 'dashboard' });
     }
 
     if (to.meta.guest && auth.isLoggedIn) {
-        return next({ name: 'dashboard' })
+        return next({ name: 'dashboard' });
     }
 
-    next()
-})
+    next();
+});
 
-export default router
+export default router;
