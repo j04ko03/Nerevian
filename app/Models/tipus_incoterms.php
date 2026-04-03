@@ -13,5 +13,12 @@ class tipus_incoterms extends Model
     protected $fillable = [
         'codi',
         'nom',
+        'created_at',
+        'updated_at'
     ];
+
+    public function solicitud()
+    {
+        return $this->hasMany(solicitud::class);
+    }
 }

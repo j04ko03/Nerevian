@@ -9,9 +9,14 @@ class estats_solicituds extends Model
 {
     use HasFactory;
     protected $table = 'estats_solicituds';
-    protected $primaryKey = 'id_estat';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'estat',
     ];
     public $timestamps = false;
+
+    public function solicitud()
+    {
+        return $this->hasMany(solicitud::class);
+    }
 }
