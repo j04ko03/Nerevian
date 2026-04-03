@@ -17,7 +17,7 @@ class ports extends Model
 
     public function ciutats()
     {
-        return $this->belongsTo(Ciutat::class, 'ciutat_id');
+        return $this->belongsTo(ciutats::class, 'ciutat_id');
     }
 
     public function solicitudOrigen()
