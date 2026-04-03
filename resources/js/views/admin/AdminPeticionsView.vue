@@ -5,8 +5,10 @@
     <div class="peticiones-container">
       <div class="header-text">
         <h1 class="page-title">Peticiones de Registro</h1>
-        <p class="page-subtitle">Solicitudes de neuvos usuarios para unirse a la plataforma</p>
-      </div>
+                <p class="page-subtitle">
+                    Solicitudes de nuevos usuarios para unirse a la plataforma
+                </p>
+            </div>
 
       <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
