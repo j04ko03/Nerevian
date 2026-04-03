@@ -19,4 +19,14 @@ class ports extends Model
     {
         return $this->belongsTo(Ciutat::class, 'ciutat_id');
     }
+
+    public function solicitudOrigen()
+    {
+        return $this->hasMany(solicitud::class, 'port_origen_id');
+    }
+
+    public function solicitudDesti()
+    {
+        return $this->hasMany(solicitud::class, 'port_desti_id');
+    }
 }

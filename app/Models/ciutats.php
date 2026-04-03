@@ -23,4 +23,9 @@ class ciutats extends Model
     {
         return $this->belongsTo(Pais::class, 'pais_id');
     }
+
+    public function transportistes()
+    {
+        return $this->hasMany(transportistes::class);
+    }
 }
