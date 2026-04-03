@@ -41,7 +41,7 @@ class solicitud extends Model
 
     public function tipus_carrega()
     {
-        return $this->belongsTo(tipus_carregas::class, 'tipus_carrega_id');
+        return $this->belongsTo(tipus_carrega::class, 'tipus_carrega_id');
     }
 
     public function tipus_incoterm()
@@ -61,7 +61,7 @@ class solicitud extends Model
 
     public function tipus_validacio()
     {
-        return $this->belongsTo(tipus_validacios::class, 'tipus_validacio_id');
+        return $this->belongsTo(tipus_validacions::class, 'tipus_validacio_id');
     }
 
     public function port_origen()
