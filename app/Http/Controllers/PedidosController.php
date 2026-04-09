@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\rols;
 use Illuminate\Http\Request;
 
-class RolsController extends Controller
+class PedidosController
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +33,7 @@ class RolsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(rols $rols)
+    public function show(string $id)
     {
         //
     }
@@ -42,7 +41,7 @@ class RolsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(rols $rols)
+    public function edit(string $id)
     {
         //
     }
@@ -50,7 +49,7 @@ class RolsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, rols $rols)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -58,7 +57,7 @@ class RolsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(rols $rols)
+    public function destroy(string $id)
     {
         //
     }

@@ -6,26 +6,26 @@ const routes = [
     {
         path: '/login',
         name: 'login',
-        component: () => import('@/views/auth/LoginView.vue'),
+        component: () => import('@/pages/auth/LoginView.vue'),
         meta: { guest: true },
     },
     {
         path: '/solicitar-registro',
         name: 'solicitar-registro',
-        component: () => import('@/views/auth/SolicitarRegistro.vue'),
+        component: () => import('@/pages/auth/SolicitarRegistro.vue'),
         meta: { guest: true },
     },
     {
         path: '/solicitud-enviada',
         name: 'solicitud-enviada',
-        component: () => import('@/views/auth/SolicitudEnviada.vue'),
+        component: () => import('@/pages/auth/SolicitudEnviada.vue'),
     },
 
     // ── Protegidas (requieren login) ──────────────────────
     {
         path: '/dashboard',
         name: 'dashboard',
-        component: () => import('@/views/DashboardView.vue'),
+        component: () => import('@/pages/DashboardView.vue'),
         meta: { requiresAuth: true },
     },
 
@@ -33,7 +33,7 @@ const routes = [
     {
         path: '/admin/peticiones',
         name: 'admin-peticiones',
-        component: () => import('@/views/admin/AdminPeticionsView.vue'),
+        component: () => import('@/pages/admin/AdminPeticionsView.vue'),
         meta: { requiresAuth: true, requiresAdmin: true },
     },
 
