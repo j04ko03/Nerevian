@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class estats_solicituds extends Model
 {
-    use HasFactory;
     protected $table = 'estats_solicituds';
     protected $primaryKey = 'id';
     protected $fillable = [
@@ -15,8 +14,8 @@ class estats_solicituds extends Model
     ];
     public $timestamps = false;
 
-    public function solicitud()
+    public function solicitud(): HasMany
     {
-        return $this->hasMany(solicitud::class);
+        return $this->hasMany(solicitud::class, 'estat_solicitud_id');
     }
 }

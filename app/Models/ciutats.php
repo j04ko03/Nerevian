@@ -16,16 +16,22 @@ class ciutats extends Model
     protected $fillable = [
         'nom',
         'pais_id',
+        'added_by',
     ];
 
-  
-    public function paissos()
+
+    public function pais()
     {
         return $this->belongsTo(Pais::class, 'pais_id');
     }
 
     public function transportistes()
     {
-        return $this->hasMany(transportistes::class);
+        return $this->hasMany(transportistes::class, 'ciutat_id');
+    }
+
+    public function ports()
+    {
+        return $this->hasMany(Port::class, 'ciutat_id');
     }
 }

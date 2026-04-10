@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class peticions_registre extends Model
 {
@@ -23,6 +24,6 @@ class peticions_registre extends Model
 
     public function peticions_registre(): BelongsTo
     {
-        return $this->belongsTo(usuaris::class , 'id');
+        return $this->belongsTo(usuaris::class, 'resolt_per');
     }
 }
