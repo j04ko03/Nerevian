@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 use App\Models\usuari;
 use App\Models\dni;
@@ -16,21 +18,28 @@ class clients extends Model
         'usuari_id',
         'dni_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
-    public function solicitud()
+    //El cliente pertenece a un usuario (cuenta).
+    public function usuari(): BelongsTo
     {
-        return $this->hasMany(solicitud::class);
+        return $this->belongsTo(Usuaris::class, 'usuari_id');
     }
 
-    public function usuari()
+    // Un cliente puede realizar muchas solicitudes
+    public function solicituds(): HasMany
     {
-        return $this->belongsTo(usuari::class);
+        return $this->hasMany(solicitud::class, 'client_id');
     }
 
-    public function dni()
+    public function usuaris(): BelongsTo
     {
-        return $this->belongsTo(dni::class);
+        return $this->belongsTo(usuaris::class, 'usuari_id');
+    }
+
+    public function dni(): BelongsTo
+    {
+        return $this->belongsTo(dni::class, 'dni_id');
     }
 }

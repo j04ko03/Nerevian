@@ -44,7 +44,7 @@ class peticions_registre extends Model
 
     public function peticions_registre(): BelongsTo
     {
-        return $this->belongsTo(usuaris::class, 'id');
+        return $this->belongsTo(usuaris::class, 'resolt_per');
     }
 
     public function resolutor(): BelongsTo

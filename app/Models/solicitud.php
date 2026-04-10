@@ -8,6 +8,9 @@ class solicitud extends Model
 {
     protected $table = 'solicitud';
     protected $primaryKey = 'id';
+
+    const CREATED_AT = 'data_creacio';
+    const UPDATED_AT = 'updated_at';
     protected $fillable = [
         'pes_brut',
         'volum',
@@ -18,7 +21,7 @@ class solicitud extends Model
         'tipus_transport_id', // FK
         'tipus_fluxe_id', // FK
         'tipus_carrega_id', // FK
-        'tipus_incoterm_id', // FK
+        'incoterm_id', // FK
         'client_id', // FK
         'transportista_id', // FK
         'tipus_validacio_id', // FK
@@ -46,7 +49,7 @@ class solicitud extends Model
 
     public function tipus_incoterm()
     {
-        return $this->belongsTo(tipus_incoterms::class, 'tipus_incoterm_id');
+        return $this->belongsTo(tipus_incoterms::class, 'incoterm_id');
     }
 
     public function client()
