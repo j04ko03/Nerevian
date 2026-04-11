@@ -91,4 +91,27 @@ class solicitud extends Model
     {
         return $this->belongsTo(tipus_contenidors::class, 'tipus_contenidor_id');
     }
+
+    // QUERY SCOPES
+    // Los queryscopes son funciones que encapsulan (guardan) peticiones de búsqueda básica o común, 
+    // como lo quieras llamar, para no tener que escribirlas cada vez (me parece la polla).
+    // Se escriben en el modelo de la tabla que quieres consultar y lo puedes llamar desde cualquier controller.
+    // Una característica que me gusta bastante es que puedes concatenarlos.
+
+    // Por ejemplo, si siempre quieres buscar por cliente, puedes crear un queryscope para ello.
+
+
+    // scope para verificar si hay un cliente logueado y así se le devuelven sus solicitudes.
+    public function scopeDelClienteActual($query)
+    {
+        $clientId = auth()->user()->client()->id ?? null;
+        return $query->where('client_id', $clientId);
+    }
+
+    // scope para filtrar el estado de las solicitudes. Si buscamos pendientes (1) pues sería blablabla ->delEstado(1)
+    public function scopeDelEstado($query, $estadoId)
+    {
+        return $query->where('estat_solicitud_id', $estadoId);
+    }
+
 }

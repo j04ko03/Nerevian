@@ -47,4 +47,28 @@ class documents extends Model
         return $this->belongsTo(usuaris::class, 'pujat_per');
     }
 
+    // QUERY SCOPES
+    // Los queryscopes son funciones que encapsulan (guardan) peticiones de búsqueda básica o común, 
+    // como lo quieras llamar, para no tener que escribirlas cada vez (me parece la polla).
+    // Se escriben en el modelo de la tabla que quieres consultar y lo puedes llamar desde cualquier controller.
+    // Una característica que me gusta bastante es que puedes concatenarlos.
+
+    // Devuelve solo los documentos subidos por el usuario actual
+    public function scopeDelUsuarioActual($query)
+    {
+        return $query->where('pujat_per', auth()->id());
+    }
+
+    // Filtra los documentos vinculados a una operación específica
+    public function scopeDeOperacion($query, $operacioId)
+    {
+        return $query->where('operacio_id', $operacioId);
+    }
+
+    // Filtra los documentos vinculados a una solicitud específica
+    public function scopeDeSolicitud($query, $solicitudId)
+    {
+        return $query->where('solicitud_id', $solicitudId);
+    }
+
 }
