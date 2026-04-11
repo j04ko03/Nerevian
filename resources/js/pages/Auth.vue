@@ -3,7 +3,7 @@
         <!-- BACK LINK (only for register) -->
         <div v-if="view === 'register'" class="back-link-container">
             <router-link to="/login" class="back-link"
-                >&larr; Volver al login</router-link
+                >&larr; Tornar al login</router-link
             >
         </div>
 
@@ -42,20 +42,21 @@
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
             </div>
-            <h2 class="title">Solicitud Enviada</h2>
+            <h2 class="title">Sol·licitud Enviada</h2>
             <p class="message">
-                Hemos recibido tu solicitud de registro. Un administrador
-                revisará tus datos y te contactará en breve.
+                Hem rebut la teva sol·licitud de registre. Un administrador
+                revisarà les teves dades i et contactarà en breu. Gràcies per
+                voler formar part de Nerevian!
             </p>
             <RouterLink to="/login" class="btn-primary"
-                >Volver al Inicio</RouterLink
+                >Tornar al Inici</RouterLink
             >
         </div>
 
         <footer v-if="view === 'login'" class="auth-footer">
             <p>
-                ¿No tienes cuenta?
-                <router-link to="/register">Solicitar registro</router-link>
+                No tens compte?
+                <router-link to="/register">Registra't</router-link>
             </p>
         </footer>
     </AuthLayout>
@@ -77,12 +78,14 @@ const auth = useAuthStore();
 const view = computed(() => route.name);
 
 const title = computed(() =>
-    view.value === 'login' ? 'Bienvenido a Nerevian' : 'Solicitud de Registro',
+    view.value === 'login'
+        ? 'Benvinguda a Nerevian'
+        : 'Sol·licitud de Registre',
 );
 const subtitle = computed(() =>
     view.value === 'login'
-        ? 'Plataforma integral de gestión logística'
-        : 'Completa el formulario para unirte a Nerevian',
+        ? 'Plataforma integral de gestió logística'
+        : 'Completa el formulari per unir-te a Nerevian',
 );
 
 const procesarLogin = async (credenciales) => {

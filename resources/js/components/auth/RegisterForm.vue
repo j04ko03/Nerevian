@@ -2,7 +2,7 @@
     <form @submit.prevent="handleSubmit" class="register-form">
         <div class="form-grid">
             <div class="input-group">
-                <label for="empresa">Nombre de Empresa *</label>
+                <label for="empresa">Nom de l'Empresa *</label>
                 <input
                     type="text"
                     id="empresa"
@@ -12,7 +12,7 @@
                 />
             </div>
             <div class="input-group">
-                <label for="contacto">Persona de Contacto *</label>
+                <label for="contacto">Persona de Contacte *</label>
                 <input
                     type="text"
                     id="contacto"
@@ -22,7 +22,7 @@
                 />
             </div>
             <div class="input-group">
-                <label for="email">Correo Electrónico *</label>
+                <label for="email">Correu Electrònic *</label>
                 <input
                     type="email"
                     id="email"
@@ -32,7 +32,7 @@
                 />
             </div>
             <div class="input-group">
-                <label for="telefono">Teléfono</label>
+                <label for="telefono">Telèfon</label>
                 <input
                     type="tel"
                     id="telefono"
@@ -41,7 +41,7 @@
                 />
             </div>
             <div class="input-group">
-                <label for="password">Contraseña *</label>
+                <label for="password">Contrasenya *</label>
                 <input
                     type="password"
                     id="password"
@@ -52,7 +52,7 @@
             </div>
             <div class="input-group">
                 <label for="password_confirmation"
-                    >Confirmar Contraseña *</label
+                    >Confirmar Contrasenya *</label
                 >
                 <input
                     type="password"
@@ -64,30 +64,30 @@
             </div>
 
             <div class="input-group full-width">
-                <label for="rol">Tipo de Cuenta *</label>
+                <label for="rol">Tipus de Perfil *</label>
                 <select id="rol" v-model="form.rol_id" required>
                     <option value="" disabled selected>
-                        Seleccione el rol de la cuenta...
+                        Seleccioni el rol de la compte...
                     </option>
-                    <option value="2">Cliente</option>
+                    <option value="2">Client</option>
                     <option value="3">Operador</option>
-                    <option value="4">Agente</option>
+                    <option value="4">Agent</option>
                     <option value="1">Administrador</option>
                 </select>
             </div>
         </div>
 
         <div class="input-group full-width mt-3">
-            <label for="descripcion">Mensaje o Descripción de Actividad</label>
+            <label for="descripcion">Missatge o Descripció de Activitat</label>
             <textarea
                 id="descripcion"
                 v-model="form.missatge"
                 rows="4"
-                placeholder="Describa brevemente su actividad y necesidades logísticas..."
+                placeholder="Descriu breument la teva activitat i necessitats logístiques..."
             ></textarea>
         </div>
 
-        <button type="submit" class="btn-submit">Enviar Solicitud</button>
+        <button type="submit" class="btn-submit">Enviar Sol·licitud</button>
     </form>
 </template>
 
@@ -169,7 +169,7 @@ textarea::placeholder {
 }
 
 select:invalid,
-select option[value=""] {
+select option[value=''] {
     color: rgba(42, 26, 8, 0.3);
 }
 

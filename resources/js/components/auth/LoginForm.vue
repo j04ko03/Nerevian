@@ -1,7 +1,7 @@
 <template>
     <form @submit.prevent="handleSubmit" class="login-form">
         <div class="input-group">
-            <label for="email" class="label">Correo Electrónico</label>
+            <label for="email" class="label">Correu Electrònic</label>
             <input
                 type="email"
                 id="email"
@@ -13,7 +13,7 @@
         </div>
 
         <div class="input-group">
-            <label for="password" class="label">Contraseña</label>
+            <label for="password" class="label">Contrasenya</label>
             <input
                 type="password"
                 id="password"
@@ -24,11 +24,11 @@
             />
         </div>
 
-        <div class="forgot-password">
+        <!-- <div class="forgot-password">
             <a href="#">¿Olvidaste tu contraseña?</a>
-        </div>
+        </div> -->
 
-        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+        <button type="submit" class="btn btn-primary">Iniciar Sessió</button>
     </form>
 </template>
 
