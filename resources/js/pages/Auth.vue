@@ -12,13 +12,15 @@
             class="auth-card"
             :class="view + '-card'"
         >
-            <div class="logo-container">
-                <img src="/logo.png" alt="Nerevian" class="logo" />
-            </div>
-            <div class="page-header">
-                <h2>{{ title }}</h2>
-                <p>{{ subtitle }}</p>
-            </div>
+            <template v-if="view === 'login'">
+                <div class="logo-container">
+                    <img src="/logo.png" alt="Nerevian" class="logo" />
+                </div>
+                <div class="page-header">
+                    <h2>{{ title }}</h2>
+                    <p>{{ subtitle }}</p>
+                </div>
+            </template>
 
             <LoginForm v-if="view === 'login'" @login="procesarLogin" />
             <RegisterForm
@@ -157,6 +159,7 @@ const enviarDatosLaravel = async (datos) => {
     border: 1px solid rgba(201, 169, 110, 0.3);
     border-radius: 16px;
     padding: 2.25rem 2.5rem;
+    box-sizing: border-box;
     margin-bottom: 1.25rem;
     box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.35),
@@ -169,7 +172,7 @@ const enviarDatosLaravel = async (datos) => {
     width: 100%;
 }
 .register-card {
-    max-width: 600px;
+    max-width: 1050px;
     margin-left: auto;
     margin-right: auto;
     width: 100%;

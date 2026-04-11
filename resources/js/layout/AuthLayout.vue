@@ -50,7 +50,7 @@
     position: relative;
     z-index: 2;
     width: 100%;
-    max-width: 660px;
+    max-width: 1300px;
     display: flex;
     flex-direction: column;
     padding: 0 1rem;
