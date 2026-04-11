@@ -16,6 +16,7 @@ class ciutats extends Model
     protected $fillable = [
         'nom',
         'pais_id',
+        'added_by'
     ];
 
   
@@ -27,5 +28,10 @@ class ciutats extends Model
     public function transportistes()
     {
         return $this->hasMany(transportistes::class);
+    }
+
+    public function addedBy()
+    {
+        return $this->belongsTo(usuaris::class, 'added_by');
     }
 }

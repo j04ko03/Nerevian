@@ -13,6 +13,7 @@ class ports extends Model
     protected $fillable = [
         'nom',
         'ciutat_id',
+        'added_by'
     ];
 
     public function ciutats()
@@ -28,5 +29,10 @@ class ports extends Model
     public function solicitudDesti()
     {
         return $this->hasMany(solicitud::class, 'port_desti_id');
+    }
+
+    public function addedBy()
+    {
+        return $this->belongsTo(usuaris::class, 'added_by');
     }
 }

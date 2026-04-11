@@ -13,10 +13,16 @@ class paissos extends Model
 
     protected $fillable = [
         'nom',
+        'added_by'
     ];
 
     public function ciutats()
     {
-        return $this->hasMany(Ciutat::class, 'pais_id');
+        return $this->hasMany(ciutats::class, 'pais_id');
+    }
+
+    public function addedBy()
+    {
+        return $this->belongsTo(usuaris::class, 'added_by');
     }
 }

@@ -1,11 +1,33 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import App from './App.vue'
-import router from './router'
-import '../css/app.css'
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import '../css/app.css';
 
-const app = createApp(App)
+// PrimeVue
+import PrimeVue from 'primevue/config';
+import Aura from '@primevue/themes/aura';
+import ToastService from 'primevue/toastservice';
+import DialogService from 'primevue/dialogservice';
+import ConfirmationService from 'primevue/confirmationservice';
 
-app.use(createPinia())
-app.use(router)
-app.mount('#app')
+const app = createApp(App);
+
+app.use(createPinia());
+app.use(router);
+
+app.use(PrimeVue, {
+    theme: {
+        preset: Aura,
+        options: {
+            darkModeSelector: '.dark',
+            cssLayer: false,
+        },
+    },
+});
+
+app.use(ToastService);
+app.use(DialogService);
+app.use(ConfirmationService);
+
+app.mount('#app');
