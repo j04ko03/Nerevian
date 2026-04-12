@@ -64,6 +64,12 @@ return [
             'report' => false,
         ],
 
+        'private' => [
+            'driver' => 'local',
+            'root' => storage_path('private'), // Pa' el storage/private que se van las cosas.
+            'throw' => false,
+        ],
+
     ],
 
     /*

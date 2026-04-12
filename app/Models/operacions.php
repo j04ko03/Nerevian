@@ -62,7 +62,7 @@ class operacions extends Model
     // scope para verificar si hay un cliente logueado y así se le devuelven sus solicitudes.
     public function scopeDelClienteActual($query)
     {
-        $clientId = auth()->user()->client->id ?? null;
+        $clientId = auth()->user()->id ?? null;
         return $query->where('client_id', $clientId);
     }
 
