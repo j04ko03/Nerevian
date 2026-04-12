@@ -34,4 +34,9 @@ class ciutats extends Model
     {
         return $this->hasMany(Port::class, 'ciutat_id');
     }
+
+    public function addedBy()
+    {
+        return $this->belongsTo(usuaris::class, 'added_by');
+    }
 }

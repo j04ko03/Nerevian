@@ -21,4 +21,9 @@ class paissos extends Model
     {
         return $this->hasMany(ciutats::class, 'pais_id');
     }
+
+    public function addedBy()
+    {
+        return $this->belongsTo(usuaris::class, 'added_by');
+    }
 }

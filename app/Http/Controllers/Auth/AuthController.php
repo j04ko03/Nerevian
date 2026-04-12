@@ -26,8 +26,6 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Eliminar tokens anteriores (una sesión activa por usuario)
-        $user->tokens()->delete();
 
         // Crear el token de Sanctum
         $token = $user->createToken('nerevian-token')->plainTextToken;
