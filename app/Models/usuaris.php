@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class usuaris extends Authenticatable
 {
 
     use HasApiTokens;
+    use HasFactory;
     //
     protected $table = 'usuaris';
     protected $primaryKey = 'id';
@@ -50,5 +52,25 @@ class usuaris extends Authenticatable
     public function rols(): BelongsTo
     {
         return $this->belongsTo(rols::class, 'rol_id');
+    }
+
+    public function tipus_incoterm(): HasMany
+    {
+        return $this->hasMany(tipus_incoterms::class, 'added_by');
+    }
+
+    public function ports(): HasMany
+    {
+        return $this->hasMany(ports::class, 'added_by');
+    }
+
+    public function paissos(): HasMany
+    {
+        return $this->hasMany(paissos::class, 'added_by');
+    }
+
+    public function ciutats(): HasMany
+    {
+        return $this->hasMany(ciutats::class, 'added_by');
     }
 }
