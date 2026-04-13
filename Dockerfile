@@ -7,7 +7,7 @@ WORKDIR /app
 # 1. Copiamos SOLO los archivos de dependencias primero. 
 # Así, si no hay paquetes nuevos, Docker usa la caché y se salta la descarga je
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --ignore-platform-reqs --no-interaction --prefer-dist --optimize-autoloader
+RUN composer install --no-dev --ignore-platform-reqs --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
 # ==========================================
 # Etapa 2: Construcción del Frontend (Node/Vue)
