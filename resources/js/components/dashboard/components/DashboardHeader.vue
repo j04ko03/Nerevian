@@ -28,19 +28,22 @@ console.log(user);
 <style scoped>
 .page-header {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 .page-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: #111827;
     margin: 0;
+    letter-spacing: -0.02em;
 }
 .page-subtitle {
-    font-size: 1rem;
+    font-size: 0.875rem;
     color: #9ca3af;
-    margin: 0.2rem 0 0;
+    margin: 0.3rem 0 0;
 }
 </style>

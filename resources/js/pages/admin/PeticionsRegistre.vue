@@ -17,6 +17,7 @@
                     label="Pendents"
                     :value="countByEstat(0)"
                     compare="per revisar"
+                    color="yellow"
                     :loading="loading"
                 >
                     <template #icon><Clock :size="18" /></template>
@@ -25,6 +26,7 @@
                     label="Acceptades"
                     :value="countByEstat(1)"
                     compare="usuaris creats"
+                    color="green"
                     :loading="loading"
                 >
                     <template #icon><CheckCircle :size="18" /></template>
@@ -33,6 +35,7 @@
                     label="Rebutjades"
                     :value="countByEstat(2)"
                     compare="sol·licituds denegades"
+                    color="red"
                     :loading="loading"
                 >
                     <template #icon><XCircle :size="18" /></template>
@@ -160,10 +163,31 @@
 
                     <!-- Card footer -->
                     <div class="card-footer">
-                        <span class="date-label">
-                            <CalendarDays :size="12" />
-                            {{ formatDate(p.data_creacio) }}
-                        </span>
+                        <div class="footer-left">
+                            <div class="date-labels">
+                                <span
+                                    class="date-label"
+                                    v-tooltip.top="'Data de creació'"
+                                >
+                                    <CalendarDays :size="12" />
+                                    {{ formatDate(p.data_creacio) }}
+                                </span>
+                                <template v-if="Number(p.estat) !== 0">
+                                    <span class="date-sep">·</span>
+                                    <span
+                                        class="date-label"
+                                        v-tooltip.top="'Data de resolució'"
+                                    >
+                                        <CalendarCheck :size="12" />
+                                        {{ formatDate(p.data_resolucio) ?? '—' }}
+                                    </span>
+                                </template>
+                            </div>
+                            <div v-if="Number(p.estat) !== 0" class="encarregat-label">
+                                <UserCheck :size="11" />
+                                <span>{{ p.resolutor ? `${p.resolutor.nom} ${p.resolutor.cognoms}`.trim() : '—' }}</span>
+                            </div>
+                        </div>
 
                         <div
                             v-if="Number(p.estat) === 0"
@@ -224,12 +248,15 @@ import {
     Phone,
     MessageSquare,
     CalendarDays,
+    CalendarCheck,
+    UserCheck,
     Check,
     X,
     LoaderCircle,
 } from 'lucide-vue-next';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
+import vTooltip from 'primevue/tooltip';
 import ConfirmDialog from 'primevue/confirmdialog';
 import Toast from 'primevue/toast';
 import Skeleton from 'primevue/skeleton';
@@ -288,11 +315,9 @@ function countByEstat(estat) {
 
 function formatDate(date) {
     if (!date) return '—';
-    return new Date(date).toLocaleDateString('ca-ES', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
+    const d = new Date(date);
+    const dayMonth = d.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+    return `${dayMonth} del ${d.getFullYear()}`;
 }
 
 const filteredPeticions = computed(() => {
@@ -353,9 +378,7 @@ async function doAccept(id) {
     processingAction.value = 'accept';
     try {
         await api.post(`/admin/registration-requests/${id}/approve`);
-        peticions.value = peticions.value.map((p) =>
-            p.id === id ? { ...p, estat: '1' } : p,
-        );
+        await fetchPeticions();
         toast.add({
             severity: 'success',
             summary: 'Acceptada',
@@ -380,9 +403,7 @@ async function doReject(id) {
     processingAction.value = 'reject';
     try {
         await api.post(`/admin/registration-requests/${id}/reject`);
-        peticions.value = peticions.value.map((p) =>
-            p.id === id ? { ...p, estat: '2' } : p,
-        );
+        await fetchPeticions();
         toast.add({
             severity: 'warn',
             summary: 'Rebutjada',
@@ -415,98 +436,111 @@ onMounted(fetchPeticions);
 
 /* ── Header ─────────────────────────────── */
 .page-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
 }
 .page-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: #111827;
     margin: 0;
+    letter-spacing: -0.02em;
 }
 .page-subtitle {
-    font-size: 1rem;
+    font-size: 0.875rem;
     color: #9ca3af;
-    margin: 0.2rem 0 0;
+    margin: 0.3rem 0 0;
 }
 
 /* ── Filter tabs ────────────────────────── */
 .filter-tabs {
     display: flex;
-    gap: 0.4rem;
-    margin-bottom: 1.5rem;
+    gap: 0.3rem;
+    margin-bottom: 1.75rem;
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
-    padding: 0.35rem;
+    padding: 0.3rem;
     width: fit-content;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .tab {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 1rem;
+    gap: 0.45rem;
+    padding: 0.5rem 1.1rem;
     border-radius: 7px;
     border: none;
     background: transparent;
     font-family: inherit;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: #6b7280;
     cursor: pointer;
     transition: all 0.15s;
 }
 .tab:hover {
-    background: #f3f4f6;
+    background: #f9fafb;
     color: #111827;
 }
 .tab--active {
     background: #1a3a3a;
     color: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 .tab-count {
-    font-size: 0.72rem;
-    font-weight: 600;
-    background: rgba(0, 0, 0, 0.08);
-    padding: 0.1rem 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.07);
+    padding: 0.1rem 0.45rem;
     border-radius: 10px;
+    min-width: 1.4rem;
+    text-align: center;
 }
 .tab--active .tab-count {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.18);
 }
 
 /* ── Cards grid ─────────────────────────── */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.1rem;
 }
 
 /* ── Petition card ──────────────────────── */
 .petition-card {
     background: white;
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    border-radius: 14px;
+    padding: 1.35rem 1.6rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.85rem;
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
 }
 .petition-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.1);
 }
 .card--pending {
-    border-left: 3px solid #f59e0b;
+    border-left: 4px solid #f59e0b;
+    background: #fffcf5;
 }
 .card--accepted {
-    border-left: 3px solid #10b981;
+    border-left: 4px solid #10b981;
+    background: #f9fefb;
 }
 .card--rejected {
-    border-left: 3px solid #ef4444;
+    border-left: 4px solid #ef4444;
+    background: #fff9f9;
 }
 
 .card-head {
@@ -591,12 +625,38 @@ onMounted(fetchPeticions);
     padding-top: 0.75rem;
     border-top: 1px solid #f3f4f6;
 }
+.footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+.date-labels {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+.encarregat-label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.72rem;
+    color: #b0b9c6;
+    cursor: default;
+}
 .date-label {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
     font-size: 0.75rem;
     color: #9ca3af;
+    cursor: default;
+}
+.date-sep {
+    font-size: 0.75rem;
+    color: #d1d5db;
+    line-height: 1;
 }
 .action-buttons {
     display: flex;

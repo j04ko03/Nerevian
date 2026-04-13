@@ -1,5 +1,5 @@
 <template>
-    <div class="stat-card">
+    <div class="stat-card" :class="`stat-card--${color}`">
         <template v-if="loading">
             <div class="skeleton-header">
                 <Skeleton width="55%" height="0.85rem" borderRadius="6px" />
@@ -36,6 +36,10 @@ defineProps({
     loading: {
         type: Boolean,
         default: false,
+    },
+    color: {
+        type: String,
+        default: 'default', // 'default' | 'yellow' | 'green' | 'red'
     },
 });
 </script>
@@ -98,6 +102,28 @@ defineProps({
     font-size: 0.75rem;
     color: #9ca3af;
 }
+
+/* ── Color variants ──────────────────────── */
+.stat-card--yellow {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+.stat-card--yellow .stat-icon { color: #d97706; }
+.stat-card--yellow .stat-value { color: #92400e; }
+
+.stat-card--green {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+.stat-card--green .stat-icon { color: #059669; }
+.stat-card--green .stat-value { color: #065f46; }
+
+.stat-card--red {
+    background: #fff1f2;
+    border-color: #fecdd3;
+}
+.stat-card--red .stat-icon { color: #e11d48; }
+.stat-card--red .stat-value { color: #9f1239; }
 
 /* ── Skeleton ────────────────────────────── */
 .skeleton-header {
