@@ -15,16 +15,16 @@ import { useAuthStore } from '@/stores/authStore';
 const auth = useAuthStore();
 
 const roleMap = {
-    1: 'admin',
-    2: 'cliente',
-    3: 'operador'
+    1: 'Administradora',
+    2: 'Clienta',
+    3: 'Operadora',
 };
 
 const authUser = computed(() => {
     if (!auth.user) return { name: '', role: '' };
     return {
         name: `${auth.user.nom || ''} ${auth.user.cognoms || ''}`.trim(),
-        role: roleMap[auth.user.rol_id] || ''
+        role: roleMap[auth.user.rol_id] || '',
     };
 });
 </script>
