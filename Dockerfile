@@ -10,17 +10,27 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --ignore-platform-reqs --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
 # ==========================================
-# Etapa 2: Construcción del Frontend (Node/Vue)
+# Etapa 2: Construcción del Frontend (Modificada para Wayfinder)
 # ==========================================
-FROM node:24-alpine AS frontend
+# Usamos una imagen ligera de PHP porque el plugin de Vite necesita ejecutar 'artisan'
+FROM php:8.4-alpine AS frontend
 WORKDIR /app
 
-# 2. Igual que antes, copiamos solo los package para aprovechar la caché.
+# 1. Instalamos Node.js y npm dentro de esta imagen de PHP
+RUN apk add --no-cache nodejs npm
+
+# 2. Copiamos las dependencias de Node
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copiamos el resto del código para que Vite pueda compilar el Vue
+# 3. Copiamos todo el código fuente (necesario para Vite y Artisan)
 COPY . .
+
+# 4. Traje la carpeta 'vendor' de la Etapa 1.
+# Sin esto, el comando 'php artisan' del plugin fallaría.
+COPY --from=vendor /app/vendor/ ./vendor/
+
+# 5. Compilamos.
 RUN npm run build
 
 # ==========================================
