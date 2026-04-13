@@ -37,5 +37,8 @@ const authUser = computed(() => {
     margin-left: 16%;
     flex: 1;
     min-height: 100vh;
+    background: #f5f7f0;
+    padding: 2rem 2.5rem;
+    font-family: 'Instrument Sans', system-ui, sans-serif;
 }
 </style>

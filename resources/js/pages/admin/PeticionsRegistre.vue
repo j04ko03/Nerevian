@@ -1,15 +1,10 @@
 <template>
     <AppLayout>
-        <div class="page">
-            <!-- Header -->
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Peticions de Registre</h1>
-                    <p class="page-subtitle">
-                        Gestió de sol·licituds d'accés al sistema
-                    </p>
-                </div>
-            </div>
+        <!-- Header -->
+            <PageHeader
+                title="Peticions de Registre"
+                subtitle="Gestió de sol·licituds d'accés al sistema"
+            />
 
             <!-- Stats -->
             <StatsGrid :columns="3">
@@ -230,9 +225,8 @@
                 </div>
             </div>
 
-            <ConfirmDialog />
-            <Toast />
-        </div>
+        <ConfirmDialog />
+        <Toast />
     </AppLayout>
 </template>
 
@@ -262,6 +256,7 @@ import Toast from 'primevue/toast';
 import Skeleton from 'primevue/skeleton';
 
 import AppLayout from '@/layout/AppLayout.vue';
+import PageHeader from '@/layout/Header.vue';
 import StatsGrid from '@/components/dashboard/components/StatsGrid.vue';
 import StatCard from '@/components/dashboard/components/StatCard.vue';
 import api from '@/plugins/axios';
@@ -427,35 +422,6 @@ onMounted(fetchPeticions);
 </script>
 
 <style scoped>
-.page {
-    padding: 2rem 2.5rem;
-    min-height: 100vh;
-    background: #f5f7f0;
-    font-family: 'Instrument Sans', system-ui, sans-serif;
-}
-
-/* ── Header ─────────────────────────────── */
-.page-header {
-    margin-bottom: 1.75rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-}
-.page-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-    letter-spacing: -0.02em;
-}
-.page-subtitle {
-    font-size: 0.875rem;
-    color: #9ca3af;
-    margin: 0.3rem 0 0;
-}
-
 /* ── Filter tabs ────────────────────────── */
 .filter-tabs {
     display: flex;

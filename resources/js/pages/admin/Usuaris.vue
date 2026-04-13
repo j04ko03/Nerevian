@@ -1,23 +1,21 @@
 <template>
     <AppLayout>
-        <div class="users-page">
-            <UsuarisHeader />
-            <UsuarisStats :users="users" :loading="loading" />
-            <UsuarisTable
-                :users="users"
-                :loading="loading"
-                @edit="openEditDialog"
-                @delete="confirmDelete"
-            />
-            <UsuarisEditDialog
-                v-model:visible="editDialogVisible"
-                :user="editingUser"
-                :saving="saving"
-                @save="saveUser"
-            />
-            <ConfirmDialog />
-            <Toast />
-        </div>
+        <UsuarisHeader />
+        <UsuarisStats :users="users" :loading="loading" />
+        <UsuarisTable
+            :users="users"
+            :loading="loading"
+            @edit="openEditDialog"
+            @delete="confirmDelete"
+        />
+        <UsuarisEditDialog
+            v-model:visible="editDialogVisible"
+            :user="editingUser"
+            :saving="saving"
+            @save="saveUser"
+        />
+        <ConfirmDialog />
+        <Toast />
     </AppLayout>
 </template>
 
@@ -134,10 +132,4 @@ onMounted(fetchUsers);
 </script>
 
 <style scoped>
-.users-page {
-    padding: 2rem 2.5rem;
-    min-height: 100vh;
-    background: #f5f7f0;
-    font-family: 'Instrument Sans', system-ui, sans-serif;
-}
 </style>
