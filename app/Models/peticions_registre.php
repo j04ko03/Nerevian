@@ -13,7 +13,7 @@ class peticions_registre extends Model
     protected $autoIncrement = true;
     protected $keyType = 'int';
     public $timestamps = false;
-    protected $fillable = ['nom_empresa', 'contacte', 'missatge', 'correu', 'contrasenya', 'telefon'];
+    protected $fillable = ['nom_empresa', 'contacte', 'missatge', 'correu', 'contrasenya', 'telefon', 'rol_id'];
 
     // Creado para que Laravel trate los campos como Carbon (fechas).
     // Carbon trata una columna como objeto fecha y hora. En este caso, si no se especifica la fecha se 

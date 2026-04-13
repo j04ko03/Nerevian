@@ -120,10 +120,10 @@
                         <option value="" disabled>
                             Seleccioni el rol del compte...
                         </option>
+                        <option value="1">Administrador</option>
                         <option value="2">Client</option>
                         <option value="3">Operador</option>
                         <option value="4">Agent</option>
-                        <option value="1">Administrador</option>
                     </select>
                 </div>
 

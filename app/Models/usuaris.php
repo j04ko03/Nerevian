@@ -25,6 +25,11 @@ class usuaris extends Authenticatable
 
     protected $hidden = ['contrasenya', 'token'];
 
+    public function getContrasenyaAttribute($value): ?string
+    {
+        return $value !== null ? rtrim($value) : null;
+    }
+
     public function peticions_registre(): HasMany
     {
         return $this->hasMany(peticions_registre::class, 'resolt_per');

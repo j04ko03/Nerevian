@@ -1,12 +1,13 @@
 <template>
     <AppLayout>
         <div class="page">
-
             <!-- Header -->
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Peticions de Registre</h1>
-                    <p class="page-subtitle">Gestió de sol·licituds d'accés al sistema</p>
+                    <p class="page-subtitle">
+                        Gestió de sol·licituds d'accés al sistema
+                    </p>
                 </div>
             </div>
 
@@ -48,7 +49,11 @@
                     @click="activeTab = tab.value"
                 >
                     {{ tab.label }}
-                    <span class="tab-count">{{ tab.value === null ? peticions.length : countByEstat(tab.value) }}</span>
+                    <span class="tab-count">{{
+                        tab.value === null
+                            ? peticions.length
+                            : countByEstat(tab.value)
+                    }}</span>
                 </button>
             </div>
 
@@ -56,21 +61,52 @@
             <div v-if="loading" class="cards-grid">
                 <div v-for="i in 6" :key="i" class="petition-skeleton">
                     <div class="skeleton-top">
-                        <Skeleton width="50%" height="1rem" borderRadius="6px" />
-                        <Skeleton width="4rem" height="1.4rem" borderRadius="20px" />
+                        <Skeleton
+                            width="50%"
+                            height="1rem"
+                            borderRadius="6px"
+                        />
+                        <Skeleton
+                            width="4rem"
+                            height="1.4rem"
+                            borderRadius="20px"
+                        />
                     </div>
-                    <Skeleton width="70%" height="0.8rem" borderRadius="6px" class="mt-2" />
-                    <Skeleton width="55%" height="0.8rem" borderRadius="6px" class="mt-1" />
-                    <Skeleton width="40%" height="0.8rem" borderRadius="6px" class="mt-1" />
+                    <Skeleton
+                        width="70%"
+                        height="0.8rem"
+                        borderRadius="6px"
+                        class="mt-2"
+                    />
+                    <Skeleton
+                        width="55%"
+                        height="0.8rem"
+                        borderRadius="6px"
+                        class="mt-1"
+                    />
+                    <Skeleton
+                        width="40%"
+                        height="0.8rem"
+                        borderRadius="6px"
+                        class="mt-1"
+                    />
                     <div class="skeleton-footer">
-                        <Skeleton width="5rem" height="0.75rem" borderRadius="6px" />
+                        <Skeleton
+                            width="5rem"
+                            height="0.75rem"
+                            borderRadius="6px"
+                        />
                     </div>
                 </div>
             </div>
 
             <div v-else-if="filteredPeticions.length === 0" class="empty-state">
-                <ClipboardList :size="40" style="color: #d1d5db;" />
-                <p>No hi ha peticions{{ activeTab !== null ? ' en aquest estat' : '' }}</p>
+                <ClipboardList :size="40" style="color: #d1d5db" />
+                <p>
+                    No hi ha peticions{{
+                        activeTab !== null ? ' en aquest estat' : ''
+                    }}
+                </p>
             </div>
 
             <div v-else class="cards-grid">
@@ -84,11 +120,17 @@
                     <div class="card-head">
                         <div>
                             <h3 class="company-name">{{ p.nom_empresa }}</h3>
-                            <span class="role-badge" :style="rolStyle(p.rol_id)">
+                            <span
+                                class="role-badge"
+                                :style="rolStyle(p.rol_id)"
+                            >
                                 {{ rolLabel(p.rol_id) }}
                             </span>
                         </div>
-                        <span class="estat-badge" :class="`estat--${estatClass(p.estat)}`">
+                        <span
+                            class="estat-badge"
+                            :class="`estat--${estatClass(p.estat)}`"
+                        >
                             {{ estatLabel(p.estat) }}
                         </span>
                     </div>
@@ -107,7 +149,10 @@
                             <Phone :size="13" class="info-icon" />
                             <span>{{ p.telefon }}</span>
                         </div>
-                        <div v-if="p.missatge" class="info-row info-row--message">
+                        <div
+                            v-if="p.missatge"
+                            class="info-row info-row--message"
+                        >
                             <MessageSquare :size="13" class="info-icon" />
                             <span class="message-text">{{ p.missatge }}</span>
                         </div>
@@ -120,13 +165,23 @@
                             {{ formatDate(p.data_creacio) }}
                         </span>
 
-                        <div v-if="Number(p.estat) === 0" class="action-buttons">
+                        <div
+                            v-if="Number(p.estat) === 0"
+                            class="action-buttons"
+                        >
                             <button
                                 class="btn btn-accept"
                                 :disabled="processingId === p.id"
                                 @click="handleAccept(p)"
                             >
-                                <LoaderCircle v-if="processingId === p.id && processingAction === 'accept'" :size="13" class="spinner" />
+                                <LoaderCircle
+                                    v-if="
+                                        processingId === p.id &&
+                                        processingAction === 'accept'
+                                    "
+                                    :size="13"
+                                    class="spinner"
+                                />
                                 <Check v-else :size="13" />
                                 Acceptar
                             </button>
@@ -135,7 +190,14 @@
                                 :disabled="processingId === p.id"
                                 @click="handleReject(p)"
                             >
-                                <LoaderCircle v-if="processingId === p.id && processingAction === 'reject'" :size="13" class="spinner" />
+                                <LoaderCircle
+                                    v-if="
+                                        processingId === p.id &&
+                                        processingAction === 'reject'
+                                    "
+                                    :size="13"
+                                    class="spinner"
+                                />
                                 <X v-else :size="13" />
                                 Rebutjar
                             </button>
@@ -151,82 +213,108 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 import {
-    Clock, CheckCircle, XCircle, ClipboardList,
-    User, Mail, Phone, MessageSquare, CalendarDays,
-    Check, X, LoaderCircle,
-} from 'lucide-vue-next'
-import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue/usetoast'
-import ConfirmDialog from 'primevue/confirmdialog'
-import Toast from 'primevue/toast'
-import Skeleton from 'primevue/skeleton'
+    Clock,
+    CheckCircle,
+    XCircle,
+    ClipboardList,
+    User,
+    Mail,
+    Phone,
+    MessageSquare,
+    CalendarDays,
+    Check,
+    X,
+    LoaderCircle,
+} from 'lucide-vue-next';
+import { useConfirm } from 'primevue/useconfirm';
+import { useToast } from 'primevue/usetoast';
+import ConfirmDialog from 'primevue/confirmdialog';
+import Toast from 'primevue/toast';
+import Skeleton from 'primevue/skeleton';
 
-import AppLayout from '@/layout/AppLayout.vue'
-import StatsGrid from '@/components/dashboard/components/StatsGrid.vue'
-import StatCard from '@/components/dashboard/components/StatCard.vue'
-import api from '@/plugins/axios'
+import AppLayout from '@/layout/AppLayout.vue';
+import StatsGrid from '@/components/dashboard/components/StatsGrid.vue';
+import StatCard from '@/components/dashboard/components/StatCard.vue';
+import api from '@/plugins/axios';
 
-const confirm = useConfirm()
-const toast = useToast()
+const confirm = useConfirm();
+const toast = useToast();
 
-const peticions = ref([])
-const loading = ref(false)
-const processingId = ref(null)
-const processingAction = ref(null)
-const activeTab = ref(null)
+const peticions = ref([]);
+const loading = ref(false);
+const processingId = ref(null);
+const processingAction = ref(null);
+const activeTab = ref(0);
 
 const tabs = [
-    { label: 'Totes',      value: null },
-    { label: 'Pendents',   value: 0 },
+    { label: 'Pendents', value: 0 },
     { label: 'Acceptades', value: 1 },
     { label: 'Rebutjades', value: 2 },
-]
+    { label: 'Totes', value: null },
+];
 
 const rolMap = {
-    1: { label: 'Admin',    bg: '#e6f4f4', color: '#0a3a40' },
-    2: { label: 'Client',   bg: '#fefce8', color: '#854d0e' },
+    1: { label: 'Admin', bg: '#e6f4f4', color: '#0a3a40' },
+    2: { label: 'Client', bg: '#fefce8', color: '#854d0e' },
     3: { label: 'Operador', bg: '#eff6ff', color: '#1e40af' },
-    4: { label: 'Agent',    bg: '#f0fdf4', color: '#166534' },
-}
+    4: { label: 'Agent', bg: '#f0fdf4', color: '#166534' },
+};
 
-function rolLabel(id) { return rolMap[id]?.label ?? 'Desconegut' }
+function rolLabel(id) {
+    return rolMap[id]?.label ?? 'Desconegut';
+}
 function rolStyle(id) {
-    const r = rolMap[id] ?? { bg: '#f3f4f6', color: '#374151' }
-    return { backgroundColor: r.bg, color: r.color }
+    const r = rolMap[id] ?? { bg: '#f3f4f6', color: '#374151' };
+    return { backgroundColor: r.bg, color: r.color };
 }
 
 function estatLabel(estat) {
-    return { 0: 'Pendent', 1: 'Acceptada', 2: 'Rebutjada' }[Number(estat)] ?? '—'
+    return (
+        { 0: 'Pendent', 1: 'Acceptada', 2: 'Rebutjada' }[Number(estat)] ?? '—'
+    );
 }
 function estatClass(estat) {
-    return { 0: 'pending', 1: 'accepted', 2: 'rejected' }[Number(estat)] ?? 'pending'
+    return (
+        { 0: 'pending', 1: 'accepted', 2: 'rejected' }[Number(estat)] ??
+        'pending'
+    );
 }
 
 function countByEstat(estat) {
-    return peticions.value.filter(p => Number(p.estat) === estat).length
+    return peticions.value.filter((p) => Number(p.estat) === estat).length;
 }
 
 function formatDate(date) {
-    if (!date) return '—'
-    return new Date(date).toLocaleDateString('ca-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+    if (!date) return '—';
+    return new Date(date).toLocaleDateString('ca-ES', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    });
 }
 
 const filteredPeticions = computed(() => {
-    if (activeTab.value === null) return peticions.value
-    return peticions.value.filter(p => Number(p.estat) === activeTab.value)
-})
+    if (activeTab.value === null) return peticions.value;
+    return peticions.value.filter((p) => Number(p.estat) === activeTab.value);
+});
 
 async function fetchPeticions() {
-    loading.value = true
+    loading.value = true;
     try {
-        const { data } = await api.get('/admin/registration-requests')
-        peticions.value = data
+        const { data } = await api.get('/admin/registration-requests');
+        console.log(data);
+        peticions.value = data;
     } catch {
-        toast.add({ severity: 'error', summary: 'Error', detail: 'No s\'han pogut carregar les peticions', life: 3000 })
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: "No s'han pogut carregar les peticions",
+            life: 3000,
+        });
     } finally {
-        loading.value = false
+        loading.value = false;
     }
 }
 
@@ -235,10 +323,14 @@ function handleAccept(p) {
         message: `Vols acceptar la sol·licitud de ${p.nom_empresa} i crear el seu usuari?`,
         header: 'Confirmar acceptació',
         icon: 'pi pi-check-circle',
-        rejectProps: { label: 'Cancel·lar', severity: 'secondary', outlined: true },
+        rejectProps: {
+            label: 'Cancel·lar',
+            severity: 'secondary',
+            outlined: true,
+        },
         acceptProps: { label: 'Acceptar', severity: 'success' },
         accept: () => doAccept(p.id),
-    })
+    });
 }
 
 function handleReject(p) {
@@ -246,43 +338,71 @@ function handleReject(p) {
         message: `Vols rebutjar la sol·licitud de ${p.nom_empresa}?`,
         header: 'Confirmar rebuig',
         icon: 'pi pi-times-circle',
-        rejectProps: { label: 'Cancel·lar', severity: 'secondary', outlined: true },
+        rejectProps: {
+            label: 'Cancel·lar',
+            severity: 'secondary',
+            outlined: true,
+        },
         acceptProps: { label: 'Rebutjar', severity: 'danger' },
         accept: () => doReject(p.id),
-    })
+    });
 }
 
 async function doAccept(id) {
-    processingId.value = id
-    processingAction.value = 'accept'
+    processingId.value = id;
+    processingAction.value = 'accept';
     try {
-        await api.post(`/admin/registration-requests/${id}/approve`)
-        peticions.value = peticions.value.map(p => p.id === id ? { ...p, estat: '1' } : p)
-        toast.add({ severity: 'success', summary: 'Acceptada', detail: 'Usuari creat correctament', life: 3000 })
+        await api.post(`/admin/registration-requests/${id}/approve`);
+        peticions.value = peticions.value.map((p) =>
+            p.id === id ? { ...p, estat: '1' } : p,
+        );
+        toast.add({
+            severity: 'success',
+            summary: 'Acceptada',
+            detail: 'Usuari creat correctament',
+            life: 3000,
+        });
     } catch {
-        toast.add({ severity: 'error', summary: 'Error', detail: 'No s\'ha pogut acceptar la petició', life: 3000 })
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: "No s'ha pogut acceptar la petició",
+            life: 3000,
+        });
     } finally {
-        processingId.value = null
-        processingAction.value = null
+        processingId.value = null;
+        processingAction.value = null;
     }
 }
 
 async function doReject(id) {
-    processingId.value = id
-    processingAction.value = 'reject'
+    processingId.value = id;
+    processingAction.value = 'reject';
     try {
-        await api.post(`/admin/registration-requests/${id}/reject`)
-        peticions.value = peticions.value.map(p => p.id === id ? { ...p, estat: '2' } : p)
-        toast.add({ severity: 'warn', summary: 'Rebutjada', detail: 'Sol·licitud rebutjada', life: 3000 })
+        await api.post(`/admin/registration-requests/${id}/reject`);
+        peticions.value = peticions.value.map((p) =>
+            p.id === id ? { ...p, estat: '2' } : p,
+        );
+        toast.add({
+            severity: 'warn',
+            summary: 'Rebutjada',
+            detail: 'Sol·licitud rebutjada',
+            life: 3000,
+        });
     } catch {
-        toast.add({ severity: 'error', summary: 'Error', detail: 'No s\'ha pogut rebutjar la petició', life: 3000 })
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: "No s'ha pogut rebutjar la petició",
+            life: 3000,
+        });
     } finally {
-        processingId.value = null
-        processingAction.value = null
+        processingId.value = null;
+        processingAction.value = null;
     }
 }
 
-onMounted(fetchPeticions)
+onMounted(fetchPeticions);
 </script>
 
 <style scoped>
@@ -294,9 +414,20 @@ onMounted(fetchPeticions)
 }
 
 /* ── Header ─────────────────────────────── */
-.page-header { margin-bottom: 2rem; }
-.page-title { font-size: 2rem; font-weight: 700; color: #111827; margin: 0; }
-.page-subtitle { font-size: 1rem; color: #9ca3af; margin: 0.2rem 0 0; }
+.page-header {
+    margin-bottom: 2rem;
+}
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+.page-subtitle {
+    font-size: 1rem;
+    color: #9ca3af;
+    margin: 0.2rem 0 0;
+}
 
 /* ── Filter tabs ────────────────────────── */
 .filter-tabs {
@@ -324,16 +455,24 @@ onMounted(fetchPeticions)
     cursor: pointer;
     transition: all 0.15s;
 }
-.tab:hover { background: #f3f4f6; color: #111827; }
-.tab--active { background: #1a3a3a; color: white; }
+.tab:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+.tab--active {
+    background: #1a3a3a;
+    color: white;
+}
 .tab-count {
     font-size: 0.72rem;
     font-weight: 600;
-    background: rgba(0,0,0,0.08);
+    background: rgba(0, 0, 0, 0.08);
     padding: 0.1rem 0.4rem;
     border-radius: 10px;
 }
-.tab--active .tab-count { background: rgba(255,255,255,0.2); }
+.tab--active .tab-count {
+    background: rgba(255, 255, 255, 0.2);
+}
 
 /* ── Cards grid ─────────────────────────── */
 .cards-grid {
@@ -348,19 +487,27 @@ onMounted(fetchPeticions)
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 .petition-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px -8px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.08);
 }
-.card--pending  { border-left: 3px solid #f59e0b; }
-.card--accepted { border-left: 3px solid #10b981; }
-.card--rejected { border-left: 3px solid #ef4444; }
+.card--pending {
+    border-left: 3px solid #f59e0b;
+}
+.card--accepted {
+    border-left: 3px solid #10b981;
+}
+.card--rejected {
+    border-left: 3px solid #ef4444;
+}
 
 .card-head {
     display: flex;
@@ -390,12 +537,25 @@ onMounted(fetchPeticions)
     white-space: nowrap;
     flex-shrink: 0;
 }
-.estat--pending  { background: #fef3c7; color: #92400e; }
-.estat--accepted { background: #d1fae5; color: #065f46; }
-.estat--rejected { background: #fee2e2; color: #991b1b; }
+.estat--pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+.estat--accepted {
+    background: #d1fae5;
+    color: #065f46;
+}
+.estat--rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
 
 /* ── Card body ──────────────────────────── */
-.card-body { display: flex; flex-direction: column; gap: 0.4rem; }
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
 .info-row {
     display: flex;
     align-items: center;
@@ -403,8 +563,13 @@ onMounted(fetchPeticions)
     font-size: 0.825rem;
     color: #374151;
 }
-.info-row--message { align-items: flex-start; }
-.info-icon { color: #9ca3af; flex-shrink: 0; }
+.info-row--message {
+    align-items: flex-start;
+}
+.info-icon {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
 .message-text {
     color: #6b7280;
     font-size: 0.8rem;
@@ -433,7 +598,10 @@ onMounted(fetchPeticions)
     font-size: 0.75rem;
     color: #9ca3af;
 }
-.action-buttons { display: flex; gap: 0.4rem; }
+.action-buttons {
+    display: flex;
+    gap: 0.4rem;
+}
 .btn {
     display: flex;
     align-items: center;
@@ -447,17 +615,24 @@ onMounted(fetchPeticions)
     border: none;
     transition: all 0.15s;
 }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 .btn-accept {
     background: #d1fae5;
     color: #065f46;
 }
-.btn-accept:hover:not(:disabled) { background: #a7f3d0; }
+.btn-accept:hover:not(:disabled) {
+    background: #a7f3d0;
+}
 .btn-reject {
     background: #fee2e2;
     color: #991b1b;
 }
-.btn-reject:hover:not(:disabled) { background: #fecaca; }
+.btn-reject:hover:not(:disabled) {
+    background: #fecaca;
+}
 
 /* ── Skeleton ───────────────────────────── */
 .petition-skeleton {
@@ -465,7 +640,7 @@ onMounted(fetchPeticions)
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 .skeleton-top {
     display: flex;
@@ -478,8 +653,12 @@ onMounted(fetchPeticions)
     padding-top: 0.75rem;
     border-top: 1px solid #f3f4f6;
 }
-.mt-1 { margin-top: 0.35rem; }
-.mt-2 { margin-top: 0.6rem; }
+.mt-1 {
+    margin-top: 0.35rem;
+}
+.mt-2 {
+    margin-top: 0.6rem;
+}
 
 /* ── Empty state ────────────────────────── */
 .empty-state {

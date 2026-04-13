@@ -16,7 +16,7 @@ class RegistreController extends Controller
     public function index()
     {
         try {
-        $peticions = peticions_registre::all();
+        $peticions = peticions_registre::orderBy('data_creacio', 'desc')->get();
         return response()->json($peticions, 200);
         }
         catch (QueryException $e) {
@@ -32,6 +32,10 @@ class RegistreController extends Controller
 
         if ($peticion->estat !== '0') {
             return response()->json(['message' => 'Esta petición ya ha sido resuelta.'], 400);
+        }
+
+        if (usuaris::where('correu', $peticion->correu)->exists()) {
+            return response()->json(['message' => 'Ja existeix un usuari amb aquest correu.'], 409);
         }
 
         // Crear usuario automáticamente con rol 2 (Usuario normal)
