@@ -114,8 +114,10 @@ return [
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
-            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+            'options' => [
+                PDO::SQLSRV_ATTR_FETCHES_NUMERIC_TYPE => true,
+                'TrustServerCertificate' => true,
+            ],
         ],
 
     ],

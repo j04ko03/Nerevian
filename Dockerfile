@@ -12,7 +12,6 @@ RUN composer install --no-dev --ignore-platform-reqs --no-interaction --prefer-d
 # ==========================================
 # Etapa 2: Construcción del Frontend (Modificada para Wayfinder)
 # ==========================================
-# Usamos una imagen ligera de PHP porque el plugin de Vite necesita ejecutar 'artisan'
 FROM php:8.4-alpine AS frontend
 WORKDIR /app
 
@@ -32,6 +31,14 @@ COPY --from=vendor /app/vendor/ ./vendor/
 
 # 5. Compilamos.
 RUN npm run build
+
+# La etapa 2 en teoría solo deberia compilar el frontend, pero en este caso traigo vendor de la etapa 1 
+# para que el plugin de Vite pueda ejecutar 'php artisan' sin problemas. Porque antes de esto me petaba 
+# con el error #22 0.884 [@laravel/vite-plugin-wayfinder] [plugin @laravel/vite-plugin-wayfinder] Error 
+# generating types: Error: Command failed: php artisan wayfinder:generate --with-form y esto era porque 
+# ese plugin al ser un puente entre el back y el front necesitaba tener en esta sección un entorno PHP 
+# completo para poder funcionar, no obstante yo he optado por instalar una versión más ligera de OS base 
+# (en vez de ubunut o debian).
 
 # ==========================================
 # Etapa 3: Imagen Final (Producción)
