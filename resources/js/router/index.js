@@ -68,6 +68,27 @@ const routes = [
         component: () => import('@/pages/Dashboard.vue'),
         meta: { requiresAuth: true, requiresOperator: true },
     },
+    {
+        path: '/operador/configuracio',
+        name: 'operador-configuracio',
+        component: () => import('@/pages/Proximamente.vue'),
+        meta: { requiresAuth: true, requiresOperator: true },
+    },
+
+    // ── Client ─────────────────────────────────────────────
+    {
+        path: '/client/dashboard',
+        name: 'client-dashboard',
+        component: () => import('@/pages/Dashboard.vue'),
+        meta: { requiresAuth: true, requiresClient: true },
+    },
+
+    {
+        path: '/client/configuracio',
+        name: 'client-configuracio',
+        component: () => import('@/pages/Proximamente.vue'),
+        meta: { requiresAuth: true, requiresClient: true },
+    },
 
     // Redireccionamiento raíz
     { path: '/', redirect: '/login' },
