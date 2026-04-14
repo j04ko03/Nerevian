@@ -34,11 +34,11 @@ class UsuariController extends Controller
     public function update(Request $request, usuaris $usuario)
         {
             $request->validate([
-                'correu' => 'required|email|max:150|unique:usuarios,correu,' . $usuario->id,
+                'correu' => 'required|email|max:150|unique:usuaris,correu,' . $usuario->id,
                 'nom' => 'required|max:50',
                 'cognoms' => 'nullable|max:50',
                 'telefon' => 'nullable|max:20',
-                'rol_id' => 'required|integer|exists:roles,id',
+                'rol_id' => 'required|integer|exists:rols,id',
             ]);
 
             $data = $request->except(['contrasenya']);

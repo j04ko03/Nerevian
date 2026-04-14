@@ -15,7 +15,7 @@ import {
 } from 'lucide-vue-next';
 
 const navConfig = {
-    admin: [
+    Administradora: [
         { label: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard },
         { label: 'Usuaris', to: '/admin/usuaris', icon: Users },
         {
@@ -26,7 +26,7 @@ const navConfig = {
         { label: 'Dades mestres', to: '/admin/dades', icon: Database },
         { label: 'Configuració', to: '/admin/configuracio', icon: Settings },
     ],
-    operador: [
+    Operadora: [
         {
             label: 'Dashboard',
             to: '/operador/dashboard',
@@ -48,7 +48,7 @@ const navConfig = {
         { label: 'Documents', to: '/operador/documents', icon: Package },
         { label: 'Notificacions', to: '/operador/notificacions', icon: Bell },
     ],
-    cliente: [
+    Clienta: [
         { label: 'Dashboard', to: '/cliente/dashboard', icon: LayoutDashboard },
         {
             label: "Solicituds d'Oferta",

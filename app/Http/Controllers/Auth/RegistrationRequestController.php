@@ -17,7 +17,7 @@ class RegistrationRequestController extends Controller
         $validated = $request->validate([
             'nom_empresa' => 'required|string|max:100',
             'contacte' => 'required|string|max:100',
-            'correu' => 'required|email|max:200',
+            'correu' => 'required|email|max:200|unique:usuaris,correu|unique:peticions_registre,correu',
             'telefon' => 'nullable|string|max:20',
             'missatge' => 'nullable|string|max:500',
             'contrasenya' => ['required', Rules\Password::defaults()],

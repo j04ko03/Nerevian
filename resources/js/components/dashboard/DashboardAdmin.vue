@@ -1,7 +1,6 @@
 <template>
     <AppLayout>
-        <div class="dashboard">
-            <DashboardHeader />
+        <DashboardHeader />
 
             <StatsGrid :columns="3">
                 <StatCard
@@ -63,7 +62,6 @@
             <div v-else class="bottom-grid">
                 <UltimosUsuarios :usuarios="ultimosUsuarios" />
                 <ActividadSistema :actividad="monitorCarga" />
-            </div>
         </div>
     </AppLayout>
 </template>
@@ -104,12 +102,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.dashboard {
-    padding: 2rem 2.5rem;
-    min-height: 100vh;
-    background: #f5f7f0;
-    font-family: 'Instrument Sans', system-ui, sans-serif;
-}
 .bottom-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
