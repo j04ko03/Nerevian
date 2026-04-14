@@ -5,11 +5,47 @@
             :subtitle="`Benvinguda, ${user?.nom}`"
         />
 
+        <!-- ── Welcome card ──────────────────── -->
+        <div class="welcome-card">
+            <div class="welcome-bg-circle welcome-bg-circle--1" />
+            <div class="welcome-bg-circle welcome-bg-circle--2" />
+
+            <div class="welcome-left">
+                <span class="welcome-eyebrow">
+                    <Sparkles :size="13" />
+                    Portal logístic
+                </span>
+                <h2 class="welcome-title">Benvinguda, {{ user?.nom }}!</h2>
+                <p class="welcome-subtitle">
+                    Gestiona les teves sol·licituds, consulta l'estat dels
+                    enviaments i accedeix a tots els teus documents des d'un sol
+                    lloc.
+                </p>
+            </div>
+
+            <div class="welcome-actions">
+                <RouterLink to="/client/ofertes" class="cta cta--primary">
+                    <PlusCircle :size="15" />
+                    Nova sol·licitud d'oferta
+                </RouterLink>
+                <div class="cta-row">
+                    <RouterLink to="/client/operacions" class="cta cta--glass">
+                        <PackageSearch :size="14" />
+                        Seguiment
+                    </RouterLink>
+                    <RouterLink to="/client/documents" class="cta cta--glass">
+                        <FileText :size="14" />
+                        Documents
+                    </RouterLink>
+                </div>
+            </div>
+        </div>
+
         <!-- Stats -->
         <StatsGrid :columns="3">
             <StatCard
                 label="Sol·licituds enviades"
-                :value="displayStats.enviades"
+                :value="stats.solicitudes_enviadas"
                 compare="en revisió"
                 color="yellow"
                 :loading="loading"
@@ -18,7 +54,7 @@
             </StatCard>
             <StatCard
                 label="Pedides actives"
-                :value="displayStats.actives"
+                :value="stats.pedidos_activos"
                 compare="en curs"
                 color="green"
                 :loading="loading"
@@ -27,7 +63,7 @@
             </StatCard>
             <StatCard
                 label="Docs per revisar"
-                :value="displayStats.docs"
+                :value="stats.docs_por_revisar"
                 compare="pendents de revisió"
                 :loading="loading"
             >
@@ -40,22 +76,54 @@
             <div class="card-skeleton">
                 <div class="skeleton-header">
                     <Skeleton width="50%" height="0.9rem" borderRadius="6px" />
-                    <Skeleton width="2.5rem" height="1.5rem" borderRadius="20px" />
+                    <Skeleton
+                        width="2.5rem"
+                        height="1.5rem"
+                        borderRadius="20px"
+                    />
                 </div>
                 <div class="skeleton-list">
                     <div v-for="i in 3" :key="i" class="skeleton-journey">
                         <div class="skeleton-journey-top">
-                            <Skeleton width="30%" height="0.8rem" borderRadius="6px" />
-                            <Skeleton width="3.5rem" height="1.4rem" borderRadius="20px" />
+                            <Skeleton
+                                width="30%"
+                                height="0.8rem"
+                                borderRadius="6px"
+                            />
+                            <Skeleton
+                                width="3.5rem"
+                                height="1.4rem"
+                                borderRadius="20px"
+                            />
                         </div>
                         <div class="skeleton-route">
-                            <Skeleton shape="circle" width="0.65rem" height="0.65rem" />
-                            <Skeleton width="100%" height="3px" borderRadius="4px" />
-                            <Skeleton shape="circle" width="0.65rem" height="0.65rem" />
+                            <Skeleton
+                                shape="circle"
+                                width="0.65rem"
+                                height="0.65rem"
+                            />
+                            <Skeleton
+                                width="100%"
+                                height="3px"
+                                borderRadius="4px"
+                            />
+                            <Skeleton
+                                shape="circle"
+                                width="0.65rem"
+                                height="0.65rem"
+                            />
                         </div>
                         <div class="skeleton-ports">
-                            <Skeleton width="35%" height="0.7rem" borderRadius="6px" />
-                            <Skeleton width="35%" height="0.7rem" borderRadius="6px" />
+                            <Skeleton
+                                width="35%"
+                                height="0.7rem"
+                                borderRadius="6px"
+                            />
+                            <Skeleton
+                                width="35%"
+                                height="0.7rem"
+                                borderRadius="6px"
+                            />
                         </div>
                     </div>
                 </div>
@@ -67,13 +135,30 @@
                 <div class="skeleton-list">
                     <div v-for="i in 4" :key="i" class="skeleton-pipeline-item">
                         <div class="skeleton-pipeline-top">
-                            <Skeleton width="40%" height="0.8rem" borderRadius="6px" />
-                            <Skeleton width="2.5rem" height="0.7rem" borderRadius="6px" />
+                            <Skeleton
+                                width="40%"
+                                height="0.8rem"
+                                borderRadius="6px"
+                            />
+                            <Skeleton
+                                width="2.5rem"
+                                height="0.7rem"
+                                borderRadius="6px"
+                            />
                         </div>
                         <div class="skeleton-steps">
                             <div v-for="s in 5" :key="s" class="skeleton-step">
-                                <Skeleton shape="circle" width="1.5rem" height="1.5rem" />
-                                <Skeleton v-if="s < 5" width="100%" height="2px" borderRadius="2px" />
+                                <Skeleton
+                                    shape="circle"
+                                    width="1.5rem"
+                                    height="1.5rem"
+                                />
+                                <Skeleton
+                                    v-if="s < 5"
+                                    width="100%"
+                                    height="2px"
+                                    borderRadius="2px"
+                                />
                             </div>
                         </div>
                     </div>
@@ -83,7 +168,6 @@
 
         <!-- Content -->
         <div v-else class="dashboard">
-
             <!-- ── Journey cards ──────────────────── -->
             <div class="card">
                 <div class="card-header">
@@ -91,7 +175,9 @@
                         <Truck :size="15" />
                         Pedides en trànsit
                     </div>
-                    <span class="count-pill">{{ pedidosEnTransito.length }}</span>
+                    <span class="count-pill">{{
+                        pedidosEnTransito.length
+                    }}</span>
                 </div>
 
                 <div v-if="pedidosEnTransito.length === 0" class="empty-state">
@@ -108,7 +194,10 @@
                         <!-- Top row -->
                         <div class="journey-top">
                             <span class="journey-code">{{ item.codigo }}</span>
-                            <span class="status-pill" :class="statusClass(item.estado_humano)">
+                            <span
+                                class="status-pill"
+                                :class="statusClass(item.estado_humano)"
+                            >
                                 {{ item.estado_humano }}
                             </span>
                         </div>
@@ -117,14 +206,18 @@
                         <div class="route-visual">
                             <div class="route-port route-port--origin">
                                 <div class="port-dot" />
-                                <span class="port-name">{{ routeParts(item.ruta).origin }}</span>
+                                <span class="port-name">{{
+                                    routeParts(item.ruta).origin
+                                }}</span>
                             </div>
 
                             <div class="route-track">
                                 <div class="route-line" />
                                 <div
                                     class="route-traveller"
-                                    :style="{ left: travellerPos(item.estado_id) }"
+                                    :style="{
+                                        left: travellerPos(item.estado_id),
+                                    }"
                                 >
                                     <Plane :size="12" />
                                 </div>
@@ -132,17 +225,25 @@
 
                             <div class="route-port route-port--dest">
                                 <div class="port-dot" />
-                                <span class="port-name">{{ routeParts(item.ruta).dest }}</span>
+                                <span class="port-name">{{
+                                    routeParts(item.ruta).dest
+                                }}</span>
                             </div>
                         </div>
 
                         <!-- Footer -->
                         <div class="journey-footer">
-                            <span class="journey-date" v-if="item.fecha_inicio !== 'Pendiente'">
+                            <span
+                                class="journey-date"
+                                v-if="item.fecha_inicio !== 'Pendiente'"
+                            >
                                 <CalendarDays :size="11" />
                                 {{ item.fecha_inicio }}
                             </span>
-                            <span class="journey-date journey-date--pending" v-else>
+                            <span
+                                class="journey-date journey-date--pending"
+                                v-else
+                            >
                                 Inici pendent
                             </span>
                         </div>
@@ -173,32 +274,53 @@
                     >
                         <div class="pipeline-top">
                             <div class="pipeline-info">
-                                <span class="pipeline-code">SOL-{{ String(item.id).padStart(3, '0') }}</span>
-                                <span class="pipeline-route">{{ item.ruta }}</span>
+                                <span class="pipeline-code"
+                                    >SOL-{{
+                                        String(item.id).padStart(3, '0')
+                                    }}</span
+                                >
+                                <span class="pipeline-route">{{
+                                    item.ruta
+                                }}</span>
                             </div>
-                            <span class="pipeline-step-label" :class="statusClass(item.sub_estado)">
+                            <span
+                                class="pipeline-step-label"
+                                :class="statusClass(item.sub_estado)"
+                            >
                                 {{ item.sub_estado }}
                             </span>
                         </div>
 
                         <!-- Step dots -->
                         <div class="pipeline-track">
-                            <template v-for="(step, i) in pipelineSteps" :key="step.key">
+                            <template
+                                v-for="(step, i) in pipelineSteps"
+                                :key="step.key"
+                            >
                                 <div
                                     class="pipeline-dot"
                                     :class="{
-                                        'dot--done':    stepIndex(item.estado) > i,
-                                        'dot--active':  stepIndex(item.estado) === i,
-                                        'dot--pending': stepIndex(item.estado) < i,
+                                        'dot--done': stepIndex(item.estado) > i,
+                                        'dot--active':
+                                            stepIndex(item.estado) === i,
+                                        'dot--pending':
+                                            stepIndex(item.estado) < i,
                                     }"
                                     v-tooltip.top="step.label"
                                 >
-                                    <Check v-if="stepIndex(item.estado) > i" :size="8" />
+                                    <Check
+                                        v-if="stepIndex(item.estado) > i"
+                                        :size="8"
+                                    />
                                 </div>
                                 <div
                                     v-if="i < pipelineSteps.length - 1"
                                     class="pipeline-connector"
-                                    :class="stepIndex(item.estado) > i ? 'connector--done' : 'connector--pending'"
+                                    :class="
+                                        stepIndex(item.estado) > i
+                                            ? 'connector--done'
+                                            : 'connector--pending'
+                                    "
                                 />
                             </template>
                         </div>
@@ -212,8 +334,17 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import {
-    Send, Package, FileText, Truck, ClipboardList,
-    CalendarDays, Plane, Check,
+    Send,
+    Package,
+    FileText,
+    Truck,
+    ClipboardList,
+    CalendarDays,
+    Plane,
+    Check,
+    Sparkles,
+    PlusCircle,
+    PackageSearch,
 } from 'lucide-vue-next';
 import Skeleton from 'primevue/skeleton';
 import vTooltip from 'primevue/tooltip';
@@ -226,23 +357,14 @@ import api from '@/plugins/axios';
 
 const { user } = useAuthStore();
 
-const loading           = ref(true);
-const stats             = ref({ solicitudes_enviadas: 0, pedidos_activos: 0, docs_por_revisar: 0 });
+const loading = ref(true);
+const stats = ref({
+    solicitudes_enviadas: 0,
+    pedidos_activos: 0,
+    docs_por_revisar: 0,
+});
 const pedidosEnTransito = ref([]);
-const misSolicitudes    = ref([]);
-const displayStats      = ref({ enviades: 0, actives: 0, docs: 0 });
-
-// Count-up
-function countUp(key, target, duration = 900) {
-    const start = Date.now();
-    const tick = () => {
-        const p = Math.min((Date.now() - start) / duration, 1);
-        displayStats.value[key] = Math.round((1 - Math.pow(1 - p, 3)) * target);
-        if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-}
-
+const misSolicitudes = ref([]);
 // Route helpers
 function routeParts(ruta) {
     const parts = (ruta ?? '').split(' → ');
@@ -265,18 +387,18 @@ const pipelineSteps = [
 ];
 
 function stepIndex(estadoId) {
-    const idx = pipelineSteps.findIndex(s => s.key === Number(estadoId));
+    const idx = pipelineSteps.findIndex((s) => s.key === Number(estadoId));
     return idx === -1 ? 0 : idx;
 }
 
 // Status pill
 const statusMap = {
-    'Nueva':          'status--green',
-    'En Revisión':    'status--purple',
-    'Cotizada':       'status--blue',
+    Nueva: 'status--green',
+    'En Revisión': 'status--purple',
+    Cotizada: 'status--blue',
     'En Negociación': 'status--amber',
-    'Rechazada':      'status--red',
-    'Desconocido':    'status--gray',
+    Rechazada: 'status--red',
+    Desconocido: 'status--gray',
 };
 function statusClass(estado) {
     return statusMap[estado] ?? 'status--gray';
@@ -286,13 +408,9 @@ onMounted(async () => {
     try {
         const { data } = await api.get('/dashboard');
         if (data.success) {
-            stats.value             = data.stats             ?? stats.value;
+            stats.value             = data.stats ?? stats.value;
             pedidosEnTransito.value = data.pedidos_en_transito ?? [];
-            misSolicitudes.value    = data.mis_solicitudes    ?? [];
-
-            countUp('enviades', data.stats.solicitudes_enviadas);
-            countUp('actives',  data.stats.pedidos_activos,  700);
-            countUp('docs',     data.stats.docs_por_revisar, 1100);
+            misSolicitudes.value    = data.mis_solicitudes ?? [];
         }
     } catch (e) {
         console.error('Error cargando dashboard cliente', e);
@@ -315,7 +433,7 @@ onMounted(async () => {
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -361,12 +479,14 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
-    transition: box-shadow 0.2s, transform 0.2s;
+    transition:
+        box-shadow 0.2s,
+        transform 0.2s;
     background: #fafafa;
 }
 
 .journey-card:hover {
-    box-shadow: 0 4px 16px -4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.1);
     transform: translateY(-1px);
 }
 
@@ -398,7 +518,9 @@ onMounted(async () => {
     min-width: 4.5rem;
 }
 
-.route-port--dest { align-items: flex-end; }
+.route-port--dest {
+    align-items: flex-end;
+}
 
 .port-dot {
     width: 10px;
@@ -450,8 +572,13 @@ onMounted(async () => {
 }
 
 @keyframes fly {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-2px); }
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
 }
 
 .journey-footer {
@@ -490,7 +617,9 @@ onMounted(async () => {
     transition: background 0.15s;
 }
 
-.pipeline-item:hover { background: #f3f4f6; }
+.pipeline-item:hover {
+    background: #f3f4f6;
+}
 
 .pipeline-top {
     display: flex;
@@ -543,7 +672,9 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.3s, border-color 0.3s;
+    transition:
+        background 0.3s,
+        border-color 0.3s;
 }
 
 .dot--done {
@@ -565,8 +696,13 @@ onMounted(async () => {
 }
 
 @keyframes dot-pulse {
-    0%, 100% { box-shadow: 0 0 0 3px rgba(26,138,125,0.15); }
-    50%       { box-shadow: 0 0 0 5px rgba(26,138,125,0.05); }
+    0%,
+    100% {
+        box-shadow: 0 0 0 3px rgba(26, 138, 125, 0.15);
+    }
+    50% {
+        box-shadow: 0 0 0 5px rgba(26, 138, 125, 0.05);
+    }
 }
 
 .pipeline-connector {
@@ -575,8 +711,12 @@ onMounted(async () => {
     transition: background 0.3s;
 }
 
-.connector--done    { background: #1a8a7d; }
-.connector--pending { background: #e5e7eb; }
+.connector--done {
+    background: #1a8a7d;
+}
+.connector--pending {
+    background: #e5e7eb;
+}
 
 /* ── Status pills ────────────────────────── */
 .status-pill {
@@ -588,12 +728,30 @@ onMounted(async () => {
     flex-shrink: 0;
 }
 
-.status--green  { background: #f0fdf4; color: #166534; }
-.status--purple { background: #f5f3ff; color: #5b21b6; }
-.status--blue   { background: #eff6ff; color: #1e40af; }
-.status--amber  { background: #fffbeb; color: #92400e; }
-.status--red    { background: #fff1f2; color: #9f1239; }
-.status--gray   { background: #f3f4f6; color: #374151; }
+.status--green {
+    background: #f0fdf4;
+    color: #166534;
+}
+.status--purple {
+    background: #f5f3ff;
+    color: #5b21b6;
+}
+.status--blue {
+    background: #eff6ff;
+    color: #1e40af;
+}
+.status--amber {
+    background: #fffbeb;
+    color: #92400e;
+}
+.status--red {
+    background: #fff1f2;
+    color: #9f1239;
+}
+.status--gray {
+    background: #f3f4f6;
+    color: #374151;
+}
 
 /* ── Empty ───────────────────────────────── */
 .empty-state {
@@ -606,7 +764,9 @@ onMounted(async () => {
     font-size: 0.85rem;
 }
 
-.empty-icon { color: #d1d5db; }
+.empty-icon {
+    color: #d1d5db;
+}
 
 /* ── Skeleton ────────────────────────────── */
 .card-skeleton {
@@ -614,7 +774,7 @@ onMounted(async () => {
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .skeleton-header {
@@ -688,7 +848,149 @@ onMounted(async () => {
     gap: 0;
 }
 
-.skeleton-step:last-child { flex: 0; }
+.skeleton-step:last-child {
+    flex: 0;
+}
 
-.mt-1 { margin-top: 0.25rem; }
+.mt-1 {
+    margin-top: 0.25rem;
+}
+
+/* ── Welcome card ────────────────────────── */
+.welcome-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    background: linear-gradient(135deg, #2a1a08 0%, #6b4c24 45%, #8a6e3e 100%);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 28px -6px rgba(42, 26, 8, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative blurred circles */
+.welcome-bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.welcome-bg-circle--1 {
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(
+        circle,
+        rgba(201, 169, 110, 0.18) 0%,
+        transparent 70%
+    );
+    top: -80px;
+    right: 200px;
+}
+.welcome-bg-circle--2 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.06) 0%,
+        transparent 70%
+    );
+    bottom: -60px;
+    right: 60px;
+}
+
+.welcome-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.welcome-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #c9a96e;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.welcome-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    letter-spacing: -0.3px;
+    line-height: 1.15;
+}
+
+.welcome-subtitle {
+    font-size: 0.83rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    line-height: 1.55;
+    max-width: 420px;
+}
+
+/* CTAs */
+.welcome-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    flex-shrink: 0;
+    min-width: 220px;
+}
+
+.cta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.62rem 1rem;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.cta--primary {
+    background: #c9a96e;
+    color: #2a1a08;
+    box-shadow: 0 4px 12px rgba(201, 169, 110, 0.35);
+}
+.cta--primary:hover {
+    background: #d4b87e;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(201, 169, 110, 0.45);
+}
+
+.cta--glass {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(6px);
+    font-size: 0.78rem;
+}
+.cta--glass:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.32);
+    color: white;
+}
 </style>

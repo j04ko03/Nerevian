@@ -16,7 +16,7 @@
                     <slot name="icon" />
                 </div>
             </div>
-            <div class="stat-value">{{ value }}</div>
+            <div class="stat-value">{{ displayValue }}</div>
             <div v-if="badge || compare" class="stat-footer">
                 <span v-if="badge" class="stat-badge positive">{{ badge }}</span>
                 <span v-if="compare" class="stat-compare">{{ compare }}</span>
@@ -26,9 +26,10 @@
 </template>
 
 <script setup>
+import { ref, watch } from 'vue';
 import Skeleton from 'primevue/skeleton';
 
-defineProps({
+const props = defineProps({
     label:   String,
     value:   [String, Number],
     badge:   String,
@@ -42,6 +43,27 @@ defineProps({
         default: 'default', // 'default' | 'yellow' | 'green' | 'red'
     },
 });
+
+const displayValue = ref(0);
+
+watch(
+    () => props.value,
+    (newVal) => {
+        const target = Number(newVal);
+        if (isNaN(target)) { displayValue.value = newVal; return; }
+        const start    = Date.now();
+        const duration = 900;
+        const from     = displayValue.value;
+        const tick = () => {
+            const p = Math.min((Date.now() - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - p, 3);
+            displayValue.value = Math.round(from + ease * (target - from));
+            if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+    },
+    { immediate: true },
+);
 </script>
 
 <style scoped>

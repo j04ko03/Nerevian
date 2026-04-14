@@ -5,11 +5,100 @@
             :subtitle="`Benvinguda, ${user?.nom}`"
         />
 
+        <!-- ── Welcome card ──────────────────── -->
+        <div class="welcome-card">
+            <div class="welcome-bg-circle welcome-bg-circle--1" />
+            <div class="welcome-bg-circle welcome-bg-circle--2" />
+
+            <div class="welcome-left">
+                <span class="welcome-eyebrow">
+                    <Briefcase :size="13" />
+                    Tauler d'operadora
+                </span>
+                <h2 class="welcome-title">Benvinguda, {{ user?.nom }}!</h2>
+                <p class="welcome-subtitle">
+                    Gestiona les cotitzacions fredes, revisa les sol·licituds
+                    pendents i consulta qualsevol operació al moment.
+                </p>
+            </div>
+
+            <div class="welcome-right">
+                <span class="search-label">
+                    <Search :size="13" />
+                    Cerca ràpida de sol·licituds
+                </span>
+                <div class="search-bar">
+                    <div
+                        class="search-input-wrap"
+                        :class="{ 'search-input-wrap--focus': searchFocused }"
+                    >
+                        <Search :size="15" class="search-icon" />
+                        <input
+                            v-model="searchQuery"
+                            type="text"
+                            placeholder="Codi o número (ex: REQ-005 o 5)"
+                            class="search-input"
+                            @keydown.enter="doSearch"
+                            @focus="searchFocused = true"
+                            @blur="searchFocused = false"
+                        />
+                        <button
+                            v-if="searchQuery"
+                            class="search-clear"
+                            @click="clearSearch"
+                        >
+                            <X :size="13" />
+                        </button>
+                    </div>
+                    <button
+                        class="search-btn"
+                        :disabled="!searchQuery.trim() || searching"
+                        @click="doSearch"
+                    >
+                        <LoaderCircle v-if="searching" :size="14" class="spin" />
+                        <span v-else>Cercar</span>
+                    </button>
+                </div>
+
+                <Transition name="result">
+                    <div
+                        v-if="searchResult"
+                        class="search-result"
+                        :class="searchResult.success ? 'result--ok' : 'result--empty'"
+                    >
+                        <template v-if="searchResult.success">
+                            <div class="result-left">
+                                <div class="result-icon result-icon--ok">
+                                    <CheckCircle :size="16" />
+                                </div>
+                                <div class="result-info">
+                                    <span class="result-code">REQ-{{ String(searchResult.operacion.id).padStart(3, '0') }}</span>
+                                    <span class="result-route">{{ searchResult.operacion.ruta }}</span>
+                                </div>
+                            </div>
+                            <div class="result-right">
+                                <span class="status-pill" :class="statusClass(searchResult.operacion.estado)">
+                                    {{ searchResult.operacion.estado }}
+                                </span>
+                                <span class="result-date">{{ searchResult.operacion.fecha_actualizacion }}</span>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="result-icon result-icon--empty">
+                                <SearchX :size="16" />
+                            </div>
+                            <span class="result-empty-text">{{ searchResult.message }}</span>
+                        </template>
+                    </div>
+                </Transition>
+            </div>
+        </div>
+
         <!-- Stats -->
         <StatsGrid :columns="3">
             <StatCard
                 label="Cotitzacions fredes"
-                :value="displayCounts.frides"
+                :value="cotizacionesFrias.length"
                 compare="requereixen atenció"
                 :color="critiques > 0 ? 'red' : 'yellow'"
                 :loading="loading"
@@ -18,7 +107,7 @@
             </StatCard>
             <StatCard
                 label="Activitat recent"
-                :value="displayCounts.recent"
+                :value="actividadRecienteMia.length"
                 compare="darreres gestionades"
                 color="green"
                 :loading="loading"
@@ -27,7 +116,7 @@
             </StatCard>
             <StatCard
                 label="Crítiques"
-                :value="displayCounts.critiques"
+                :value="critiques"
                 compare="+7 dies sense canvis"
                 :color="critiques > 0 ? 'red' : 'default'"
                 :loading="loading"
@@ -180,6 +269,7 @@
 import { ref, computed, onMounted } from 'vue';
 import {
     Thermometer, Activity, AlertOctagon, ClipboardList, CheckCircle,
+    Search, SearchX, X, LoaderCircle, Briefcase,
 } from 'lucide-vue-next';
 import Skeleton from 'primevue/skeleton';
 import AppLayout from '@/layout/AppLayout.vue';
@@ -191,21 +281,38 @@ import api from '@/plugins/axios';
 
 const { user } = useAuthStore();
 
-const loading   = ref(true);
-const cotizacionesFrias   = ref([]);
+const loading              = ref(true);
+const cotizacionesFrias    = ref([]);
 const actividadRecienteMia = ref([]);
 
-// Count-up
-const displayCounts = ref({ frides: 0, recent: 0, critiques: 0 });
+// Search
+const searchQuery  = ref('');
+const searchFocused = ref(false);
+const searching    = ref(false);
+const searchResult = ref(null);
 
-function countUp(key, target, duration = 900) {
-    const start = Date.now();
-    const tick = () => {
-        const p = Math.min((Date.now() - start) / duration, 1);
-        displayCounts.value[key] = Math.round((1 - Math.pow(1 - p, 3)) * target);
-        if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+async function doSearch() {
+    if (!searchQuery.value.trim()) return;
+    searching.value = true;
+    searchResult.value = null;
+    try {
+        const { data } = await api.get('/dashboard/search', {
+            params: { termino: searchQuery.value.trim() },
+        });
+        searchResult.value = data;
+    } catch (e) {
+        searchResult.value = {
+            success: false,
+            message: 'No s\'ha trobat cap sol·licitud amb aquest codi.',
+        };
+    } finally {
+        searching.value = false;
+    }
+}
+
+function clearSearch() {
+    searchQuery.value  = '';
+    searchResult.value = null;
 }
 
 const critiques = computed(() =>
@@ -246,11 +353,6 @@ onMounted(async () => {
         if (data.success) {
             cotizacionesFrias.value    = data.cotizacionesFrias    ?? [];
             actividadRecienteMia.value = data.actividadRecienteMia ?? [];
-
-            const crit = cotizacionesFrias.value.filter(i => i.dias_sin_cambios >= 7).length;
-            countUp('frides',    cotizacionesFrias.value.length);
-            countUp('recent',    actividadRecienteMia.value.length, 700);
-            countUp('critiques', crit, 1100);
         }
     } catch (e) {
         console.error('Error cargando dashboard operador', e);
@@ -599,4 +701,253 @@ onMounted(async () => {
 }
 
 .mt-1 { margin-top: 0.25rem; }
+
+/* ── Welcome card ────────────────────────── */
+.welcome-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    background: linear-gradient(135deg, #2a1a08 0%, #6b4c24 45%, #8a6e3e 100%);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 28px -6px rgba(42, 26, 8, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.welcome-bg-circle--1 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(201, 169, 110, 0.15) 0%, transparent 70%);
+    top: -100px;
+    left: 30%;
+}
+.welcome-bg-circle--2 {
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+    bottom: -50px;
+    right: 80px;
+}
+
+.welcome-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.welcome-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #c9a96e;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.welcome-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    letter-spacing: -0.3px;
+    line-height: 1.15;
+}
+
+.welcome-subtitle {
+    font-size: 0.83rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    line-height: 1.55;
+    max-width: 360px;
+}
+
+/* ── Search (inside welcome) ─────────────── */
+.welcome-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    position: relative;
+    flex-shrink: 0;
+    width: 340px;
+}
+
+.search-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Search bar ──────────────────────────── */
+.search-bar {
+    display: flex;
+    gap: 0.55rem;
+}
+
+.search-input-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    padding: 0 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.search-input-wrap--focus {
+    background: rgba(255, 255, 255, 0.17);
+    border-color: rgba(201, 169, 110, 0.6);
+    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.12);
+}
+
+.search-icon { color: rgba(255, 255, 255, 0.5); flex-shrink: 0; }
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: white;
+    background: transparent;
+    padding: 0.7rem 0;
+}
+
+.search-input::placeholder { color: rgba(255, 255, 255, 0.38); }
+
+.search-clear {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.15s;
+}
+.search-clear:hover { color: rgba(255, 255, 255, 0.9); }
+
+.search-btn {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0 1.2rem;
+    background: #c9a96e;
+    color: #2a1a08;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(201, 169, 110, 0.3);
+}
+
+.search-btn:hover:not(:disabled) {
+    background: #d4b87e;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(201, 169, 110, 0.4);
+}
+.search-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.spin { animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Search result ───────────────────────── */
+.search-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+}
+
+.result--ok    { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(201, 169, 110, 0.35); }
+.result--empty { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.13); }
+
+.result-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.result-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.result-icon--ok    { background: rgba(201, 169, 110, 0.2); color: #c9a96e; }
+.result-icon--empty { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.4); }
+
+.result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.result-code {
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.result-route {
+    font-size: 0.73rem;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.result-date {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.result-empty-text {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Transition */
+.result-enter-active { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+.result-leave-active { transition: all 0.15s ease; }
+.result-enter-from  { opacity: 0; transform: translateY(-6px); }
+.result-leave-to    { opacity: 0; transform: translateY(-4px); }
 </style>

@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me',      [AuthController::class, 'me']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/dashboard/search', [DashboardController::class, 'buscadorSolicitud']);
 
     // Rutas administrativas (solo para rol_id = 1)
     Route::middleware('admin')->prefix('admin')->group(function () {
