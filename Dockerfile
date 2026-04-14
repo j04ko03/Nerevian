@@ -43,7 +43,7 @@ RUN npm run build
 # ==========================================
 # Etapa 3: Imagen Final (Producción)
 # ==========================================
-FROM php:8.4-fpm
+FROM php:8.4-fpm-bookworm
 
 # 3. Instalamos SOLO lo necesario para ejecutar la app (quitamos nodejs, npm, git, etc.)
 RUN apt-get update && apt-get install -y \
