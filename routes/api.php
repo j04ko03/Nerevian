@@ -11,13 +11,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login',                 [AuthController::class, 'login']);
 Route::post('/registration-requests', [RegistrationRequestController::class, 'store']);
 
-// ── TEMP: rutas públicas para testing (revertir después) ────────
-Route::get('/admin/registration-requests',                [RegistreController::class, 'index']);
-Route::post('/admin/registration-requests/{id}/approve', [RegistreController::class, 'approve']);
-Route::post('/admin/registration-requests/{id}/reject',  [RegistreController::class, 'reject']);
-
-
-
 
 // ── Rutas protegidas (requieren token Sanctum) ──────────────────
 Route::middleware('auth:sanctum')->group(function () {

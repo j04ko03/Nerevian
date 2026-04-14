@@ -61,6 +61,14 @@ const routes = [
         meta: { requiresAuth: true, requiresAdmin: true },
     },
 
+    // ── Operador ─────────────────────────────────────────────
+    {
+        path: '/operador/dashboard',
+        name: 'operador-dashboard',
+        component: () => import('@/pages/Dashboard.vue'),
+        meta: { requiresAuth: true, requiresOperator: true },
+    },
+
     // Redireccionamiento raíz
     { path: '/', redirect: '/login' },
 ];
