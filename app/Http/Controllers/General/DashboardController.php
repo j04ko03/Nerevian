@@ -4,7 +4,7 @@ namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
 use App\Models\ciutats;
-use App\Models\Incoterm;
+use App\Models\incoterm;
 use App\Models\operacions;
 use App\Models\paissos;
 use App\Models\peticions_registre;
@@ -38,9 +38,9 @@ class DashboardController extends Controller
     private function getAdminData(): JsonResponse
     {
         $stats = [
-            'totalUsuarios'        => usuaris::count(),
+            'totalUsuarios' => usuaris::count(),
             'peticionesPendientes' => peticions_registre::where('estat', '0')->count(),
-            'totalOperadores'      => usuaris::where('rol_id', 3)->count(),
+            'totalOperadores' => usuaris::where('rol_id', 3)->count(),
         ];
 
         $monitorCarga = $this->getMonitorCarga();
@@ -50,20 +50,20 @@ class DashboardController extends Controller
             ->get()
             ->map(fn($u) => [
                 'nombre' => $u->nom,
-                'rol'    => match ((int) $u->rol_id) {
+                'rol' => match ((int) $u->rol_id) {
                     1 => 'Admin',
                     3 => 'Operador',
                     default => 'Cliente',
                 },
-                'fecha'  => $u->created_at
+                'fecha' => $u->created_at
                     ? Carbon::parse($u->created_at)->format('d/m/Y')
                     : 'N/A',
             ]);
 
         return response()->json([
-            'success'         => true,
-            'stats'           => $stats,
-            'monitorCarga'    => $monitorCarga,
+            'success' => true,
+            'stats' => $stats,
+            'monitorCarga' => $monitorCarga,
             'ultimosUsuarios' => $ultimosUsuarios,
         ]);
     }
@@ -72,23 +72,23 @@ class DashboardController extends Controller
     {
         $sources = [
             [
-                'model'   => ports::class,
-                'label'   => 'Puerto',
+                'model' => ports::class,
+                'label' => 'Puerto',
                 'display' => fn($i) => $i->nom,
             ],
             [
-                'model'   => Incoterm::class,
-                'label'   => 'Incoterm',
+                'model' => Incoterm::class,
+                'label' => 'Incoterm',
                 'display' => fn($i) => $i->name,
             ],
             [
-                'model'   => paissos::class,
-                'label'   => 'País',
+                'model' => paissos::class,
+                'label' => 'País',
                 'display' => fn($i) => $i->nom,
             ],
             [
-                'model'   => ciutats::class,
-                'label'   => 'Ciudad',
+                'model' => ciutats::class,
+                'label' => 'Ciudad',
                 'display' => fn($i) => $i->nom,
             ],
         ];
@@ -100,10 +100,10 @@ class DashboardController extends Controller
                     ->take(3)
                     ->get()
                     ->map(fn($item) => [
-                        'entidad'   => $src['label'],
-                        'registro'  => ($src['display'])($item),
-                        'fecha'     => $item->updated_at ?? $item->created_at,
-                        'accion'    => (
+                        'entidad' => $src['label'],
+                        'registro' => ($src['display'])($item),
+                        'fecha' => $item->updated_at ?? $item->created_at,
+                        'accion' => (
                             $item->updated_at &&
                             $item->created_at &&
                             Carbon::parse($item->updated_at)->gt(Carbon::parse($item->created_at))
@@ -138,12 +138,12 @@ class DashboardController extends Controller
             ->orderBy('updated_at', 'asc')
             ->get()
             ->map(fn($s) => [
-                'id'                   => $s->id,
-                'codigo'               => 'REQ-00' . $s->id,
-                'ruta'                 => ($s->portOrigen->nom ?? 'N/A') . ' → ' . ($s->portDesti->nom ?? 'N/A'),
+                'id' => $s->id,
+                'codigo' => 'REQ-00' . $s->id,
+                'ruta' => ($s->portOrigen->nom ?? 'N/A') . ' → ' . ($s->portDesti->nom ?? 'N/A'),
                 // CORRECCIÓN: leemos el estado desde la relación
-                'estado'               => $s->estatSolicitud->estat ?? 'Desconegut',
-                'dias_sin_cambios'     => Carbon::parse($s->updated_at)->diffInDays(Carbon::now()),
+                'estado' => $s->estatSolicitud->estat ?? 'Desconegut',
+                'dias_sin_cambios' => Carbon::parse($s->updated_at)->diffInDays(Carbon::now()),
                 'ultima_actualizacion' => $s->updated_at
                     ? Carbon::parse($s->updated_at)->format('Y-m-d')
                     : 'N/A',
@@ -156,16 +156,16 @@ class DashboardController extends Controller
             ->take(5)
             ->get()
             ->map(fn($s) => [
-                'id'                  => $s->id,
-                'codigo'              => 'REQ-00' . $s->id,
+                'id' => $s->id,
+                'codigo' => 'REQ-00' . $s->id,
                 // CORRECCIÓN: estado desde relación, no campo directo
-                'estado_actual'       => $s->estatSolicitud->estat ?? 'Desconegut',
+                'estado_actual' => $s->estatSolicitud->estat ?? 'Desconegut',
                 'tiempo_transcurrido' => Carbon::parse($s->updated_at)->diffForHumans(),
             ]);
 
         return response()->json([
-            'success'              => true,
-            'cotizacionesFrias'    => $cotizacionesFrias,
+            'success' => true,
+            'cotizacionesFrias' => $cotizacionesFrias,
             'actividadRecienteMia' => $actividadRecienteMia,
         ]);
     }
@@ -191,14 +191,16 @@ class DashboardController extends Controller
             'solicitudes_enviadas' => solicitud::where('client_id', $clienteId)
                 ->whereIn('estat_solicitud_id', [1, 2])
                 ->count(),
-            'pedidos_activos'      => solicitud::where('client_id', $clienteId)
+            'pedidos_activos' => solicitud::where('client_id', $clienteId)
                 ->whereIn('estat_solicitud_id', [3, 4])
                 ->count(),
             // CORRECCIÓN: ofertes no tiene campo 'enviada' ni 'cliente_id'
             // Contamos ofertes vinculadas a solicitudes del cliente
-            'docs_por_revisar'     => ofertes::whereHas('solicitud', fn($q) =>
-                    $q->where('client_id', $clienteId)
-                )
+            'docs_por_revisar' => ofertes::whereHas(
+                'solicitud',
+                fn($q) =>
+                $q->where('client_id', $clienteId)
+            )
                 ->whereIn('estat_oferta_id', [1]) // ajusta el ID de estado "pendiente"
                 ->count(),
         ];
@@ -206,29 +208,29 @@ class DashboardController extends Controller
         // CORRECCIÓN: operacions → oferta → solicitud para llegar a los puertos
         // La cadena correcta es: operacio → oferta → solicitud → portOrigen/portDesti
         $pedidosEnTransito = operacions::with([
-                'oferta.solicitud.portOrigen',
-                'oferta.solicitud.portDesti',
-                'oferta.solicitud.estatSolicitud',
-                'estat',
-            ])
+            'oferta.solicitud.portOrigen',
+            'oferta.solicitud.portDesti',
+            'oferta.solicitud.estatSolicitud',
+            'estat',
+        ])
             ->where('client_id', $clienteId)
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get()
             ->map(fn($op) => [
-                'id'            => $op->id,
-                'codigo'        => $op->codi_referencia ?? 'OP-' . $op->id,
+                'id' => $op->id,
+                'codigo' => $op->codi_referencia ?? 'OP-' . $op->id,
                 // CORRECCIÓN: ruta viene de solicitud, no de oferta directamente
-                'ruta'          => ($op->oferta->solicitud->portOrigen->nom ?? 'N/A')
+                'ruta' => ($op->oferta->solicitud->portOrigen->nom ?? 'N/A')
                     . ' → '
                     . ($op->oferta->solicitud->portDesti->nom ?? 'N/A'),
-                'fecha_inicio'  => $op->data_inici
+                'fecha_inicio' => $op->data_inici
                     ? Carbon::parse($op->data_inici)->format('d/m/Y')
                     : 'Pendiente',
                 'estado_humano' => $this->getEstadoHumanoCorto(
                     $op->oferta->solicitud->estatSolicitud->estat ?? 'desconocido'
                 ),
-                'estado_id'     => $op->oferta->solicitud->estat_solicitud_id ?? 'desconocido',
+                'estado_id' => $op->oferta->solicitud->estat_solicitud_id ?? 'desconocido',
             ]);
 
         // CORRECCIÓN: client_id en lugar de cliente_id
@@ -238,21 +240,21 @@ class DashboardController extends Controller
             ->take(4)
             ->get()
             ->map(fn($s) => [
-                'id'              => $s->id,
+                'id' => $s->id,
                 'tipo_transporte' => $s->tipus_transport_id ?? 'Carga General',
-                'ruta'            => ($s->portOrigen->nom ?? 'N/A') . ' → ' . ($s->portDesti->nom ?? 'N/A'),
+                'ruta' => ($s->portOrigen->nom ?? 'N/A') . ' → ' . ($s->portDesti->nom ?? 'N/A'),
                 // CORRECCIÓN: estado desde relación
-                'estado'          => $s->estat_solicitud_id ?? 'desconocido',
-                'sub_estado'      => $this->getEstadoHumanoCorto(
+                'estado' => $s->estat_solicitud_id ?? 'desconocido',
+                'sub_estado' => $this->getEstadoHumanoCorto(
                     $s->estatSolicitud->estat ?? 'desconocido'
                 ),
             ]);
 
         return response()->json([
-            'success'             => true,
-            'stats'               => $stats,
+            'success' => true,
+            'stats' => $stats,
             'pedidos_en_transito' => $pedidosEnTransito,
-            'mis_solicitudes'     => $misSolicitudes,
+            'mis_solicitudes' => $misSolicitudes,
         ]);
     }
 
@@ -285,12 +287,12 @@ class DashboardController extends Controller
         }
 
         return response()->json([
-            'success'   => true,
+            'success' => true,
             'operacion' => [
-                'id'                  => $resultado->id,
+                'id' => $resultado->id,
                 // CORRECCIÓN: estado desde relación
-                'estado'              => $resultado->estatSolicitud->estat ?? 'desconocido',
-                'ruta'                => ($resultado->portOrigen->nom ?? 'N/A') . ' → ' . ($resultado->portDesti->nom ?? 'N/A'),
+                'estado' => $resultado->estatSolicitud->estat ?? 'desconocido',
+                'ruta' => ($resultado->portOrigen->nom ?? 'N/A') . ' → ' . ($resultado->portDesti->nom ?? 'N/A'),
                 'fecha_actualizacion' => $resultado->updated_at
                     ? Carbon::parse($resultado->updated_at)->format('d/m/Y H:i')
                     : 'N/A',
@@ -305,12 +307,12 @@ class DashboardController extends Controller
     private function getEstadoHumanoCorto(string $estado): string
     {
         return match (strtolower($estado)) {
-            'nueva'          => 'Nueva',
-            'en_revision'    => 'En Revisión',
-            'cotizada'       => 'Cotizada',
+            'nueva' => 'Nueva',
+            'en_revision' => 'En Revisión',
+            'cotizada' => 'Cotizada',
             'en_negociacion' => 'En Negociación',
-            'rechazada'      => 'Rechazada',
-            default          => 'Desconocido',
+            'rechazada' => 'Rechazada',
+            default => 'Desconocido',
         };
     }
 }
