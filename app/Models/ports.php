@@ -16,7 +16,7 @@ class ports extends Model
         'added_by'
     ];
 
-    public function ciutats()
+    public function ciutat()
     {
         return $this->belongsTo(ciutats::class, 'ciutat_id');
     }

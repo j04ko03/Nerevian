@@ -182,7 +182,7 @@ class DashboardController extends Controller
 
         if (!$clienteId) {
             return response()->json(['error' => 'Cliente no encontrado'], 404);
-        }
+        }   
 
         $stats = [
             // CORRECCIÓN: campo correcto es 'client_id', no 'cliente_id'

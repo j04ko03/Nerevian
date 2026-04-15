@@ -1,15 +1,21 @@
 <template>
     <AppLayout>
-        <div class="page-header mt-4">
+        <Header
+            :title="carregant ? 'Carregant...' : operacioInfo.ref"
+            :subtitle="carregant ? '' : `${operacioInfo.origen}  →  ${operacioInfo.desti}`"
+        >
             <button class="btn-back" @click="tornarAEnrere">
-                <i class="pi pi-arrow-left"></i> Volver a Mis Envíos
+                <i class="pi pi-arrow-left"></i> Tornar als Enviaments
             </button>
-        </div>
+        </Header>
 
-        <div class="tracking-container mt-4">
-            <div class="title-section mb-4">
-                <h2>Seguiment: <span class="ref-code">{{ operacioInfo.ref }}</span></h2>
-            </div>
+        <div v-if="carregant" class="loading-state">
+            <i class="pi pi-spin pi-spinner" style="font-size:2rem"></i>
+            <p>Carregant seguiment...</p>
+        </div>
+        <div v-else-if="error" class="error-state">{{ error }}</div>
+
+        <div v-else class="tracking-container">
 
             <a :href="`https://www.google.com/maps/dir/${operacioInfo.origen}/${operacioInfo.desti}`" target="_blank"
                 class="map-placeholder mb-4">
@@ -36,7 +42,7 @@
                             </div>
                             <div class="step-text">
                                 <h4>{{ step.label }}</h4>
-                                <span class="step-date" :class="{ 'highlight': step.date === 'Actualidad' }">{{
+                                <span class="step-date" :class="{ 'highlight': step.date === 'Actualitat' }">{{
                                     step.date }}</span>
                             </div>
                         </div>
@@ -77,38 +83,62 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import api from '@/plugins/axios';
 import AppLayout from '@/layout/AppLayout.vue';
+import Header from '@/layout/Header.vue';
 
 const router = useRouter();
+const route = useRoute();
 
-// Datos extraídos de tus mockups
-const operacioInfo = ref({
-    ref: 'EXP-8821',
-    origen: 'Shanghai',
-    desti: 'Valencia',
+const carregant = ref(true);
+const error = ref(null);
+
+const operacioInfo = ref({ ref: '', origen: '', desti: '' });
+const historial = ref([]);
+const detallesCarga = ref({ contenedor: null, tipo: null, peso: null });
+const documentos = ref([]);
+
+const STEP_LABELS = [
+    { label: 'Recogida',       icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'Puerto Salida',  icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'En Tránsito',    icon_pending: 'pi pi-truck',  icon_done: 'pi pi-check' },
+    { label: 'Puerto Destino', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'Entrega Final',  icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+];
+
+const progressSteps = computed(() => {
+    const completed = historial.value.length;
+    return STEP_LABELS.map((s, i) => {
+        if (i < completed) {
+            return { label: s.label, date: historial.value[i]?.date_update?.slice(0, 10) ?? '', icon: s.icon_done, status: 'completed' };
+        } else if (i === completed) {
+            return { label: s.label, date: 'Actualitat', icon: s.icon_pending, status: 'active' };
+        } else {
+            return { label: s.label, date: '', icon: s.icon_pending, status: 'pending' };
+        }
+    });
 });
 
-// status: 'completed' (verde), 'active' (rojo), 'pending' (gris)
-const progressSteps = ref([
-    { label: 'Recogida', date: '20 Sep', icon: 'pi pi-check', status: 'completed' },
-    { label: 'Puerto Salida', date: '25 Sep', icon: 'pi pi-check', status: 'completed' },
-    { label: 'En Tránsito', date: 'Actualidad', icon: 'pi pi-truck', status: 'active' },
-    { label: 'Puerto Destino', date: 'Est. 12 Oct 2023', icon: 'pi pi-circle', status: 'pending' },
-    { label: 'Entrega Final', date: '', icon: 'pi pi-circle', status: 'pending' },
-]);
-
-const detallesCarga = ref({
-    contenedor: 'MSKU901283',
-    tipo: "40' HC",
-    peso: '24.500 kg'
+onMounted(async () => {
+    try {
+        const { data } = await api.get(`/tracking/${route.params.id}`);
+        const sol = data.data.solicitud;
+        operacioInfo.value = { ref: sol.ref, origen: sol.origen, desti: sol.desti };
+        detallesCarga.value = {
+            contenedor: sol.tipus_contenidor ?? '—',
+            tipo: sol.tipus_carrega ?? '—',
+            peso: sol.pes_brut ?? '—',
+        };
+        historial.value = data.data.historial;
+    } catch (e) {
+        error.value = 'No s\'ha pogut carregar el seguiment.';
+        console.error(e);
+    } finally {
+        carregant.value = false;
+    }
 });
-
-const documentos = ref([
-    { nom: 'Bill of Lading' },
-    { nom: 'Packing List' }
-]);
 
 const tornarAEnrere = () => {
     router.push('/client/operacions');
@@ -132,35 +162,40 @@ const tornarAEnrere = () => {
     margin-bottom: 2rem;
 }
 
-/* Cabecera y Títulos */
+/* Loading / Error */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: #6b7280;
+    gap: 1rem;
+}
+
+.error-state {
+    padding: 2rem;
+    color: #ef4444;
+    font-weight: 500;
+}
+
 .btn-back {
     background: transparent;
-    border: none;
+    border: 1px solid #d1d5db;
     color: #6b7280;
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0;
-    transition: color 0.2s;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s;
 }
 
 .btn-back:hover {
+    border-color: #9ca3af;
     color: #111827;
-}
-
-.title-section h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #111827;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.ref-code {
-    font-weight: 700;
 }
 
 /* Mapa Interactivo */
