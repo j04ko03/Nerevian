@@ -84,13 +84,28 @@
                     <label for="password"
                         >Contrasenya <span class="required">*</span></label
                     >
-                    <input
-                        type="password"
-                        id="password"
-                        v-model="form.contrasenya"
-                        placeholder="••••••••"
-                        required
-                    />
+                    <div class="input-wrapper">
+                        <input
+                            :type="showPassword ? 'text' : 'password'"
+                            id="password"
+                            v-model="form.contrasenya"
+                            placeholder="••••••••"
+                            required
+                        />
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            @click="showPassword = !showPassword"
+                            :aria-label="
+                                showPassword
+                                    ? 'Ocultar contrasenya'
+                                    : 'Mostrar contrasenya'
+                            "
+                        >
+                            <EyeOff v-if="showPassword" :size="17" />
+                            <Eye v-else :size="17" />
+                        </button>
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -98,13 +113,28 @@
                         >Confirmar Contrasenya
                         <span class="required">*</span></label
                     >
-                    <input
-                        type="password"
-                        id="password_confirmation"
-                        v-model="form.password_confirmation"
-                        placeholder="••••••••"
-                        required
-                    />
+                    <div class="input-wrapper">
+                        <input
+                            :type="showPasswordConfirm ? 'text' : 'password'"
+                            id="password_confirmation"
+                            v-model="form.password_confirmation"
+                            placeholder="••••••••"
+                            required
+                        />
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            @click="showPasswordConfirm = !showPasswordConfirm"
+                            :aria-label="
+                                showPasswordConfirm
+                                    ? 'Ocultar contrasenya'
+                                    : 'Mostrar contrasenya'
+                            "
+                        >
+                            <EyeOff v-if="showPasswordConfirm" :size="17" />
+                            <Eye v-else :size="17" />
+                        </button>
+                    </div>
                 </div>
 
                 <div class="input-group full-width">
@@ -120,10 +150,10 @@
                         <option value="" disabled>
                             Seleccioni el rol del compte...
                         </option>
-                        <option value="2">Client</option>
-                        <option value="3">Operador</option>
+                        <option value="1">Administradora</option>
+                        <option value="2">Clienta</option>
+                        <option value="3">Operadora</option>
                         <option value="4">Agent</option>
-                        <option value="1">Administrador</option>
                     </select>
                 </div>
 
@@ -146,7 +176,8 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import { Eye, EyeOff } from 'lucide-vue-next';
 
 const form = reactive({
     nom_empresa: '',
@@ -158,6 +189,9 @@ const form = reactive({
     rol_id: '',
     missatge: '',
 });
+
+const showPassword = ref(false);
+const showPasswordConfirm = ref(false);
 
 const emit = defineEmits(['submitRegistro']);
 
@@ -291,6 +325,35 @@ label {
 .required {
     color: #c9a96e;
     font-weight: 700;
+}
+
+/* ── Password wrapper ────────────────────── */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding-right: 2.75rem;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: rgba(42, 26, 8, 0.4);
+    transition: color 0.2s;
+}
+
+.toggle-password:hover {
+    color: #8a6e3e;
 }
 
 /* ── Inputs ──────────────────────────────── */

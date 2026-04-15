@@ -1,5 +1,5 @@
 <template>
-    <div class="stat-card">
+    <div class="stat-card" :class="`stat-card--${color}`">
         <template v-if="loading">
             <div class="skeleton-header">
                 <Skeleton width="55%" height="0.85rem" borderRadius="6px" />
@@ -16,7 +16,7 @@
                     <slot name="icon" />
                 </div>
             </div>
-            <div class="stat-value">{{ value }}</div>
+            <div class="stat-value">{{ displayValue }}</div>
             <div v-if="badge || compare" class="stat-footer">
                 <span v-if="badge" class="stat-badge positive">{{ badge }}</span>
                 <span v-if="compare" class="stat-compare">{{ compare }}</span>
@@ -26,9 +26,10 @@
 </template>
 
 <script setup>
+import { ref, watch } from 'vue';
 import Skeleton from 'primevue/skeleton';
 
-defineProps({
+const props = defineProps({
     label:   String,
     value:   [String, Number],
     badge:   String,
@@ -37,7 +38,32 @@ defineProps({
         type: Boolean,
         default: false,
     },
+    color: {
+        type: String,
+        default: 'default', // 'default' | 'yellow' | 'green' | 'red'
+    },
 });
+
+const displayValue = ref(0);
+
+watch(
+    () => props.value,
+    (newVal) => {
+        const target = Number(newVal);
+        if (isNaN(target)) { displayValue.value = newVal; return; }
+        const start    = Date.now();
+        const duration = 900;
+        const from     = displayValue.value;
+        const tick = () => {
+            const p = Math.min((Date.now() - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - p, 3);
+            displayValue.value = Math.round(from + ease * (target - from));
+            if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+    },
+    { immediate: true },
+);
 </script>
 
 <style scoped>
@@ -98,6 +124,28 @@ defineProps({
     font-size: 0.75rem;
     color: #9ca3af;
 }
+
+/* ── Color variants ──────────────────────── */
+.stat-card--yellow {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+.stat-card--yellow .stat-icon { color: #d97706; }
+.stat-card--yellow .stat-value { color: #92400e; }
+
+.stat-card--green {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+.stat-card--green .stat-icon { color: #059669; }
+.stat-card--green .stat-value { color: #065f46; }
+
+.stat-card--red {
+    background: #fff1f2;
+    border-color: #fecdd3;
+}
+.stat-card--red .stat-icon { color: #e11d48; }
+.stat-card--red .stat-value { color: #9f1239; }
 
 /* ── Skeleton ────────────────────────────── */
 .skeleton-header {

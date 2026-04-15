@@ -47,8 +47,8 @@
             <h2 class="title">Sol·licitud Enviada</h2>
             <p class="message">
                 Hem rebut la teva sol·licitud de registre. Un administrador
-                revisarà les teves dades i et contactarà en breu. Gràcies per
-                voler formar part de Nerevian!
+                revisarà les teves dades i et contactarà en breu. <br />Gràcies
+                per voler formar part de Nerevian!
             </p>
             <RouterLink to="/login" class="btn-primary"
                 >Tornar al Inici</RouterLink

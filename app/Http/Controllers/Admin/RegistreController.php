@@ -16,7 +16,7 @@ class RegistreController extends Controller
     public function index()
     {
         try {
-        $peticions = peticions_registre::all();
+        $peticions = peticions_registre::with('resolutor:id,nom,cognoms')->orderBy('data_creacio', 'desc')->get();
         return response()->json($peticions, 200);
         }
         catch (QueryException $e) {
@@ -34,18 +34,26 @@ class RegistreController extends Controller
             return response()->json(['message' => 'Esta petición ya ha sido resuelta.'], 400);
         }
 
-        // Crear usuario automáticamente con rol 2 (Usuario normal)
+        if (usuaris::where('correu', $peticion->correu)->exists()) {
+            return response()->json(['message' => 'Ja existeix un usuari amb aquest correu.'], 409);
+        }
+
+        // Crear usuario automáticamente con los datos de la petición
         $user = usuaris::create([
             'nom' => $peticion->contacte,
             'cognoms' => '', // Evitar error de NULL en la BD
             'correu' => $peticion->correu,
             'contrasenya' => $peticion->contrasenya, // Ya está hasheada en la petición
             'telefon' => $peticion->telefon,
-            'rol_id' => 2, // Rol de usuario normal
+            'rol_id' => $peticion->rol_id, // Rol de usuario normal
         ]);
 
         // Marcamos estado como aceptada
+        // Data resolució = now
+        // Resolt per = id del admin que ha aprovat (usuario autenticado)
         $peticion->estat = '1';
+        $peticion->data_resolucio = now();
+        $peticion->resolt_per = auth()->id();
         $peticion->save();
 
         return response()->json([
@@ -65,6 +73,8 @@ class RegistreController extends Controller
 
         // Marcamos estado como rechazada
         $peticion->estat = '2';
+        $peticion->data_resolucio = now();
+        $peticion->resolt_per = auth()->id();
         $peticion->save();
 
         return response()->json(['message' => 'Petición rechazada correctamente.']);

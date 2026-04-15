@@ -14,14 +14,25 @@
 
         <div class="input-group">
             <label for="password" class="label">Contrasenya</label>
-            <input
-                type="password"
-                id="password"
-                v-model="form.contrasenya"
-                placeholder="••••••••"
-                class="input-field"
-                required
-            />
+            <div class="input-wrapper">
+                <input
+                    :type="showPassword ? 'text' : 'password'"
+                    id="password"
+                    v-model="form.contrasenya"
+                    placeholder="••••••••"
+                    class="input-field"
+                    required
+                />
+                <button
+                    type="button"
+                    class="toggle-password"
+                    @click="showPassword = !showPassword"
+                    :aria-label="showPassword ? 'Ocultar contrasenya' : 'Mostrar contrasenya'"
+                >
+                    <EyeOff v-if="showPassword" :size="17" />
+                    <Eye v-else :size="17" />
+                </button>
+            </div>
         </div>
 
         <!-- <div class="forgot-password">
@@ -33,9 +44,11 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import { Eye, EyeOff } from 'lucide-vue-next';
 
 const form = reactive({ correu: '', contrasenya: '' });
+const showPassword = ref(false);
 const emit = defineEmits(['login']);
 
 const handleSubmit = () => {
@@ -63,6 +76,34 @@ const handleSubmit = () => {
     color: rgba(42, 26, 8, 0.75);
     margin-bottom: 0.4rem;
     font-size: 0.85rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .input-field {
+    width: 100%;
+    padding-right: 2.75rem;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: rgba(42, 26, 8, 0.4);
+    transition: color 0.2s;
+}
+
+.toggle-password:hover {
+    color: #8a6e3e;
 }
 
 .input-field {

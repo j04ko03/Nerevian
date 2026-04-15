@@ -15,7 +15,7 @@ import {
 } from 'lucide-vue-next';
 
 const navConfig = {
-    admin: [
+    Administradora: [
         { label: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard },
         { label: 'Usuaris', to: '/admin/usuaris', icon: Users },
         {
@@ -26,43 +26,43 @@ const navConfig = {
         { label: 'Dades mestres', to: '/admin/dades', icon: Database },
         { label: 'Configuració', to: '/admin/configuracio', icon: Settings },
     ],
-    operador: [
+    Operadora: [
         {
             label: 'Dashboard',
             to: '/operador/dashboard',
             icon: LayoutDashboard,
         },
         {
-            label: 'Peticions de Oferta',
-            to: '/operador/peticions',
-            icon: ClipboardList,
-        },
-        { label: 'Cotizacions', to: '/operador/cotizacions', icon: FileText },
-        {
-            label: 'Precontractes',
-            to: '/operador/precontrates',
-            icon: FileText,
-        },
-        { label: 'Expedicions', to: '/operador/expedicions', icon: Truck },
-        { label: 'Clients', to: '/operador/clients', icon: Users },
-        { label: 'Documents', to: '/operador/documents', icon: Package },
-        { label: 'Notificacions', to: '/operador/notificacions', icon: Bell },
-    ],
-    cliente: [
-        { label: 'Dashboard', to: '/cliente/dashboard', icon: LayoutDashboard },
-        {
-            label: "Solicituds d'Oferta",
-            to: '/cliente/solicituds',
+            label: 'Ofertes',
+            to: '/operador/ofertes',
             icon: Send,
         },
         {
-            label: 'Les meves comandes',
-            to: '/cliente/pedidos',
+            label: 'Operacions',
+            to: '/operador/operacions',
             icon: ShoppingBag,
         },
-        { label: 'Tracking', to: '/cliente/tracking', icon: MapPin },
-        { label: 'Documents', to: '/cliente/documents', icon: Package },
-        { label: 'Notificacions', to: '/cliente/notificacions', icon: Bell },
+        { label: 'Clients', to: '/operador/clients', icon: Users },
+        { label: 'Configuració', to: '/operador/configuracio', icon: Settings },
+    ],
+    Clienta: [
+        { label: 'Dashboard', to: '/client/dashboard', icon: LayoutDashboard },
+        {
+            label: 'Ofertes',
+            to: '/client/ofertes',
+            icon: Send,
+        },
+        {
+            label: 'Les meves operacions',
+            to: '/client/operacions',
+            icon: ShoppingBag,
+        },
+        {
+            label: 'Documents',
+            to: '/client/documents',
+            icon: FileText,
+        },
+        { label: 'Configuració', to: '/client/configuracio', icon: Settings },
     ],
 };
 
