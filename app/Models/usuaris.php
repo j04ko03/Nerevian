@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes; // Para el borrado lógico (soft delete)
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 class usuaris extends Authenticatable
 {
 
-    use HasApiTokens;
-    use HasFactory;
+    use HasApiTokens, HasFactory, SoftDeletes;
     //
     protected $table = 'usuaris';
     protected $primaryKey = 'id';

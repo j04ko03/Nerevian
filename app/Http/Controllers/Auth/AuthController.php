@@ -18,7 +18,7 @@ class AuthController extends Controller
             'contrasenya' => 'required|string',
         ]);
 
-        $user = usuaris::with('rols')->where('correu', $request->correu)->first();
+        $user = usuaris::withTrashed()->with('rols')->where('correu', $request->correu)->first();
 
         if (!$user || !Hash::check($request->contrasenya, $user->contrasenya)) {
             return response()->json([
@@ -26,6 +26,11 @@ class AuthController extends Controller
             ], 401);
         }
 
+        if ($user->trashed()) {
+            return response()->json([
+                'message' => 'El compte ha estat desactivat. Contacta amb l\'administrador.'
+            ], 403);
+        }
 
         // Crear el token de Sanctum
         $token = $user->createToken('nerevian-token')->plainTextToken;

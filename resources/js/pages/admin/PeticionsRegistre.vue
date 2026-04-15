@@ -1,229 +1,223 @@
 <template>
     <AppLayout>
         <!-- Header -->
-            <PageHeader
-                title="Peticions de Registre"
-                subtitle="Gestió de sol·licituds d'accés al sistema"
-            />
+        <PageHeader
+            title="Peticions de Registre"
+            subtitle="Gestió de sol·licituds d'accés al sistema"
+        />
 
-            <!-- Stats -->
-            <StatsGrid :columns="3">
-                <StatCard
-                    label="Pendents"
-                    :value="countByEstat(0)"
-                    compare="per revisar"
-                    color="yellow"
-                    :loading="loading"
-                >
-                    <template #icon><Clock :size="18" /></template>
-                </StatCard>
-                <StatCard
-                    label="Acceptades"
-                    :value="countByEstat(1)"
-                    compare="usuaris creats"
-                    color="green"
-                    :loading="loading"
-                >
-                    <template #icon><CheckCircle :size="18" /></template>
-                </StatCard>
-                <StatCard
-                    label="Rebutjades"
-                    :value="countByEstat(2)"
-                    compare="sol·licituds denegades"
-                    color="red"
-                    :loading="loading"
-                >
-                    <template #icon><XCircle :size="18" /></template>
-                </StatCard>
-            </StatsGrid>
+        <!-- Stats -->
+        <StatsGrid :columns="3">
+            <StatCard
+                label="Pendents"
+                :value="countByEstat(0)"
+                compare="per revisar"
+                color="yellow"
+                :loading="loading"
+            >
+                <template #icon><Clock :size="18" /></template>
+            </StatCard>
+            <StatCard
+                label="Acceptades"
+                :value="countByEstat(1)"
+                compare="usuaris creats"
+                color="green"
+                :loading="loading"
+            >
+                <template #icon><CheckCircle :size="18" /></template>
+            </StatCard>
+            <StatCard
+                label="Rebutjades"
+                :value="countByEstat(2)"
+                compare="sol·licituds denegades"
+                color="red"
+                :loading="loading"
+            >
+                <template #icon><XCircle :size="18" /></template>
+            </StatCard>
+        </StatsGrid>
 
-            <!-- Filter tabs -->
-            <div class="filter-tabs">
-                <button
-                    v-for="tab in tabs"
-                    :key="tab.value"
-                    class="tab"
-                    :class="{ 'tab--active': activeTab === tab.value }"
-                    @click="activeTab = tab.value"
-                >
-                    {{ tab.label }}
-                    <span class="tab-count">{{
-                        tab.value === null
-                            ? peticions.length
-                            : countByEstat(tab.value)
-                    }}</span>
-                </button>
-            </div>
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+            <button
+                v-for="tab in tabs"
+                :key="tab.value"
+                class="tab"
+                :class="{ 'tab--active': activeTab === tab.value }"
+                @click="activeTab = tab.value"
+            >
+                {{ tab.label }}
+                <span class="tab-count">{{
+                    tab.value === null
+                        ? peticions.length
+                        : countByEstat(tab.value)
+                }}</span>
+            </button>
+        </div>
 
-            <!-- Cards grid -->
-            <div v-if="loading" class="cards-grid">
-                <div v-for="i in 6" :key="i" class="petition-skeleton">
-                    <div class="skeleton-top">
-                        <Skeleton
-                            width="50%"
-                            height="1rem"
-                            borderRadius="6px"
-                        />
-                        <Skeleton
-                            width="4rem"
-                            height="1.4rem"
-                            borderRadius="20px"
-                        />
-                    </div>
+        <!-- Cards grid -->
+        <div v-if="loading" class="cards-grid">
+            <div v-for="i in 6" :key="i" class="petition-skeleton">
+                <div class="skeleton-top">
+                    <Skeleton width="50%" height="1rem" borderRadius="6px" />
                     <Skeleton
-                        width="70%"
-                        height="0.8rem"
-                        borderRadius="6px"
-                        class="mt-2"
+                        width="4rem"
+                        height="1.4rem"
+                        borderRadius="20px"
                     />
+                </div>
+                <Skeleton
+                    width="70%"
+                    height="0.8rem"
+                    borderRadius="6px"
+                    class="mt-2"
+                />
+                <Skeleton
+                    width="55%"
+                    height="0.8rem"
+                    borderRadius="6px"
+                    class="mt-1"
+                />
+                <Skeleton
+                    width="40%"
+                    height="0.8rem"
+                    borderRadius="6px"
+                    class="mt-1"
+                />
+                <div class="skeleton-footer">
                     <Skeleton
-                        width="55%"
-                        height="0.8rem"
+                        width="5rem"
+                        height="0.75rem"
                         borderRadius="6px"
-                        class="mt-1"
                     />
-                    <Skeleton
-                        width="40%"
-                        height="0.8rem"
-                        borderRadius="6px"
-                        class="mt-1"
-                    />
-                    <div class="skeleton-footer">
-                        <Skeleton
-                            width="5rem"
-                            height="0.75rem"
-                            borderRadius="6px"
-                        />
-                    </div>
                 </div>
             </div>
+        </div>
 
-            <div v-else-if="filteredPeticions.length === 0" class="empty-state">
-                <ClipboardList :size="40" style="color: #d1d5db" />
-                <p>
-                    No hi ha peticions{{
-                        activeTab !== null ? ' en aquest estat' : ''
-                    }}
-                </p>
-            </div>
+        <div v-else-if="filteredPeticions.length === 0" class="empty-state">
+            <ClipboardList :size="40" style="color: #d1d5db" />
+            <p>
+                No hi ha peticions{{
+                    activeTab !== null ? ' en aquest estat' : ''
+                }}
+            </p>
+        </div>
 
-            <div v-else class="cards-grid">
-                <div
-                    v-for="p in filteredPeticions"
-                    :key="p.id"
-                    class="petition-card"
-                    :class="`card--${estatClass(p.estat)}`"
-                >
-                    <!-- Card header -->
-                    <div class="card-head">
-                        <div>
-                            <h3 class="company-name">{{ p.nom_empresa }}</h3>
-                            <span
-                                class="role-badge"
-                                :style="rolStyle(p.rol_id)"
-                            >
-                                {{ rolLabel(p.rol_id) }}
-                            </span>
-                        </div>
-                        <span
-                            class="estat-badge"
-                            :class="`estat--${estatClass(p.estat)}`"
-                        >
-                            {{ estatLabel(p.estat) }}
+        <div v-else class="cards-grid">
+            <div
+                v-for="p in filteredPeticions"
+                :key="p.id"
+                class="petition-card"
+                :class="`card--${estatClass(p.estat)}`"
+            >
+                <!-- Card header -->
+                <div class="card-head">
+                    <div>
+                        <h3 class="company-name">{{ p.nom_empresa }}</h3>
+                        <span class="role-badge" :style="rolStyle(p.rol_id)">
+                            {{ rolLabel(p.rol_id) }}
                         </span>
                     </div>
+                    <span
+                        class="estat-badge"
+                        :class="`estat--${estatClass(p.estat)}`"
+                    >
+                        {{ estatLabel(p.estat) }}
+                    </span>
+                </div>
 
-                    <!-- Card body -->
-                    <div class="card-body">
-                        <div class="info-row">
-                            <User :size="13" class="info-icon" />
-                            <span>{{ p.contacte }}</span>
-                        </div>
-                        <div class="info-row">
-                            <Mail :size="13" class="info-icon" />
-                            <span>{{ p.correu }}</span>
-                        </div>
-                        <div v-if="p.telefon" class="info-row">
-                            <Phone :size="13" class="info-icon" />
-                            <span>{{ p.telefon }}</span>
+                <!-- Card body -->
+                <div class="card-body">
+                    <div class="info-row">
+                        <User :size="13" class="info-icon" />
+                        <span>{{ p.contacte }}</span>
+                    </div>
+                    <div class="info-row">
+                        <Mail :size="13" class="info-icon" />
+                        <span>{{ p.correu }}</span>
+                    </div>
+                    <div v-if="p.telefon" class="info-row">
+                        <Phone :size="13" class="info-icon" />
+                        <span>{{ p.telefon }}</span>
+                    </div>
+                    <div v-if="p.missatge" class="info-row info-row--message">
+                        <MessageSquare :size="13" class="info-icon" />
+                        <span class="message-text">{{ p.missatge }}</span>
+                    </div>
+                </div>
+
+                <!-- Card footer -->
+                <div class="card-footer">
+                    <div class="footer-left">
+                        <div class="date-labels">
+                            <span
+                                class="date-label"
+                                v-tooltip.top="'Data de creació'"
+                            >
+                                <CalendarDays :size="12" />
+                                {{ formatDate(p.data_creacio) }}
+                            </span>
+                            <template v-if="Number(p.estat) !== 0">
+                                <span class="date-sep">·</span>
+                                <span
+                                    class="date-label"
+                                    v-tooltip.top="'Data de resolució'"
+                                >
+                                    <CalendarCheck :size="12" />
+                                    {{ formatDate(p.data_resolucio) ?? '—' }}
+                                </span>
+                            </template>
                         </div>
                         <div
-                            v-if="p.missatge"
-                            class="info-row info-row--message"
+                            v-if="Number(p.estat) !== 0"
+                            class="encarregat-label"
                         >
-                            <MessageSquare :size="13" class="info-icon" />
-                            <span class="message-text">{{ p.missatge }}</span>
+                            <UserCheck :size="11" />
+                            <span>{{
+                                p.resolutor
+                                    ? `${p.resolutor.nom} ${p.resolutor.cognoms}`.trim()
+                                    : '—'
+                            }}</span>
                         </div>
                     </div>
 
-                    <!-- Card footer -->
-                    <div class="card-footer">
-                        <div class="footer-left">
-                            <div class="date-labels">
-                                <span
-                                    class="date-label"
-                                    v-tooltip.top="'Data de creació'"
-                                >
-                                    <CalendarDays :size="12" />
-                                    {{ formatDate(p.data_creacio) }}
-                                </span>
-                                <template v-if="Number(p.estat) !== 0">
-                                    <span class="date-sep">·</span>
-                                    <span
-                                        class="date-label"
-                                        v-tooltip.top="'Data de resolució'"
-                                    >
-                                        <CalendarCheck :size="12" />
-                                        {{ formatDate(p.data_resolucio) ?? '—' }}
-                                    </span>
-                                </template>
-                            </div>
-                            <div v-if="Number(p.estat) !== 0" class="encarregat-label">
-                                <UserCheck :size="11" />
-                                <span>{{ p.resolutor ? `${p.resolutor.nom} ${p.resolutor.cognoms}`.trim() : '—' }}</span>
-                            </div>
-                        </div>
-
-                        <div
-                            v-if="Number(p.estat) === 0"
-                            class="action-buttons"
+                    <div v-if="Number(p.estat) === 0" class="action-buttons">
+                        <button
+                            class="btn btn-accept"
+                            :disabled="processingId === p.id"
+                            @click="handleAccept(p)"
                         >
-                            <button
-                                class="btn btn-accept"
-                                :disabled="processingId === p.id"
-                                @click="handleAccept(p)"
-                            >
-                                <LoaderCircle
-                                    v-if="
-                                        processingId === p.id &&
-                                        processingAction === 'accept'
-                                    "
-                                    :size="13"
-                                    class="spinner"
-                                />
-                                <Check v-else :size="13" />
-                                Acceptar
-                            </button>
-                            <button
-                                class="btn btn-reject"
-                                :disabled="processingId === p.id"
-                                @click="handleReject(p)"
-                            >
-                                <LoaderCircle
-                                    v-if="
-                                        processingId === p.id &&
-                                        processingAction === 'reject'
-                                    "
-                                    :size="13"
-                                    class="spinner"
-                                />
-                                <X v-else :size="13" />
-                                Rebutjar
-                            </button>
-                        </div>
+                            <LoaderCircle
+                                v-if="
+                                    processingId === p.id &&
+                                    processingAction === 'accept'
+                                "
+                                :size="13"
+                                class="spinner"
+                            />
+                            <Check v-else :size="13" />
+                            Acceptar
+                        </button>
+                        <button
+                            class="btn btn-reject"
+                            :disabled="processingId === p.id"
+                            @click="handleReject(p)"
+                        >
+                            <LoaderCircle
+                                v-if="
+                                    processingId === p.id &&
+                                    processingAction === 'reject'
+                                "
+                                :size="13"
+                                class="spinner"
+                            />
+                            <X v-else :size="13" />
+                            Rebutjar
+                        </button>
                     </div>
                 </div>
             </div>
+        </div>
 
         <ConfirmDialog />
         <Toast />
@@ -311,7 +305,10 @@ function countByEstat(estat) {
 function formatDate(date) {
     if (!date) return '—';
     const d = new Date(date);
-    const dayMonth = d.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+    const dayMonth = d.toLocaleDateString('ca-ES', {
+        day: 'numeric',
+        month: 'short',
+    });
     return `${dayMonth} del ${d.getFullYear()}`;
 }
 
@@ -324,7 +321,6 @@ async function fetchPeticions() {
     loading.value = true;
     try {
         const { data } = await api.get('/admin/registration-requests');
-        console.log(data);
         peticions.value = data;
     } catch {
         toast.add({
@@ -432,7 +428,7 @@ onMounted(fetchPeticions);
     border-radius: 10px;
     padding: 0.3rem;
     width: fit-content;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 .tab {
     display: flex;
@@ -456,7 +452,7 @@ onMounted(fetchPeticions);
 .tab--active {
     background: #1a3a3a;
     color: white;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 .tab-count {
     font-size: 0.7rem;

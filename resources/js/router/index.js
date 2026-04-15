@@ -61,6 +61,58 @@ const routes = [
         meta: { requiresAuth: true, requiresAdmin: true },
     },
 
+    // ── Operador ─────────────────────────────────────────────
+    {
+        path: '/operador/dashboard',
+        name: 'operador-dashboard',
+        component: () => import('@/pages/Dashboard.vue'),
+        meta: { requiresAuth: true, requiresOperator: true },
+    },
+    {
+        path: '/operador/configuracio',
+        name: 'operador-configuracio',
+        component: () => import('@/pages/Proximamente.vue'),
+        meta: { requiresAuth: true, requiresOperator: true },
+    },
+
+    // ── Client ─────────────────────────────────────────────
+    {
+        path: '/client/dashboard',
+        name: 'client-dashboard',
+        component: () => import('@/pages/Dashboard.vue'),
+        meta: { requiresAuth: true, requiresClient: true },
+    },
+    {
+        path: '/client/ofertes',
+        name: 'client-ofertes',
+        component: () => import('@/pages/client/OfertesView.vue'),
+        meta: { requiresAuth: true, requiresClient: true },
+    },
+    {
+        path: '/client/operacions',
+        name: 'client-operacions',
+        component: () => import('@/pages/client/OperacionsView.vue'),
+        meta: { requiresAuth: true, requiresClient: true },
+    },
+    {
+        path: '/client/operacions/:id/tracking',
+        name: 'client-tracking',
+        component: () => import('@/pages/client/TrackingView.vue'),
+        meta: { requiresAuth: true, requiresClient: true },
+    },
+    {
+        path: '/client/documents',
+        name: 'client-documents',
+        component: () => import('@/pages/client/DocumentsView.vue'),
+        meta: { requiresAuth: true, requiresClient: true },
+    },
+    {
+        path: '/client/configuracio',
+        name: 'client-configuracio',
+        component: () => import('@/pages/Proximamente.vue'),
+        meta: { requiresAuth: true, requiresClient: true },
+    },
+
     // Redireccionamiento raíz
     { path: '/', redirect: '/login' },
 ];

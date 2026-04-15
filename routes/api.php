@@ -17,19 +17,13 @@ use App\Http\Controllers\Api\DocumentController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/registration-requests', [RegistrationRequestController::class, 'store']);
 
-// ── TEMP: rutas públicas para testing (revertir después) ────────
-Route::get('/admin/registration-requests',                [RegistreController::class, 'index']);
-Route::post('/admin/registration-requests/{id}/approve', [RegistreController::class, 'approve']);
-Route::post('/admin/registration-requests/{id}/reject',  [RegistreController::class, 'reject']);
-
-
-
 
 // ── Rutas protegidas (requieren token Sanctum) ──────────────────
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me',      [AuthController::class, 'me']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/dashboard/search', [DashboardController::class, 'buscadorSolicitud']);
 
     // Rutas administrativas (solo para rol_id = 1)
     Route::middleware('admin')->prefix('admin')->group(function () {

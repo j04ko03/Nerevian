@@ -1,6 +1,6 @@
 <template>
     <AppLayout>
-        <UsuarisHeader />
+        <Header title="Usuaris" subtitle="Gestió dels usuaris del sistema" />
         <UsuarisStats :users="users" :loading="loading" />
         <UsuarisTable
             :users="users"
@@ -29,10 +29,10 @@ import Toast from 'primevue/toast';
 import AppLayout from '@/layout/AppLayout.vue';
 import api from '@/plugins/axios';
 
-import UsuarisHeader from '@/components/admin/usuaris/UsuarisHeader.vue';
 import UsuarisStats from '@/components/admin/usuaris/UsuarisStats.vue';
 import UsuarisTable from '@/components/admin/usuaris/UsuarisTable.vue';
 import UsuarisEditDialog from '@/components/admin/usuaris/UsuarisEditDialog.vue';
+import Header from '@/layout/Header.vue';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -68,10 +68,10 @@ function openEditDialog(user) {
 async function saveUser(userData) {
     saving.value = true;
     try {
-        await api.put(`/admin/users/${userData.id}`, userData);
+        const { data: response } = await api.put(`/admin/users/${userData.id}`, userData);
         const idx = users.value.findIndex((u) => u.id === userData.id);
         if (idx !== -1) {
-            users.value[idx] = { ...userData };
+            users.value[idx] = { ...users.value[idx], ...response.data };
             users.value = [...users.value];
         }
         editDialogVisible.value = false;
@@ -131,5 +131,4 @@ async function deleteUser(id) {
 onMounted(fetchUsers);
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

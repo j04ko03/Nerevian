@@ -1,7 +1,7 @@
 <template>
     <AppLayout>
         <div class="proximamente">
-            <h1>¡Pròximament!</h1>
+            <h1>Pròximament!</h1>
             <p>
                 Estem treballant en aquesta secció. Torna aviat per veure les
                 novetats!
