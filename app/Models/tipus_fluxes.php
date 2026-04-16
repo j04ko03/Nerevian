@@ -10,9 +10,7 @@ class tipus_fluxes extends Model
     public $timestamps = false;
     protected $table = 'tipus_fluxes';
     protected $primaryKey = 'id';
-    protected $fillable = [
-        'tipus'
-    ];
+    protected $fillable = ['nom'];
 
     public function solicitud(): HasMany
     {

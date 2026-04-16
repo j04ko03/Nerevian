@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ports extends Model
 {
@@ -21,12 +22,12 @@ class ports extends Model
         return $this->belongsTo(ciutats::class, 'ciutat_id');
     }
 
-    public function solicitudOrigen()
+    public function solicitudOrigen(): HasMany
     {
         return $this->hasMany(solicitud::class, 'port_origen_id');
     }
 
-    public function solicitudDesti()
+    public function solicitudDesti(): HasMany
     {
         return $this->hasMany(solicitud::class, 'port_desti_id');
     }

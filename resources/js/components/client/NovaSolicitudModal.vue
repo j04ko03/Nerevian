@@ -14,7 +14,7 @@
                     <select v-model="form.tipus_transport_id" required class="form-input">
                         <option value="" disabled>Selecciona...</option>
                         <option v-for="t in catalogos.tipus_transports" :key="t.id" :value="t.id">
-                            {{ t.nom }}
+                            {{ t.tipus }}
                         </option>
                     </select>
                 </div>
@@ -23,7 +23,7 @@
                     <select v-model="form.incoterm_id" required class="form-input">
                         <option value="" disabled>Selecciona...</option>
                         <option v-for="i in catalogos.incoterms" :key="i.id" :value="i.id">
-                            {{ i.nom }}
+                            {{ i.name }}
                         </option>
                     </select>
                 </div>
@@ -56,7 +56,7 @@
                     <select v-model="form.tipus_carrega_id" required class="form-input">
                         <option value="" disabled>Selecciona...</option>
                         <option v-for="c in catalogos.tipus_carregues" :key="c.id" :value="c.id">
-                            {{ c.nom }}
+                            {{ c.tipus }}
                         </option>
                     </select>
                 </div>
@@ -86,7 +86,7 @@
                     <select v-model="form.tipus_contenidor_id" class="form-input">
                         <option :value="null">No aplica</option>
                         <option v-for="c in catalogos.tipus_contenidors" :key="c.id" :value="c.id">
-                            {{ c.nom }}
+                            {{ c.tipus }}
                         </option>
                     </select>
                 </div>
