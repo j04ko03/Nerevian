@@ -1,9 +1,7 @@
 <template>
     <AppLayout>
-        <Header
-            title="Ofertes i Sol·licituds"
-            subtitle="Gestiona les teves sol·licituds i consulta l'estat dels pressupostos."
-        />
+        <Header title="Ofertes i Sol·licituds"
+            subtitle="Gestiona les teves sol·licituds i consulta l'estat dels pressupostos." />
 
         <div class="action-bar mt-4">
             <RouterLink to="/client/operacions" class="action-tile">
@@ -12,23 +10,16 @@
                 </div>
                 <div class="action-tile__text">
                     <span class="action-tile__label">Seguiment</span>
-                    <span class="action-tile__desc"
-                        >Consulta l'estat dels teus enviaments</span
-                    >
+                    <span class="action-tile__desc">Consulta l'estat dels teus enviaments</span>
                 </div>
             </RouterLink>
-            <button
-                @click="mostrarModal = true"
-                class="action-tile action-tile--primary"
-            >
+            <button @click="mostrarModal = true" class="action-tile action-tile--primary">
                 <div class="action-tile__icon">
                     <PlusCircle :size="22" />
                 </div>
                 <div class="action-tile__text">
                     <span class="action-tile__label">Nova Sol·licitud</span>
-                    <span class="action-tile__desc"
-                        >Demana una nova cotització de transport</span
-                    >
+                    <span class="action-tile__desc">Demana una nova cotització de transport</span>
                 </div>
             </button>
             <RouterLink to="/client/documents" class="action-tile">
@@ -37,9 +28,7 @@
                 </div>
                 <div class="action-tile__text">
                     <span class="action-tile__label">Documents</span>
-                    <span class="action-tile__desc"
-                        >Accedeix a tota la documentació</span
-                    >
+                    <span class="action-tile__desc">Accedeix a tota la documentació</span>
                 </div>
             </RouterLink>
         </div>
@@ -54,32 +43,19 @@
 
             <TabView class="custom-tabs">
                 <TabPanel header="Pendent de Cotitzar">
-                    <DataTable
-                        :value="ofertasPendientes"
-                        :paginator="true"
-                        :rows="5"
-                        responsiveLayout="scroll"
-                    >
+                    <DataTable :value="ofertasPendientes" :paginator="true" :rows="5" responsiveLayout="scroll">
                         <Column field="id" header="Ref." sortable>
                             <template #body="slotProps">
-                                <strong
-                                    >SOL-{{
-                                        String(slotProps.data.id).padStart(
-                                            3,
-                                            '0',
-                                        )
-                                    }}</strong
-                                >
+                                <strong>SOL-{{
+                                    String(slotProps.data.id).padStart(
+                                        3,
+                                        '0',
+                                    )
+                                }}</strong>
                             </template>
                         </Column>
-                        <Column
-                            field="ruta"
-                            header="Ruta (Origen → Destí)"
-                        ></Column>
-                        <Column
-                            field="tipus_transport.nom"
-                            header="Transport"
-                        ></Column>
+                        <Column field="ruta" header="Ruta (Origen → Destí)"></Column>
+                        <Column field="tipus_transport.nom" header="Transport"></Column>
                         <Column header="Estat">
                             <template #body="slotProps">
                                 <span class="status-pill status--purple">
@@ -91,22 +67,15 @@
                 </TabPanel>
 
                 <TabPanel header="Ofertes Rebudes">
-                    <DataTable
-                        :value="ofertasCotizadas"
-                        :paginator="true"
-                        :rows="5"
-                        responsiveLayout="scroll"
-                    >
+                    <DataTable :value="ofertasCotizadas" :paginator="true" :rows="5" responsiveLayout="scroll">
                         <Column field="id" header="Ref." sortable>
                             <template #body="slotProps">
-                                <strong
-                                    >OFE-{{
-                                        String(slotProps.data.id).padStart(
-                                            3,
-                                            '0',
-                                        )
-                                    }}</strong
-                                >
+                                <strong>OFE-{{
+                                    String(slotProps.data.id).padStart(
+                                        3,
+                                        '0',
+                                    )
+                                }}</strong>
                             </template>
                         </Column>
                         <Column field="ruta" header="Ruta"></Column>
@@ -118,16 +87,10 @@
                         <Column header="Accions">
                             <template #body>
                                 <div style="display: flex; gap: 0.5rem">
-                                    <button
-                                        class="status-pill status--green"
-                                        style="border: none; cursor: pointer"
-                                    >
+                                    <button class="status-pill status--green" style="border: none; cursor: pointer">
                                         Aprovar
                                     </button>
-                                    <button
-                                        class="status-pill status--red"
-                                        style="border: none; cursor: pointer"
-                                    >
+                                    <button class="status-pill status--red" style="border: none; cursor: pointer">
                                         Rebutjar
                                     </button>
                                 </div>
@@ -138,10 +101,7 @@
             </TabView>
         </div>
 
-        <NovaSolicitudModal
-            v-model:visible="mostrarModal"
-            @solicitudCreada="cargarDatos"
-        />
+        <NovaSolicitudModal v-model:visible="mostrarModal" @solicitudCreada="cargarDatos" />
     </AppLayout>
 </template>
 
@@ -194,15 +154,12 @@ const ofertasCotizadas = computed(() =>
 const cargarDatos = async () => {
     loading.value = true;
     try {
-        // Usamos la ruta REST oficial que ya tienes en api.php
         const { data } = await api.get('/solicitudes');
 
         if (data.status === 'success') {
             todasLasSolicitudes.value = data.data ?? [];
 
             // Calculamos las estadísticas leyendo directamente de la lista que nos da Laravel
-            // Suponemos que 1 es Pendiente, 2 es Cotizada, 3 es Aceptada.
-            // (Ajusta estos IDs según los que tengas en tu BD real)
             stats.value = {
                 solicitudes_nuevas: todasLasSolicitudes.value.filter(
                     (s) => s.estats_solicitud_id === 1,
@@ -232,7 +189,7 @@ onMounted(() => {
     margin-top: 1.5rem;
 }
 
-/* ── Card shell (De tu compañera) ──────────────────────────── */
+/* ── Card shell ──────────────────────────── */
 .card {
     background: white;
     border: 1px solid #e5e7eb;
@@ -261,7 +218,7 @@ onMounted(() => {
     color: #111827;
 }
 
-/* ── Status pills (De tu compañera) ────────────────────────── */
+/* ── Status pills  ────────────────────────── */
 .status-pill {
     font-size: 0.68rem;
     font-weight: 600;
