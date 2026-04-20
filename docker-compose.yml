@@ -1,0 +1,30 @@
+#docker compose version que suo.
+version: '3.8'
+
+services:
+  # Tu proxy inverso explícito
+
+  # camarero:
+  nginx-proxy:
+    # version ligera de nginx con to'
+    image: nginx:alpine
+    ports:
+      # derecha: contenedor, izquierda: host/internet
+      - "80:80"
+    volumes:
+      # Agarra el nginx.conf de la carpeta nginx y lo monta en el contenedor.
+      # Si hay otro nginx.conf en el contenedor, lo sobreescribe :p
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      # Un promise de js, sin esto encendido no corras (ah...) el proxy
+      - laravel_app
+
+  # cocinero (el que he creado en el multistagebuilder).
+  laravel_app:
+    build:
+      context: .
+      # Orden: usa el dockerfile que está en la raíz del proyecto
+      dockerfile: Dockerfile
+    expose:
+      # Expone el puerto solo para la red interna de Docker, nada más.
+      - "80"
