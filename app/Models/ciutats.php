@@ -22,7 +22,7 @@ class ciutats extends Model
 
     public function pais()
     {
-        return $this->belongsTo(Pais::class, 'pais_id');
+        return $this->belongsTo(paissos::class, 'pais_id');
     }
 
     public function transportistes()
@@ -32,7 +32,7 @@ class ciutats extends Model
 
     public function ports()
     {
-        return $this->hasMany(Port::class, 'ciutat_id');
+        return $this->hasMany(ports::class, 'ciutat_id');
     }
 
     public function addedBy()

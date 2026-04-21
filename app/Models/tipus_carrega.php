@@ -7,13 +7,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class tipus_carrega extends Model
 {
-
     public $timestamps = false;
     protected $table = 'tipus_carrega';
     protected $primaryKey = 'id';
-    protected $fillable = [
-        'tipus'
-    ];
+    protected $fillable = ['nom'];
 
     public function solicitud(): HasMany
     {

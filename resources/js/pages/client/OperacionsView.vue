@@ -1,11 +1,13 @@
 <template>
     <AppLayout>
-        <Header
-            title="Les meves Operacions"
-            subtitle="Consulta i fes el seguiment de tots els enviaments en curs."
-        />
+        <Header title="Les meves Operacions" subtitle="Consulta i fes el seguiment de tots els enviaments en curs." />
 
-        <div v-if="operacions.length === 0" class="empty-state mt-4">
+        <div v-if="carregant" class="loading-state mt-4">
+            <i class="pi pi-spin pi-spinner" style="font-size:2rem"></i>
+            <p>Carregant operacions...</p>
+        </div>
+
+        <div v-else-if="operacions.length === 0" class="empty-state mt-4">
             <Package :size="40" class="empty-icon" />
             <h3>Cap operació activa</h3>
             <p>Quan tinguis enviaments en curs apareixeran aquí.</p>
@@ -45,9 +47,9 @@
                 <div class="order-footer">
                     <div class="date">
                         <Calendar :size="13" />
-                        Entrega est. <strong>{{ op.data }}</strong>
+                        Inici: <strong>{{ op.data }}</strong>
                     </div>
-                    <button class="btn-tracking" @click="anarAlTracking(op.id)">
+                    <button class="btn-tracking" @click="anarAlTracking(op.solicitudId)">
                         Veure Tracking
                         <ArrowRight :size="13" />
                     </button>
@@ -59,27 +61,87 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Package, Truck, MapPin, Flag, Calendar, ArrowRight } from 'lucide-vue-next';
 import AppLayout from '@/layout/AppLayout.vue';
 import Header from '@/layout/Header.vue';
+import api from '@/plugins/axios';
 
 const router = useRouter();
 
-const operacions = ref([
-    { id: 1, ref: 'OP-2024-0892', transport: 'Marítim', origen: 'Madrid (ES)', desti: 'París (FR)', data: '12 Nov 2024', statusText: 'En Trànsit', statusClass: 'badge-blue' },
-    { id: 2, ref: 'OP-2024-0895', transport: 'Terrestre', origen: 'Barcelona (ES)', desti: 'Milà (IT)', data: '15 Nov 2024', statusText: 'Pendent Recollida', statusClass: 'badge-yellow' },
-]);
+const carregant = ref(true);
+const operacions = ref([]);
 
-const anarAlTracking = (id) => {
-    router.push(`/client/operacions/${id}/tracking`);
+// Mapeo de estado a clase CSS del badge
+const STATUS_MAP = {
+    1: { text: 'Pendent',           cls: 'badge-yellow' },
+    2: { text: 'En Recollida',      cls: 'badge-yellow' },
+    3: { text: 'En Trànsit',        cls: 'badge-blue'   },
+    4: { text: 'En Duana',          cls: 'badge-blue'   },
+    5: { text: 'Entregat',          cls: 'badge-green'  },
+};
+
+const formatPort = (port) => {
+    if (!port) return '—';
+    const ciutat = port.ciutat?.nom ? ` (${port.ciutat.nom})` : '';
+    return `${port.nom}${ciutat}`;
+};
+
+onMounted(async () => {
+    try {
+        const { data } = await api.get('/operaciones');
+        if (data.status === 'success') {
+            operacions.value = (data.data ?? []).map(op => {
+                const sol = op.solicitud;
+                const estat = op.estat;
+                const statusInfo = STATUS_MAP[op.estat_id] ?? { text: estat?.estat ?? '—', cls: 'badge-yellow' };
+
+                return {
+                    id: op.id,
+                    solicitudId: sol?.id ?? null,
+                    ref: op.codi_referencia ?? `OP-${String(op.id).padStart(4, '0')}`,
+                    transport: sol?.tipus_transport?.tipus ?? '—',
+                    origen: formatPort(sol?.port_origen),
+                    desti: formatPort(sol?.port_desti),
+                    data: op.data_inici
+                        ? new Date(op.data_inici).toLocaleDateString('ca-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+                        : '—',
+                    statusText: statusInfo.text,
+                    statusClass: statusInfo.cls,
+                };
+            });
+        }
+    } catch (e) {
+        console.error('Error carregant operacions', e);
+    } finally {
+        carregant.value = false;
+    }
+});
+
+const anarAlTracking = (solicitudId) => {
+    if (!solicitudId) {
+        console.warn('Aquesta operació no té una sol·licitud vinculada.');
+        return;
+    }
+    router.push(`/client/operacions/${solicitudId}/tracking`);
 };
 </script>
 
 <style scoped>
 .mt-4 {
     margin-top: 1.5rem;
+}
+
+/* ── Loading state ─────────────────────────────────────────── */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: #6b7280;
+    gap: 1rem;
 }
 
 /* ── Empty state ────────────────────────────────────────────── */
@@ -260,8 +322,13 @@ const anarAlTracking = (id) => {
 }
 
 @keyframes move {
-    0%   { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
 }
 
 /* ── Card footer ────────────────────────────────────────────── */

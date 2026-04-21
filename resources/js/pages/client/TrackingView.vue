@@ -1,13 +1,14 @@
 <template>
     <AppLayout>
-        <Header
-            :title="carregant ? 'Carregant...' : operacioInfo.ref"
-            :subtitle="carregant ? '' : `${operacioInfo.origen}  →  ${operacioInfo.desti}`"
-        >
+        <div class="tracking-top-bar">
             <button class="btn-back" @click="tornarAEnrere">
-                <i class="pi pi-arrow-left"></i> Tornar als Enviaments
+                <i class="pi pi-arrow-left"></i>
             </button>
-        </Header>
+            <div class="tracking-top-info">
+                <h1 class="tracking-top-title">{{ carregant ? 'Carregant...' : operacioInfo.ref }}</h1>
+                <p v-if="!carregant" class="tracking-top-route">{{ operacioInfo.origen }} → {{ operacioInfo.desti }}</p>
+            </div>
+        </div>
 
         <div v-if="carregant" class="loading-state">
             <i class="pi pi-spin pi-spinner" style="font-size:2rem"></i>
@@ -87,7 +88,6 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/plugins/axios';
 import AppLayout from '@/layout/AppLayout.vue';
-import Header from '@/layout/Header.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -162,6 +162,59 @@ const tornarAEnrere = () => {
     margin-bottom: 2rem;
 }
 
+/* ── Tracking Top Bar ──────────────────────────────────────── */
+.tracking-top-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.btn-back {
+    background: transparent;
+    border: 1px solid #d1d5db;
+    color: #6b7280;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-back:hover {
+    border-color: #1a8a7d;
+    color: #1a8a7d;
+    background: #f0fdfa;
+}
+
+.tracking-top-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.tracking-top-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.tracking-top-route {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin: 0;
+}
+
 /* Loading / Error */
 .loading-state {
     display: flex;
@@ -177,25 +230,6 @@ const tornarAEnrere = () => {
     padding: 2rem;
     color: #ef4444;
     font-weight: 500;
-}
-
-.btn-back {
-    background: transparent;
-    border: 1px solid #d1d5db;
-    color: #6b7280;
-    font-size: 0.875rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: all 0.2s;
-}
-
-.btn-back:hover {
-    border-color: #9ca3af;
-    color: #111827;
 }
 
 /* Mapa Interactivo */
@@ -430,6 +464,10 @@ const tornarAEnrere = () => {
 
     .stepper-container {
         min-width: 600px;
+    }
+
+    .tracking-top-title {
+        font-size: 1.3rem;
     }
 }
 </style>

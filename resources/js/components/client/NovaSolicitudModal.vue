@@ -14,7 +14,7 @@
                     <select v-model="form.tipus_transport_id" required class="form-input">
                         <option value="" disabled>Selecciona...</option>
                         <option v-for="t in catalogos.tipus_transports" :key="t.id" :value="t.id">
-                            {{ t.nom }}
+                            {{ t.tipus }}
                         </option>
                     </select>
                 </div>
@@ -23,7 +23,7 @@
                     <select v-model="form.incoterm_id" required class="form-input">
                         <option value="" disabled>Selecciona...</option>
                         <option v-for="i in catalogos.incoterms" :key="i.id" :value="i.id">
-                            {{ i.nom }}
+                            {{ i.name }}
                         </option>
                     </select>
                 </div>
@@ -56,7 +56,7 @@
                     <select v-model="form.tipus_carrega_id" required class="form-input">
                         <option value="" disabled>Selecciona...</option>
                         <option v-for="c in catalogos.tipus_carregues" :key="c.id" :value="c.id">
-                            {{ c.nom }}
+                            {{ c.tipus }}
                         </option>
                     </select>
                 </div>
@@ -86,7 +86,7 @@
                     <select v-model="form.tipus_contenidor_id" class="form-input">
                         <option :value="null">No aplica</option>
                         <option v-for="c in catalogos.tipus_contenidors" :key="c.id" :value="c.id">
-                            {{ c.nom }}
+                            {{ c.tipus }}
                         </option>
                     </select>
                 </div>
@@ -133,7 +133,6 @@ const catalogos = ref({
     ports: []
 });
 
-// El estado inicial del formulario basado en lo que pide tu backend
 const formInicial = {
     tipus_transport_id: '',
     tipus_fluxe_id: '',
@@ -145,12 +144,12 @@ const formInicial = {
     volum: null,
     comentaris: '',
     tipus_contenidor_id: null,
-    tipus_validacio_id: null // Opcional, dependiendo de tu lógica
+    tipus_validacio_id: null
 };
 
 const form = ref({ ...formInicial });
 
-// 1. Cargamos los catálogos al montar el componente
+// 1. Cargamos los catálogos al montar el fornm
 onMounted(async () => {
     try {
         const response = await api.get('/catalogos');
@@ -162,7 +161,7 @@ onMounted(async () => {
     }
 });
 
-// 2. Enviamos el formulario al endpoint que creaste en el backend
+// 2. Enviamos el formulario al endpoint que creé en el backend
 const enviarSolicitud = async () => {
     enviando.value = true;
     try {
