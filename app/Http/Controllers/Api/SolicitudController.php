@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Solicitud;
+use App\Models\usuaris;
 
 class SolicitudController
 {
@@ -18,7 +19,7 @@ class SolicitudController
         // Obtener solo las solicitudes del cliente logueado
         // Uso auth porque Laravel al recibir un token (bearer) 
         // desde el front (stores/authStore.js) sabe qué usuario esta logeado.
-        $clientId = auth()->user()->client->id ?? null;
+        $clientId = auth()->user()->clients->id ?? null;
 
         $solicitudes = Solicitud::with(['estat_solicitud', 'tipus_transport', 'port_origen', 'port_desti', 'incoterm'])
             ->delClienteActual() // queryscope de solicitud.php
@@ -61,9 +62,8 @@ class SolicitudController
         // Más que nada para forzar campos internos de la solicitud y el usuario no pueda elegirlos. (security stuff)
         // Hablando de seguridad, por eso también en $validated he puesto campos como exists:tipus_transports,id, para 
         // que el usuario no pueda ingresar valores que no existen en la base de datos saltandose el front.
-        // TODO: Falta añadir los estados en estats_solicituds. Yo de momento uso 1 como pendiente aquí.
-        $validated['client_id'] = auth()->user()->client()->id;
-        $validated['estats_solicitud_id'] = 1;
+        $validated['client_id'] = auth()->user()->clients->id;
+        $validated['estats_solicitud_id'] = 1; // nueva
 
         $solicitiud = solicitud::create($validated);
 
