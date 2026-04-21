@@ -13,7 +13,13 @@ class OperacionController
      */
     public function index(): JsonResponse
     {
-        $operacions = operacions::with(['estat', 'operador'])
+        $operacions = operacions::with([
+                'estat',
+                'operador',
+                'solicitud.port_origen.ciutat',
+                'solicitud.port_desti.ciutat',
+                'solicitud.tipus_transport',
+            ])
             ->delClienteActual() // queryscope de operacions.php
             ->orderBy('id', 'desc')
             ->get();

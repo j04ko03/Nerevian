@@ -16,7 +16,7 @@ class DocumentController
      */
     public function index(Request $request): JsonResponse
     {
-        $query = documents::with(['tipus_document', 'usuari']);
+        $query = documents::with(['tipo_documento', 'usuari', 'solicitud', 'operacio']);
 
         // cancatenacioooon de queryscopes jeje
         // si viene operacio_id, filtra por operacio_id

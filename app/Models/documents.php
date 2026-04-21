@@ -21,6 +21,7 @@ class documents extends Model
         'mida',
         'oferta_id',
         'operacio_id',
+        'solicitud_id',
         'pujat_per',
     ];
     public function solicitud(): BelongsTo

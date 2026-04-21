@@ -12,6 +12,7 @@ use App\Models\tipus_validacions;
 use App\Models\estats_solicituds;
 use App\Models\tipus_incoterms;
 use App\Models\ports;
+use App\Models\tipo_documento;
 
 class CatalogoController extends Controller
 {
@@ -29,6 +30,7 @@ class CatalogoController extends Controller
                 'estats_solicituds' => estats_solicituds::all(),
                 'incoterms' => tipus_incoterms::all(),
                 'ports' => ports::with('ciutat')->get(),
+                'tipus_documents' => tipo_documento::all(),
             ]
         ]);
     }
