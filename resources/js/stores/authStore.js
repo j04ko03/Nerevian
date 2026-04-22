@@ -8,16 +8,16 @@ export const useAuthStore = defineStore('auth', {
     }),
 
     getters: {
-        isLoggedIn: (state) => !!state.token,
-        userRol: (state) => state.user?.rol ?? null,
-        isAdmin: (state) => Number(state.user?.rol_id) === 1,
-        isUser: (state) => Number(state.user?.rol_id) === 2,
-        isOperador: (state) => Number(state.user?.rol_id) === 3,
+        isLoggedIn:     (state) => !!state.token,
+        userRol:        (state) => state.user?.rol ?? null,
+        isAdmin:        (state) => Number(state.user?.rol_id) === 1,
+        isUser:         (state) => Number(state.user?.rol_id) === 2,
+        isOperador:     (state) => Number(state.user?.rol_id) === 3,
+        isClientActiu:  (state) => Number(state.user?.rol_id) === 2 && state.user?.actiu === true,
     },
 
     actions: {
         async login(credentials) {
-            // credentials = { correu, contrasenya }
             const { data } = await api.post('/login', credentials);
 
             this.token = data.token;

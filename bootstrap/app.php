@@ -34,7 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // LE DÍ ALIAS A ADMIN PARA QUE EN ROUTES ESCRIBA ADMIN Y ALE SIN TENER QUE METER TODA LA RUTA 
         // LLAMANDO A app/Http/Middleware/EnsureIsAdmin.php.
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureIsAdmin::class,
+            'admin'         => \App\Http\Middleware\EnsureIsAdmin::class,
+            'client.actiu'  => \App\Http\Middleware\EnsureClienteActivo::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

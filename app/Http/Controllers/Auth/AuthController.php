@@ -18,7 +18,7 @@ class AuthController extends Controller
             'contrasenya' => 'required|string',
         ]);
 
-        $user = usuaris::withTrashed()->with('rols')->where('correu', $request->correu)->first();
+        $user = usuaris::withTrashed()->with(['rols', 'clients'])->where('correu', $request->correu)->first();
 
         if (!$user || !Hash::check($request->contrasenya, $user->contrasenya)) {
             return response()->json([
@@ -50,6 +50,6 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return new UserResource($request->user()->load('rols'));
+        return new UserResource($request->user()->load(['rols', 'clients']));
     }
 }

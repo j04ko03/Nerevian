@@ -16,13 +16,8 @@ class SolicitudController
      */
     public function index(): JsonResponse
     {
-        // Obtener solo las solicitudes del cliente logueado
-        // Uso auth porque Laravel al recibir un token (bearer) 
-        // desde el front (stores/authStore.js) sabe qué usuario esta logeado.
-        $clientId = auth()->user()->clients->id ?? null;
-
-        $solicitudes = Solicitud::with(['estat_solicitud', 'tipus_transport', 'port_origen', 'port_desti', 'incoterm'])
-            ->delClienteActual() // queryscope de solicitud.php
+        $solicitudes = Solicitud::with(['estat_solicitud', 'tipus_transport', 'port_origen', 'port_desti', 'incoterm', 'ofertes.estat'])
+            ->delClienteActual()
             ->orderBy('id', 'desc')
             ->get();
 
@@ -55,15 +50,13 @@ class SolicitudController
             'volum' => 'nullable|numeric',
             'comentaris' => 'nullable|string',
             'tipus_contenidor_id' => 'nullable|exists:tipus_contenidors,id',
-            'tipus_validacio_id' => 'nullable|exists:tipus_validacions,id'
+            'tipus_validacio_id' => 'nullable|exists:tipus_validacions,id',
+            'operador_id'        => 'nullable|exists:usuaris,id',
         ]);
 
-        // Digo x cliente logueado y su estado por defecto
-        // Más que nada para forzar campos internos de la solicitud y el usuario no pueda elegirlos. (security stuff)
-        // Hablando de seguridad, por eso también en $validated he puesto campos como exists:tipus_transports,id, para 
-        // que el usuario no pueda ingresar valores que no existen en la base de datos saltandose el front.
         $validated['client_id'] = auth()->user()->clients->id;
-        $validated['estats_solicitud_id'] = 1; // nueva
+        $validated['estat_solicitud_id'] = 1;   // nova
+        $validated['tipus_validacio_id'] = 1;   // Manual (únic valor existent)
 
         $solicitiud = solicitud::create($validated);
 

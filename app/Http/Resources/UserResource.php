@@ -20,6 +20,7 @@ class UserResource extends JsonResource
                 'id'  => $this->rols->id,
                 'rol' => $this->rols->rol,
             ]),
+            'actiu' => $this->whenLoaded('clients', fn() => (bool) $this->clients?->actiu, null),
         ];
     }
 }

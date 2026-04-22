@@ -13,6 +13,7 @@ use App\Models\estats_solicituds;
 use App\Models\tipus_incoterms;
 use App\Models\ports;
 use App\Models\tipo_documento;
+use App\Models\usuaris;
 
 class CatalogoController extends Controller
 {
@@ -31,6 +32,10 @@ class CatalogoController extends Controller
                 'incoterms' => tipus_incoterms::all(),
                 'ports' => ports::with('ciutat')->get(),
                 'tipus_documents' => tipo_documento::all(),
+                'operadors' => usuaris::where('rol_id', 3)
+                    ->select('id', 'nom', 'cognoms')
+                    ->orderBy('nom')
+                    ->get(),
             ]
         ]);
     }

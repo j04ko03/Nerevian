@@ -69,6 +69,18 @@ const routes = [
         meta: { requiresAuth: true, requiresOperator: true },
     },
     {
+        path: '/operador/clients',
+        name: 'operador-clients',
+        component: () => import('@/pages/operador/Clients.vue'),
+        meta: { requiresAuth: true, requiresOperator: true },
+    },
+    {
+        path: '/operador/ofertes',
+        name: 'operador-ofertes',
+        component: () => import('@/pages/operador/Ofertes.vue'),
+        meta: { requiresAuth: true, requiresOperator: true },
+    },
+    {
         path: '/operador/configuracio',
         name: 'operador-configuracio',
         component: () => import('@/pages/Proximamente.vue'),
@@ -77,40 +89,46 @@ const routes = [
 
     // ── Client ─────────────────────────────────────────────
     {
+        path: '/client/pendent',
+        name: 'client-pendent',
+        component: () => import('@/pages/client/PendentActivacio.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
         path: '/client/dashboard',
         name: 'client-dashboard',
         component: () => import('@/pages/Dashboard.vue'),
-        meta: { requiresAuth: true, requiresClient: true },
+        meta: { requiresAuth: true, requiresClientActiu: true },
     },
     {
         path: '/client/ofertes',
         name: 'client-ofertes',
         component: () => import('@/pages/client/OfertesView.vue'),
-        meta: { requiresAuth: true, requiresClient: true },
+        meta: { requiresAuth: true, requiresClientActiu: true },
     },
     {
         path: '/client/operacions',
         name: 'client-operacions',
         component: () => import('@/pages/client/OperacionsView.vue'),
-        meta: { requiresAuth: true, requiresClient: true },
+        meta: { requiresAuth: true, requiresClientActiu: true },
     },
     {
         path: '/client/operacions/:id/tracking',
         name: 'client-tracking',
         component: () => import('@/pages/client/TrackingView.vue'),
-        meta: { requiresAuth: true, requiresClient: true },
+        meta: { requiresAuth: true, requiresClientActiu: true },
     },
     {
         path: '/client/documents',
         name: 'client-documents',
         component: () => import('@/pages/client/DocumentsView.vue'),
-        meta: { requiresAuth: true, requiresClient: true },
+        meta: { requiresAuth: true, requiresClientActiu: true },
     },
     {
         path: '/client/configuracio',
         name: 'client-configuracio',
         component: () => import('@/pages/Proximamente.vue'),
-        meta: { requiresAuth: true, requiresClient: true },
+        meta: { requiresAuth: true, requiresClientActiu: true },
     },
 
     // Redireccionamiento raíz
@@ -132,6 +150,19 @@ router.beforeEach((to, from) => {
 
     if (to.meta.guest && auth.isLoggedIn) {
         return { name: 'dashboard' };
+    }
+
+    // Client amb rol_id=2 però sense activació → pendent
+    if (auth.isLoggedIn && auth.isUser && !auth.isClientActiu) {
+        if (to.name !== 'client-pendent') {
+            return { name: 'client-pendent' };
+        }
+        return true;
+    }
+
+    // Ruta que requereix client actiu
+    if (to.meta.requiresClientActiu && !auth.isClientActiu) {
+        return { name: 'client-pendent' };
     }
 
     return true;

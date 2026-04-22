@@ -11,6 +11,21 @@ class solicitud extends Model
 
     const CREATED_AT = 'data_creacio';
     const UPDATED_AT = 'updated_at';
+    protected $casts = [
+        'estat_solicitud_id'  => 'integer',
+        'tipus_transport_id'  => 'integer',
+        'tipus_fluxe_id'      => 'integer',
+        'tipus_carrega_id'    => 'integer',
+        'incoterm_id'         => 'integer',
+        'client_id'           => 'integer',
+        'operador_id'         => 'integer',
+        'port_origen_id'      => 'integer',
+        'port_desti_id'       => 'integer',
+        'tipus_contenidor_id' => 'integer',
+        'pes_brut'            => 'float',
+        'volum'               => 'float',
+    ];
+
     protected $fillable = [
         'pes_brut',
         'volum',
@@ -92,6 +107,16 @@ class solicitud extends Model
         return $this->belongsTo(tipus_contenidors::class, 'tipus_contenidor_id');
     }
 
+    public function incoterm()
+    {
+        return $this->belongsTo(tipus_incoterms::class, 'incoterm_id');
+    }
+
+    public function ofertes()
+    {
+        return $this->hasMany(ofertes::class, 'solicitud_id');
+    }
+
     // QUERY SCOPES
     // Los queryscopes son funciones que encapsulan (guardan) peticiones de búsqueda básica o común, 
     // como lo quieras llamar, para no tener que escribirlas cada vez (me parece la polla).
@@ -104,7 +129,7 @@ class solicitud extends Model
     // scope para verificar si hay un cliente logueado y así se le devuelven sus solicitudes.
     public function scopeDelClienteActual($query)
     {
-        $clientId = auth()->user()->id ?? null;
+        $clientId = auth()->user()->clients?->id ?? 0;
         return $query->where('client_id', $clientId);
     }
 

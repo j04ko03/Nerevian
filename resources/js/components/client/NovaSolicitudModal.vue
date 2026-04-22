@@ -65,7 +65,7 @@
                     <select v-model="form.tipus_fluxe_id" required class="form-input">
                         <option value="" disabled>Selecciona...</option>
                         <option v-for="f in catalogos.tipus_fluxes" :key="f.id" :value="f.id">
-                            {{ f.nom }}
+                            {{ f.tipus }}
                         </option>
                     </select>
                 </div>
@@ -93,6 +93,16 @@
             </div>
 
             <div class="form-group full-width">
+                <label>Operador Assignat</label>
+                <select v-model="form.operador_id" class="form-input">
+                    <option :value="null">Sense preferència</option>
+                    <option v-for="o in catalogos.operadors" :key="o.id" :value="o.id">
+                        {{ o.nom }} {{ o.cognoms }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group full-width">
                 <label>Comentaris o Instruccions Especials</label>
                 <textarea v-model="form.comentaris" class="form-input" rows="3"
                     placeholder="Detalls addicionals per a l'operador..."></textarea>
@@ -111,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import api from '@/plugins/axios';
 import Dialog from 'primevue/dialog';
 
@@ -119,7 +129,7 @@ const props = defineProps({
     visible: Boolean
 });
 
-const emit = defineEmits(['update:visible', 'solicitudCreada']);
+const emit = defineEmits(['update:visible', 'solicitudCreada', 'error']);
 
 const cargandoCatalogos = ref(true);
 const enviando = ref(false);
@@ -130,7 +140,8 @@ const catalogos = ref({
     tipus_fluxes: [],
     tipus_contenidors: [],
     incoterms: [],
-    ports: []
+    ports: [],
+    operadors: [],
 });
 
 const formInicial = {
@@ -144,13 +155,14 @@ const formInicial = {
     volum: null,
     comentaris: '',
     tipus_contenidor_id: null,
-    tipus_validacio_id: null
+    tipus_validacio_id: null,
+    operador_id: null,
 };
 
 const form = ref({ ...formInicial });
 
-// 1. Cargamos los catálogos al montar el fornm
-onMounted(async () => {
+async function carregarCatalogos() {
+    cargandoCatalogos.value = true;
     try {
         const response = await api.get('/catalogos');
         catalogos.value = response.data.data;
@@ -159,7 +171,13 @@ onMounted(async () => {
     } finally {
         cargandoCatalogos.value = false;
     }
-});
+}
+
+// Carrega catàlegs quan s'obre el modal, no al muntar la pàgina
+watch(
+    () => props.visible,
+    (val) => { if (val) carregarCatalogos(); },
+);
 
 // 2. Enviamos el formulario al endpoint que creé en el backend
 const enviarSolicitud = async () => {
@@ -174,7 +192,7 @@ const enviarSolicitud = async () => {
         emit('solicitudCreada');
     } catch (error) {
         console.error('Error al crear la solicitud', error);
-        alert('Hi ha hagut un error en enviar la sol·licitud.');
+        emit('error', 'Hi ha hagut un error en enviar la sol·licitud.');
     } finally {
         enviando.value = false;
     }

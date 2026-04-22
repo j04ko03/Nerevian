@@ -11,7 +11,6 @@ use App\Models\peticions_registre;
 use App\Models\ports;
 use App\Models\usuaris;
 use App\Models\solicitud;
-use App\Models\ofertes;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -132,7 +131,7 @@ class DashboardController extends Controller
         // CORRECCIÓN: solicitud no tiene campo 'estat', el estado es
         // 'estat_solicitud_id'. Filtramos por los IDs correspondientes.
         // Asumiendo: 3 = cotizada, 4 = en_negociacion (ajusta según tus datos)
-        $cotizacionesFrias = solicitud::with(['portOrigen', 'portDesti', 'estatSolicitud'])
+        $cotizacionesFrias = solicitud::with(['port_origen', 'port_desti', 'estat_solicitud'])
             ->whereIn('estat_solicitud_id', [3, 4])
             ->where('updated_at', '<', $fechaLimite)
             ->orderBy('updated_at', 'asc')
@@ -140,17 +139,15 @@ class DashboardController extends Controller
             ->map(fn($s) => [
                 'id' => $s->id,
                 'codigo' => 'REQ-00' . $s->id,
-                'ruta' => ($s->portOrigen->nom ?? 'N/A') . ' → ' . ($s->portDesti->nom ?? 'N/A'),
-                // CORRECCIÓN: leemos el estado desde la relación
-                'estado' => $s->estatSolicitud->estat ?? 'Desconegut',
+                'ruta' => ($s->port_origen->nom ?? 'N/A') . ' → ' . ($s->port_desti->nom ?? 'N/A'),
+                'estado' => $s->estat_solicitud->estat ?? 'Desconegut',
                 'dias_sin_cambios' => Carbon::parse($s->updated_at)->diffInDays(Carbon::now()),
                 'ultima_actualizacion' => $s->updated_at
                     ? Carbon::parse($s->updated_at)->format('Y-m-d')
                     : 'N/A',
             ]);
 
-        // CORRECCIÓN: solicitud sí tiene operador_id, esto es correcto
-        $actividadRecienteMia = solicitud::with('estatSolicitud')
+        $actividadRecienteMia = solicitud::with('estat_solicitud')
             ->where('operador_id', $user->id)
             ->orderBy('updated_at', 'desc')
             ->take(5)
@@ -158,8 +155,7 @@ class DashboardController extends Controller
             ->map(fn($s) => [
                 'id' => $s->id,
                 'codigo' => 'REQ-00' . $s->id,
-                // CORRECCIÓN: estado desde relación, no campo directo
-                'estado_actual' => $s->estatSolicitud->estat ?? 'Desconegut',
+                'estado_actual' => $s->estat_solicitud->estat ?? 'Desconegut',
                 'tiempo_transcurrido' => Carbon::parse($s->updated_at)->diffForHumans(),
             ]);
 
@@ -178,7 +174,7 @@ class DashboardController extends Controller
     {
         // CORRECCIÓN: clients.usuari_id apunta a usuaris.id,
         // por lo que el clienteId es el id del usuario autenticado
-        $clienteId = $user->client->id ?? null;
+        $clienteId = $user->clients->id ?? null;
 
         if (!$clienteId) {
             return response()->json(['error' => 'Cliente no encontrado'], 404);
@@ -196,21 +192,17 @@ class DashboardController extends Controller
                 ->count(),
             // CORRECCIÓN: ofertes no tiene campo 'enviada' ni 'cliente_id'
             // Contamos ofertes vinculadas a solicitudes del cliente
-            'docs_por_revisar' => ofertes::whereHas(
-                'solicitud',
-                fn($q) =>
-                $q->where('client_id', $clienteId)
-            )
-                ->whereIn('estat_oferta_id', [1]) // ajusta el ID de estado "pendiente"
+            'docs_por_revisar' => solicitud::where('client_id', $clienteId)
+                ->whereIn('estat_solicitud_id', [3])
                 ->count(),
         ];
 
         // CORRECCIÓN: operacions → oferta → solicitud para llegar a los puertos
         // La cadena correcta es: operacio → oferta → solicitud → portOrigen/portDesti
         $pedidosEnTransito = operacions::with([
-            'oferta.solicitud.portOrigen',
-            'oferta.solicitud.portDesti',
-            'oferta.solicitud.estatSolicitud',
+            'solicitud.port_origen',
+            'solicitud.port_desti',
+            'solicitud.estat_solicitud',
             'estat',
         ])
             ->where('client_id', $clienteId)
@@ -220,33 +212,31 @@ class DashboardController extends Controller
             ->map(fn($op) => [
                 'id' => $op->id,
                 'codigo' => $op->codi_referencia ?? 'OP-' . $op->id,
-                // CORRECCIÓN: ruta viene de solicitud, no de oferta directamente
-                'ruta' => ($op->oferta->solicitud->portOrigen->nom ?? 'N/A')
+                'ruta' => ($op->solicitud->port_origen->nom ?? 'N/A')
                     . ' → '
-                    . ($op->oferta->solicitud->portDesti->nom ?? 'N/A'),
+                    . ($op->solicitud->port_desti->nom ?? 'N/A'),
                 'fecha_inicio' => $op->data_inici
                     ? Carbon::parse($op->data_inici)->format('d/m/Y')
                     : 'Pendiente',
                 'estado_humano' => $this->getEstadoHumanoCorto(
-                    $op->oferta->solicitud->estatSolicitud->estat ?? 'desconocido'
+                    $op->solicitud->estat_solicitud->estat ?? 'desconocido'
                 ),
-                'estado_id' => $op->oferta->solicitud->estat_solicitud_id ?? 'desconocido',
+                'estado_id' => $op->solicitud->estat_solicitud_id ?? 'desconocido',
             ]);
 
         // CORRECCIÓN: client_id en lugar de cliente_id
-        $misSolicitudes = solicitud::with(['portOrigen', 'portDesti', 'estatSolicitud'])
+        $misSolicitudes = solicitud::with(['port_origen', 'port_desti', 'estat_solicitud'])
             ->where('client_id', $clienteId)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('data_creacio', 'desc')
             ->take(4)
             ->get()
             ->map(fn($s) => [
                 'id' => $s->id,
                 'tipo_transporte' => $s->tipus_transport_id ?? 'Carga General',
-                'ruta' => ($s->portOrigen->nom ?? 'N/A') . ' → ' . ($s->portDesti->nom ?? 'N/A'),
-                // CORRECCIÓN: estado desde relación
+                'ruta' => ($s->port_origen->nom ?? 'N/A') . ' → ' . ($s->port_desti->nom ?? 'N/A'),
                 'estado' => $s->estat_solicitud_id ?? 'desconocido',
                 'sub_estado' => $this->getEstadoHumanoCorto(
-                    $s->estatSolicitud->estat ?? 'desconocido'
+                    $s->estat_solicitud->estat ?? 'desconocido'
                 ),
             ]);
 

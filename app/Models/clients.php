@@ -6,10 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-use App\Models\usuari;
-use App\Models\dni;
-use App\Models\solicitud;
-
 class clients extends Model
 {
     protected $table = 'clients';
@@ -17,22 +13,14 @@ class clients extends Model
     protected $fillable = [
         'usuari_id',
         'dni_id',
-        'created_at',
-        'updated_at',
+        'actiu',
     ];
 
-    //El cliente pertenece a un usuario (cuenta).
-    public function usuari(): BelongsTo
-    {
-        return $this->belongsTo(Usuaris::class, 'usuari_id');
-    }
+    protected $casts = [
+        'actiu' => 'boolean',
+    ];
 
-    // Un cliente puede realizar muchas solicitudes
-    public function solicituds(): HasMany
-    {
-        return $this->hasMany(solicitud::class, 'client_id');
-    }
-
+    // clients.usuari_id → usuaris.id
     public function usuaris(): BelongsTo
     {
         return $this->belongsTo(usuaris::class, 'usuari_id');
@@ -41,5 +29,10 @@ class clients extends Model
     public function dni(): BelongsTo
     {
         return $this->belongsTo(dni::class, 'dni_id');
+    }
+
+    public function solicituds(): HasMany
+    {
+        return $this->hasMany(solicitud::class, 'client_id');
     }
 }
