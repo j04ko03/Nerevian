@@ -34,6 +34,7 @@
 
                 <div class="stepper-wrapper mt-5 mb-5">
                     <div class="stepper-line"></div>
+                    <div class="stepper-line-progress" :style="{ width: progressPercentage + '%' }"></div>
                     <div class="stepper-container">
                         <div v-for="(step, index) in progressSteps" :key="index" class="step">
                             <div class="step-box">
@@ -101,37 +102,52 @@ const detallesCarga = ref({ contenedor: null, tipo: null, peso: null });
 const documentos = ref([]);
 
 const STEP_LABELS = [
-    { label: 'Recogida',       icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
-    { label: 'Puerto Salida',  icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
-    { label: 'En Tránsito',    icon_pending: 'pi pi-truck',  icon_done: 'pi pi-check' },
+    { label: 'Recogida', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'Puerto Salida', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'En Tránsito', icon_pending: 'pi pi-truck', icon_done: 'pi pi-check' },
     { label: 'Puerto Destino', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
-    { label: 'Entrega Final',  icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'Entrega Final', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
 ];
 
+const pasoActualMobile = ref('');
+
 const progressSteps = computed(() => {
-    const completed = historial.value.length;
+    // Orden lógico de los pasos (lo que recibimos de la API)
+    const ORDER = ['Recogida', 'Puerto Salida', 'En Tránsito', 'Puerto Destino', 'Entrega Final'];
+
+    const currentIndex = ORDER.indexOf(pasoActualMobile.value);
+
     return STEP_LABELS.map((s, i) => {
-        if (i < completed) {
-            return { label: s.label, date: historial.value[i]?.date_update?.slice(0, 10) ?? '', icon: s.icon_done, status: 'completed' };
-        } else if (i === completed) {
-            return { label: s.label, date: 'Actualitat', icon: s.icon_pending, status: 'active' };
-        } else {
-            return { label: s.label, date: '', icon: s.icon_pending, status: 'pending' };
-        }
+        if (i < currentIndex) return { ...s, label: s.label, status: 'completed', icon: s.icon_done };
+        if (i === currentIndex) return { ...s, label: s.label, status: 'active', icon: s.icon_pending };
+        return { ...s, label: s.label, status: 'pending', icon: s.icon_pending };
     });
+});
+
+const progressPercentage = computed(() => {
+    const ORDER = ['Recogida', 'Puerto Salida', 'En Tránsito', 'Puerto Destino', 'Entrega Final'];
+    const idx = ORDER.indexOf(pasoActualMobile.value);
+    if (idx === -1) return 0;
+    return (idx / (ORDER.length - 1)) * 90;
 });
 
 onMounted(async () => {
     try {
         const { data } = await api.get(`/tracking/${route.params.id}`);
-        const sol = data.data.solicitud;
-        operacioInfo.value = { ref: sol.ref, origen: sol.origen, desti: sol.desti };
-        detallesCarga.value = {
-            contenedor: sol.tipus_contenidor ?? '—',
-            tipo: sol.tipus_carrega ?? '—',
-            peso: sol.pes_brut ?? '—',
+        const res = data.data; // Aquí está tu nuevo JSON unificado
+
+        operacioInfo.value = {
+            ref: res.ref,
+            origen: res.origen,
+            desti: res.desti
         };
-        historial.value = data.data.historial;
+
+        detallesCarga.value = {
+            tipo: res.carrega,
+            peso: res.pes_brut ?? '—',
+        };
+        historial.value = res.historial;
+        pasoActualMobile.value = res.tracking.paso_nombre;
     } catch (e) {
         error.value = 'No s\'ha pogut carregar el seguiment.';
         console.error(e);
@@ -447,6 +463,78 @@ const tornarAEnrere = () => {
 
 .btn-outline:hover {
     background: #f0fdfa;
+}
+
+.step-circle.active {
+    background-color: #fff;
+    border: 2px solid #1a8a7d;
+    color: #1a8a7d;
+    box-shadow: 0 0 0 0 rgba(26, 138, 125, 0.4);
+    animation: pulse-green 2s infinite;
+    /* ¡Efecto de pulso! */
+}
+
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(26, 138, 125, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(26, 138, 125, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(26, 138, 125, 0);
+    }
+}
+
+.step-circle.completed {
+    background-color: #1a8a7d;
+    border-color: #1a8a7d;
+    color: white;
+}
+
+.step-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    background-color: white;
+    border: 2px solid #e5e7eb;
+    color: #d1d5db;
+    z-index: 2;
+}
+
+/* Para que la línea también se pinte de verde */
+.stepper-line-progress {
+    position: absolute;
+    top: 24px;
+    left: 5%;
+    height: 2px;
+    background-color: #1a8a7d;
+    /* Verde Nerevian */
+    z-index: 1;
+    transition: width 0.5s ease;
+}
+
+.stepper-line,
+.stepper-line-progress {
+    position: absolute;
+    top: 37px;
+    z-index: 1;
+}
+
+/* Quitamos el fondo cuadrado y el padding molesto */
+.step-box {
+    background-color: transparent;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
 }
 
 /* Responsive */

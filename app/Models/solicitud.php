@@ -12,18 +12,18 @@ class solicitud extends Model
     const CREATED_AT = 'data_creacio';
     const UPDATED_AT = 'updated_at';
     protected $casts = [
-        'estat_solicitud_id'  => 'integer',
-        'tipus_transport_id'  => 'integer',
-        'tipus_fluxe_id'      => 'integer',
-        'tipus_carrega_id'    => 'integer',
-        'incoterm_id'         => 'integer',
-        'client_id'           => 'integer',
-        'operador_id'         => 'integer',
-        'port_origen_id'      => 'integer',
-        'port_desti_id'       => 'integer',
+        'estat_solicitud_id' => 'integer',
+        'tipus_transport_id' => 'integer',
+        'tipus_fluxe_id' => 'integer',
+        'tipus_carrega_id' => 'integer',
+        'incoterm_id' => 'integer',
+        'client_id' => 'integer',
+        'operador_id' => 'integer',
+        'port_origen_id' => 'integer',
+        'port_desti_id' => 'integer',
         'tipus_contenidor_id' => 'integer',
-        'pes_brut'            => 'float',
-        'volum'               => 'float',
+        'pes_brut' => 'float',
+        'volum' => 'float',
     ];
 
     protected $fillable = [
@@ -115,6 +115,24 @@ class solicitud extends Model
     public function ofertes()
     {
         return $this->hasMany(ofertes::class, 'solicitud_id');
+    }
+
+
+    /**
+     * Relación para llegar a la operación a través de las ofertas.
+     */
+    public function operacio()
+    {
+        // Una solicitud tiene una operación a través de sus ofertas
+        // Solo nos interesa la que ha llegado a ser operación
+        return $this->hasOneThrough(
+            operacions::class,
+            ofertes::class,
+            'solicitud_id', // FK en ofertes
+            'oferta_id',    // FK en operacions
+            'id',           // PK en solicitud
+            'id'            // PK en ofertes
+        );
     }
 
     // QUERY SCOPES
