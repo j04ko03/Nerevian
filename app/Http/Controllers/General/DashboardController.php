@@ -172,33 +172,26 @@ class DashboardController extends Controller
 
     private function getUserData($user): JsonResponse
     {
-        // CORRECCIÓN: clients.usuari_id apunta a usuaris.id,
-        // por lo que el clienteId es el id del usuario autenticado
         $clienteId = $user->clients->id ?? null;
 
         if (!$clienteId) {
             return response()->json(['error' => 'Cliente no encontrado'], 404);
-        }   
+        }
 
         $stats = [
-            // CORRECCIÓN: campo correcto es 'client_id', no 'cliente_id'
-            // y filtramos por estat_solicitud_id, no por 'estat'
-            // Asumiendo: 1 = nueva, 2 = en_revision (ajusta según tus datos)
             'solicitudes_enviadas' => solicitud::where('client_id', $clienteId)
                 ->whereIn('estat_solicitud_id', [1, 2])
                 ->count(),
             'pedidos_activos' => solicitud::where('client_id', $clienteId)
                 ->whereIn('estat_solicitud_id', [3, 4])
                 ->count(),
-            // CORRECCIÓN: ofertes no tiene campo 'enviada' ni 'cliente_id'
             // Contamos ofertes vinculadas a solicitudes del cliente
             'docs_por_revisar' => solicitud::where('client_id', $clienteId)
                 ->whereIn('estat_solicitud_id', [3])
                 ->count(),
         ];
 
-        // CORRECCIÓN: operacions → oferta → solicitud para llegar a los puertos
-        // La cadena correcta es: operacio → oferta → solicitud → portOrigen/portDesti
+        //operacio → oferta → solicitud → portOrigen/portDesti
         $pedidosEnTransito = operacions::with([
             'solicitud.port_origen',
             'solicitud.port_desti',
@@ -224,7 +217,6 @@ class DashboardController extends Controller
                 'estado_id' => $op->solicitud->estat_solicitud_id ?? 'desconocido',
             ]);
 
-        // CORRECCIÓN: client_id en lugar de cliente_id
         $misSolicitudes = solicitud::with(['port_origen', 'port_desti', 'estat_solicitud'])
             ->where('client_id', $clienteId)
             ->orderBy('data_creacio', 'desc')
@@ -265,7 +257,6 @@ class DashboardController extends Controller
             ], 400);
         }
 
-        // CORRECCIÓN: añadimos estatSolicitud para leer el estado correctamente
         $resultado = solicitud::with(['portOrigen', 'portDesti', 'estatSolicitud'])
             ->find((int) $idLimpio);
 
@@ -280,7 +271,6 @@ class DashboardController extends Controller
             'success' => true,
             'operacion' => [
                 'id' => $resultado->id,
-                // CORRECCIÓN: estado desde relación
                 'estado' => $resultado->estatSolicitud->estat ?? 'desconocido',
                 'ruta' => ($resultado->portOrigen->nom ?? 'N/A') . ' → ' . ($resultado->portDesti->nom ?? 'N/A'),
                 'fecha_actualizacion' => $resultado->updated_at

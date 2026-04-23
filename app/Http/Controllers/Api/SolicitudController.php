@@ -51,12 +51,16 @@ class SolicitudController
             'comentaris' => 'nullable|string',
             'tipus_contenidor_id' => 'nullable|exists:tipus_contenidors,id',
             'tipus_validacio_id' => 'nullable|exists:tipus_validacions,id',
-            'operador_id'        => 'nullable|exists:usuaris,id',
+            'operador_id' => 'nullable|exists:usuaris,id',
         ]);
 
+        // Digo x cliente logueado y su estado por defecto
+        // Más que nada para forzar campos internos de la solicitud y el usuario no pueda elegirlos. (security stuff)
+        // Hablando de seguridad, por eso también en $validated he puesto campos como exists:tipus_transports,id, para 
+        // que el usuario no pueda ingresar valores que no existen en la base de datos saltandose el front.
         $validated['client_id'] = auth()->user()->clients->id;
         $validated['estat_solicitud_id'] = 1;   // nova
-        $validated['tipus_validacio_id'] = 1;   // Manual (únic valor existent)
+        $validated['tipus_validacio_id'] = 1;
 
         $solicitiud = solicitud::create($validated);
 

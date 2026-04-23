@@ -21,20 +21,20 @@ class TrackingController extends Controller
             ->get();
 
         $portOrigen = $solicitud->port_origen;
-        $portDesti  = $solicitud->port_desti;
+        $portDesti = $solicitud->port_desti;
 
         return response()->json([
             'status' => 'success',
             'data' => [
                 'solicitud' => [
-                    'id'               => $solicitud->id,
-                    'ref'              => 'SOL-' . str_pad($solicitud->id, 4, '0', STR_PAD_LEFT),
-                    'origen'           => $portOrigen ? $portOrigen->nom . ($portOrigen->ciutat ? ' (' . $portOrigen->ciutat->nom . ')' : '') : 'N/A',
-                    'desti'            => $portDesti  ? $portDesti->nom  . ($portDesti->ciutat  ? ' (' . $portDesti->ciutat->nom  . ')' : '') : 'N/A',
-                    'tipus_carrega'    => optional($solicitud->tipus_carrega)->nom,
+                    'id' => $solicitud->id,
+                    'ref' => 'SOL-' . str_pad($solicitud->id, 4, '0', STR_PAD_LEFT),
+                    'origen' => $portOrigen ? $portOrigen->nom . ($portOrigen->ciutat ? ' (' . $portOrigen->ciutat->nom . ')' : '') : 'N/A',
+                    'desti' => $portDesti ? $portDesti->nom . ($portDesti->ciutat ? ' (' . $portDesti->ciutat->nom . ')' : '') : 'N/A',
+                    'tipus_carrega' => optional($solicitud->tipus_carrega)->nom,
                     'tipus_contenidor' => optional($solicitud->tipus_contenidor)->nom,
-                    'pes_brut'         => $solicitud->pes_brut ? number_format($solicitud->pes_brut, 0, ',', '.') . ' kg' : null,
-                    'estat'            => $solicitud->estat_solicitud_id,
+                    'pes_brut' => $solicitud->pes_brut ? number_format($solicitud->pes_brut, 0, ',', '.') . ' kg' : null,
+                    'estat' => $solicitud->estat_solicitud_id,
                 ],
                 'historial' => $tracking,
             ]

@@ -75,11 +75,11 @@ const operacions = ref([]);
 
 // Mapeo de estado a clase CSS del badge
 const STATUS_MAP = {
-    1: { text: 'Pendent',           cls: 'badge-yellow' },
-    2: { text: 'En Recollida',      cls: 'badge-yellow' },
-    3: { text: 'En Trànsit',        cls: 'badge-blue'   },
-    4: { text: 'En Duana',          cls: 'badge-blue'   },
-    5: { text: 'Entregat',          cls: 'badge-green'  },
+    1: { text: 'Pendent', cls: 'badge-yellow' },
+    2: { text: 'En Recollida', cls: 'badge-yellow' },
+    3: { text: 'En Trànsit', cls: 'badge-blue' },
+    4: { text: 'En Duana', cls: 'badge-blue' },
+    5: { text: 'Entregat', cls: 'badge-green' },
 };
 
 const formatPort = (port) => {
@@ -93,7 +93,7 @@ onMounted(async () => {
         const { data } = await api.get('/operaciones');
         if (data.status === 'success') {
             operacions.value = (data.data ?? []).map(op => {
-                const sol = op.solicitud;
+                const sol = op.oferta?.solicitud;
                 const estat = op.estat;
                 const statusInfo = STATUS_MAP[op.estat_id] ?? { text: estat?.estat ?? '—', cls: 'badge-yellow' };
 

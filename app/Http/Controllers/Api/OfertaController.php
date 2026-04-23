@@ -21,18 +21,18 @@ class OfertaController extends Controller
         $oferta->update(['estat_oferta_id' => 1]); // aceptada
 
         $operacio = operacions::create([
-            'oferta_id'       => $oferta->id,
-            'client_id'       => $clientId,
-            'operador_id'     => $sol->operador_id,
-            'estat_id'        => 1,
+            'oferta_id' => $oferta->id,
+            'client_id' => $clientId,
+            'operador_id' => $sol->operador_id,
+            'estat_id' => 1, // en curso
             'codi_referencia' => 'OP-' . str_pad($oferta->id, 5, '0', STR_PAD_LEFT),
-            'data_inici'      => now(),
+            'data_inici' => now(),
         ]);
 
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => "Oferta acceptada. Operació creada.",
-            'data'    => $operacio,
+            'data' => $operacio,
         ], 201);
     }
 
@@ -45,12 +45,12 @@ class OfertaController extends Controller
 
         $oferta->update([
             'estat_oferta_id' => 4, // rechazada
-            'deny_reason'     => $request->input('motiu'),
+            'deny_reason' => $request->input('motiu'),
         ]);
         $sol->update(['estat_solicitud_id' => 2]); // torna a en_revision
 
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'Oferta rebutjada. Espereu una nova cotització.',
         ]);
     }
@@ -62,33 +62,33 @@ class OfertaController extends Controller
         $sol = solicitud::where('client_id', $clientId)->findOrFail($solicitudId);
 
         $validated = $request->validate([
-            'pressupost'    => 'required|numeric|min:0',
+            'pressupost' => 'required|numeric|min:0',
             'temps_estimat' => 'nullable|integer|min:1',
-            'comentaris'    => 'nullable|string',
+            'comentaris' => 'nullable|string',
         ]);
 
         // Mark current sent offers as rejected before sending counter-offer
         ofertes::where('solicitud_id', $sol->id)
-            ->where('estat_oferta_id', 2)
-            ->update(['estat_oferta_id' => 4]);
+            ->where('estat_oferta_id', 2) // revisión
+            ->update(['estat_oferta_id' => 4]); //negociación
 
         ofertes::create([
-            'solicitud_id'           => $sol->id,
-            'clients_id'             => $clientId,
-            'pressupost'             => $validated['pressupost'],
-            'comentaris'             => $validated['comentaris'] ?? null,
-            'estat_oferta_id'        => 2, // enviada (al operador per revisar)
-            'es_contraoferta'        => true,
-            'data_creacio'           => now()->toDateString(),
+            'solicitud_id' => $sol->id,
+            'clients_id' => $clientId,
+            'pressupost' => $validated['pressupost'],
+            'comentaris' => $validated['comentaris'] ?? null,
+            'estat_oferta_id' => 2, // enviada (al operador per revisar)
+            'es_contraoferta' => true,
+            'data_creacio' => now()->toDateString(),
             'data_validessa_inicial' => now()->toDateString(),
-            'data_validessa_final'   => now()->addDays(30)->toDateString(),
-            'moneda'                 => 'EUR',
+            'data_validessa_final' => now()->addDays(30)->toDateString(),
+            'moneda' => 'EUR',
         ]);
 
         $sol->update(['estat_solicitud_id' => 4]); // en_negociacion
 
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'Contraoferta enviada correctament.',
         ], 201);
     }

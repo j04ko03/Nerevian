@@ -42,7 +42,7 @@ class DocumentController
     {
         $request->validate([
             'fitxer' => 'required|file|max:10000', // 10mb
-            'tipus_document' => 'required|exists:tipus_document,id',
+            'tipus_document' => 'required|exists:tipo_documento,id',
             'operacio_id' => 'nullable|exists:operacions,id',
             'solicitud_id' => 'nullable|exists:solicitud,id'
         ]);
@@ -62,7 +62,8 @@ class DocumentController
             'mida' => $file->getSize(), // getSize() devuelve el tamaño del archivo en bytes
             'tipus_document' => $request->tipus_document,
             'operacio_id' => $request->operacio_id,
-            'solicitud_id' => $request->solicitud_id,
+            //TODO: Hay que hacer una migración para que solicitud_id sea nullable y poder relacionar documentos con solicitudes.
+            //'solicitud_id' => $request->solicitud_id,
             'pujat_per' => auth()->id() // auth()->id() devuelve el id del usuario autenticado
         ]);
 
@@ -96,7 +97,7 @@ class DocumentController
         ]);
 
         $document = documents::findOrFail($id);
-        $document->update(['tipus_document' => $request->tipus_document]);
+        $document->update(['tipus_document' => $request->tipo_documento]);
 
         return response()->json([
             'status' => 'success',
@@ -116,16 +117,29 @@ class DocumentController
     public function destroy(string $id)
     {
         $document = documents::findOrFail($id);
+        $user = auth()->user();
 
-        // Borramos el archivo físico del disco privado
-        Storage::disk('private')->delete($document->ruta_fitxer);
-
-        // Borramos el registro en BD
+        if ($document->solicitud_id) {
+            $propiedad = solicitud::delClienteActual()->where('id', $document->solicitud_id)->exists();
+        } elseif ($document->operacio_id) {
+            $propiedad = operacions::delClienteActual()->where('id', $document->operacio_id)->exists();
+        } else {
+            $propiedad = ($document->pujat_per == $user->id);
+        }
+        if (!$propiedad) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No tienes permiso para borrar este archivo'
+            ], 403);
+        }
+        // Si tiene permiso puede acceder a sus documentos:
+        if (Storage::disk('private')->exists($document->ruta_fitxer)) {
+            Storage::disk('private')->delete($document->ruta_fitxer);
+        }
         $document->delete();
-
         return response()->json([
             'status' => 'success',
-            'message' => 'Documentito eliminado'
+            'message' => 'Documento eliminado correctamente'
         ]);
     }
 
@@ -141,7 +155,7 @@ class DocumentController
         } elseif ($document->operacio_id) {
             $propiedad = operacions::delClienteActual()->where('id', $document->operacio_id)->exists();
         } else {
-            $propiedad = ($document->pujat_per === $user->id);
+            $propiedad = ($document->pujat_per == $user->id);
         }
 
         if (!$propiedad) {
@@ -160,6 +174,9 @@ class DocumentController
         }
 
         // Retornamos la descarga
-        return Storage::disk('private')->download /*Está amarillo por tonterías de Laravel, FilesystemAdapter tiene el método y es lo que furula por atrás.*/ ($document->ruta_fitxer, $document->nom_original);
+        return Storage::disk('private')->download
+            /*Está amarillo por cosas de Laravel, FilesystemAdapter tiene el método y 
+            es lo que funciona por atrás.*/
+        ($document->ruta_fitxer, $document->nom_original);
     }
 }
