@@ -154,6 +154,7 @@
                         <option value="2">Clienta</option>
                         <option value="3">Operadora</option>
                         <option value="4">Agent</option>
+                        <option value="1">Administrador</option>
                     </select>
                 </div>
 
@@ -198,6 +199,9 @@ const emit = defineEmits(['submitRegistro']);
 const handleSubmit = () => {
     if (form.contrasenya !== form.password_confirmation) {
         alert('Les contrasenyes no coincideixen');
+        return;
+    } if (form.contrasenya.length < 8) {
+        alert('La contrasenya ha de tenir almenys 8 caràcters');
         return;
     }
     emit('submitRegistro', form);
