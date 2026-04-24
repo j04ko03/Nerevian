@@ -30,7 +30,7 @@ const authUser = computed(() => {
 
 const loadChat = () => {
     // 1. Manejo de visibilidad por CSS
-    let visibilityStyle = document.getElementById('n8n-chat-visibility');
+    var visibilityStyle = document.getElementById('n8n-chat-visibility');
     if (!visibilityStyle) {
         visibilityStyle = document.createElement('style');
         visibilityStyle.id = 'n8n-chat-visibility';
