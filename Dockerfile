@@ -1,41 +1,88 @@
-FROM php:8.2-fpm
+# ==========================================
+# Etapa 1: Construcción del Backend (Composer)
+# ==========================================
+FROM composer:2.7 AS vendor
+WORKDIR /app
 
-# Dependencias del sistema
-RUN apt-get update && apt-get install -y \
-    nginx nodejs npm git curl zip unzip \
-    libpng-dev libonig-dev libxml2-dev \
-    unixodbc-dev
+# 1. Copiamos SOLO los archivos de dependencias primero. 
+# Así, si no hay paquetes nuevos, Docker usa la caché y se salta la descarga je
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --ignore-platform-reqs --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
-# Instalar extensiones ODBC para SQL Server
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && curl https://packages.microsoft.com/config/debian/11/prod.list \
-        > /etc/apt/sources.list.d/mssql-release.list \
-    && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
-    && pecl install sqlsrv pdo_sqlsrv \
-    && docker-php-ext-enable sqlsrv pdo_sqlsrv
+# ==========================================
+# Etapa 2: Construcción del Frontend (Modificada para Wayfinder)
+# ==========================================
+FROM php:8.4-alpine AS frontend
+WORKDIR /app
 
-# Otras extensiones PHP
-RUN docker-php-ext-install mbstring exif pcntl bcmath gd
+# 1. Instalamos Node.js y npm dentro de esta imagen de PHP
+RUN apk add --no-cache nodejs npm
 
-# Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# 2. Copiamos las dependencias de Node
+COPY package.json package-lock.json ./
+RUN npm ci
 
-WORKDIR /var/www
+# 3. Copiamos todo el código fuente (necesario para Vite y Artisan)
 COPY . .
 
-# Dependencias PHP
-RUN composer install --no-dev --optimize-autoloader
+# 4. Traje la carpeta 'vendor' de la Etapa 1.
+# Sin esto, el comando 'php artisan' del plugin fallaría.
+COPY --from=vendor /app/vendor/ ./vendor/
 
-# Compilar Vue
-RUN npm install && npm run build
+# 5. Compilamos.
+RUN npm run build
 
-# Permisos Laravel
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# La etapa 2 en teoría solo deberia compilar el frontend, pero en este caso traigo vendor de la etapa 1 
+# para que el plugin de Vite pueda ejecutar 'php artisan' sin problemas. Porque antes de esto me petaba 
+# con el error #22 0.884 [@laravel/vite-plugin-wayfinder] [plugin @laravel/vite-plugin-wayfinder] Error 
+# generating types: Error: Command failed: php artisan wayfinder:generate --with-form y esto era porque 
+# ese plugin al ser un puente entre el back y el front necesitaba tener en esta sección un entorno PHP 
+# completo para poder funcionar, no obstante yo he optado por instalar una versión más ligera de OS base 
+# (en vez de ubunut o debian).
 
+# ==========================================
+# Etapa 3: Imagen Final (Producción)
+# ==========================================
+FROM php:8.4-fpm-bookworm
+
+# 3. Instalamos SOLO lo necesario para ejecutar la app (quitamos nodejs, npm, git, etc.)
+RUN apt-get update && apt-get install -y \
+    nginx curl gnupg2 libpng-dev libonig-dev libxml2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar extensiones ODBC para SQL Server
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
+    && curl -fsSL https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev \
+    && pecl install sqlsrv pdo_sqlsrv \
+    && docker-php-ext-enable sqlsrv pdo_sqlsrv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Otras extensiones PHP necesarias para Laravel
+RUN docker-php-ext-install mbstring exif pcntl bcmath gd
+
+WORKDIR /var/www
+
+# 4. Copiamos el código fuente base de la aplicación
+COPY . .
+
+# 5. Traemos la carpeta "vendor" ya compilada de la Etapa 1
+COPY --from=vendor /app/vendor/ /var/www/vendor/
+
+# 6. Traemos los assets públicos (js, css de Vue) ya compilados de la Etapa 2
+# (Asegúrate de que la ruta coincida con donde compila tu frontend, usualmente public/build)
+COPY --from=frontend /app/public/ /var/www/public/
+
+# Permisos para Laravel
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
+# Archivos de configuración
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 
 EXPOSE 80
+
 CMD ["/start.sh"]
