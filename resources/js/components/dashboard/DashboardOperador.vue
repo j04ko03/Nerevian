@@ -247,7 +247,6 @@
                     >
                         <div class="feed-left">
                             <div class="feed-dot" :class="statusClass(item.estado_actual)" />
-                            <div v-if="i < actividadRecienteMia.length - 1" class="feed-line" />
                         </div>
                         <div class="feed-body">
                             <div class="feed-top">
@@ -256,7 +255,17 @@
                                     {{ item.estado_actual }}
                                 </span>
                             </div>
-                            <span class="feed-time">{{ item.tiempo_transcurrido }}</span>
+                            <span class="feed-route">
+                                <MapPin :size="11" />
+                                {{ item.ruta }}
+                            </span>
+                            <div class="feed-meta">
+                                <span class="feed-client">
+                                    <User :size="11" />
+                                    {{ item.client_nom }}
+                                </span>
+                                <span class="feed-time">{{ item.tiempo_transcurrido }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -269,7 +278,7 @@
 import { ref, computed, onMounted } from 'vue';
 import {
     Thermometer, Activity, AlertOctagon, ClipboardList, CheckCircle,
-    Search, SearchX, X, LoaderCircle, Briefcase,
+    Search, SearchX, X, LoaderCircle, Briefcase, MapPin, User,
 } from 'lucide-vue-next';
 import Skeleton from 'primevue/skeleton';
 import AppLayout from '@/layout/AppLayout.vue';
@@ -529,12 +538,13 @@ onMounted(async () => {
 .feed {
     display: flex;
     flex-direction: column;
+    gap: 0.55rem;
 }
 
 .feed-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.85rem;
+    gap: 0.75rem;
 }
 
 .feed-left {
@@ -542,33 +552,34 @@ onMounted(async () => {
     flex-direction: column;
     align-items: center;
     flex-shrink: 0;
-    padding-top: 0.3rem;
+    padding-top: 0.82rem;
 }
 
 .feed-dot {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     flex-shrink: 0;
     border: 2px solid white;
     box-shadow: 0 0 0 1.5px currentColor;
 }
 
-.feed-line {
-    width: 1.5px;
-    flex: 1;
-    min-height: 1.5rem;
-    background: linear-gradient(to bottom, #e5e7eb, transparent);
-    margin: 4px 0;
-}
-
 .feed-body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
-    padding: 0.2rem 0 0.9rem;
+    gap: 0.3rem;
+    padding: 0.65rem 0.85rem;
     min-width: 0;
+    background: #fafafa;
+    border: 1px solid #f3f4f6;
+    border-radius: 10px;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+.feed-body:hover {
+    background: #f9fafb;
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.06);
 }
 
 .feed-top {
@@ -584,9 +595,40 @@ onMounted(async () => {
     color: #111827;
 }
 
+.feed-route {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.73rem;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.feed-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.feed-client {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    color: #9ca3af;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .feed-time {
     font-size: 0.72rem;
     color: #9ca3af;
+    flex-shrink: 0;
 }
 
 /* ── Status pills ────────────────────────── */

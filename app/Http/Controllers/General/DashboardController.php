@@ -126,36 +126,43 @@ class DashboardController extends Controller
 
     private function getOperadorData($user): JsonResponse
     {
-        $fechaLimite = Carbon::now()->subDays(3);
-
-        // CORRECCIÓN: solicitud no tiene campo 'estat', el estado es
-        // 'estat_solicitud_id'. Filtramos por los IDs correspondientes.
-        // Asumiendo: 3 = cotizada, 4 = en_negociacion (ajusta según tus datos)
         $cotizacionesFrias = solicitud::with(['port_origen', 'port_desti', 'estat_solicitud'])
-            ->whereIn('estat_solicitud_id', [3, 4])
-            ->where('updated_at', '<', $fechaLimite)
-            ->orderBy('updated_at', 'asc')
+            ->whereIn('estat_solicitud_id', [1, 2, 3, 4])
+            ->orderByRaw('COALESCE(updated_at, data_creacio) ASC')
+            ->take(5)
             ->get()
-            ->map(fn($s) => [
-                'id' => $s->id,
-                'codigo' => 'REQ-00' . $s->id,
-                'ruta' => ($s->port_origen->nom ?? 'N/A') . ' → ' . ($s->port_desti->nom ?? 'N/A'),
-                'estado' => $s->estat_solicitud->estat ?? 'Desconegut',
-                'dias_sin_cambios' => Carbon::parse($s->updated_at)->diffInDays(Carbon::now()),
-                'ultima_actualizacion' => $s->updated_at
-                    ? Carbon::parse($s->updated_at)->format('Y-m-d')
-                    : 'N/A',
-            ]);
+            ->map(function ($s) {
+                $lastUpdate = $s->updated_at ?? $s->created_at;
+                $dias = $lastUpdate
+                    ? (int) Carbon::parse($lastUpdate)->startOfDay()->diffInDays(Carbon::now()->startOfDay())
+                    : 0;
 
-        $actividadRecienteMia = solicitud::with('estat_solicitud')
+                return [
+                    'id'                  => $s->id,
+                    'codigo'              => 'REQ-' . str_pad($s->id, 3, '0', STR_PAD_LEFT),
+                    'ruta'                => ($s->port_origen?->nom ?? 'N/A') . ' → ' . ($s->port_desti?->nom ?? 'N/A'),
+                    'estado'              => $this->getEstadoHumanoCorto($s->estat_solicitud?->estat ?? 'desconocido'),
+                    'dias_sin_cambios'    => $dias,
+                    'ultima_actualizacion'=> $lastUpdate
+                        ? Carbon::parse($lastUpdate)->format('d/m/Y')
+                        : 'N/A',
+                ];
+            });
+
+        $actividadRecienteMia = solicitud::with(['estat_solicitud', 'port_origen', 'port_desti', 'client.usuaris'])
             ->where('operador_id', $user->id)
             ->orderBy('updated_at', 'desc')
             ->take(5)
             ->get()
             ->map(fn($s) => [
                 'id' => $s->id,
-                'codigo' => 'REQ-00' . $s->id,
-                'estado_actual' => $s->estat_solicitud->estat ?? 'Desconegut',
+                'codigo' => 'REQ-' . str_pad($s->id, 3, '0', STR_PAD_LEFT),
+                'estado_actual' => $this->getEstadoHumanoCorto($s->estat_solicitud?->estat ?? 'desconocido'),
+                'ruta' => ($s->port_origen?->nom ?? 'N/A') . ' → ' . ($s->port_desti?->nom ?? 'N/A'),
+                'client_nom' => $s->client?->usuaris?->nom ?? 'N/A',
+                'ultima_actualizacion' => $s->updated_at
+                    ? Carbon::parse($s->updated_at)->format('d/m/Y')
+                    : 'N/A',
                 'tiempo_transcurrido' => Carbon::parse($s->updated_at)->diffForHumans(),
             ]);
 
@@ -257,7 +264,7 @@ class DashboardController extends Controller
             ], 400);
         }
 
-        $resultado = solicitud::with(['portOrigen', 'portDesti', 'estatSolicitud'])
+        $resultado = solicitud::with(['port_origen', 'port_desti', 'estat_solicitud'])
             ->find((int) $idLimpio);
 
         if (!$resultado) {
@@ -271,8 +278,8 @@ class DashboardController extends Controller
             'success' => true,
             'operacion' => [
                 'id' => $resultado->id,
-                'estado' => $resultado->estatSolicitud->estat ?? 'desconocido',
-                'ruta' => ($resultado->portOrigen->nom ?? 'N/A') . ' → ' . ($resultado->portDesti->nom ?? 'N/A'),
+                'estado' => $this->getEstadoHumanoCorto($resultado->estat_solicitud?->estat ?? 'desconocido'),
+                'ruta' => ($resultado->port_origen?->nom ?? 'N/A') . ' → ' . ($resultado->port_desti?->nom ?? 'N/A'),
                 'fecha_actualizacion' => $resultado->updated_at
                     ? Carbon::parse($resultado->updated_at)->format('d/m/Y H:i')
                     : 'N/A',
