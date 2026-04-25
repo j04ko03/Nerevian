@@ -28,7 +28,9 @@
                 </div>
                 <TabView v-model:activeIndex="tabActiu" class="header-tabs">
                     <TabPanel :header="`Pendents (${pendents.length})`" />
-                    <TabPanel :header="`En Negociació (${enNegociacio.length})`" />
+                    <TabPanel
+                        :header="`En Negociació (${enNegociacio.length})`"
+                    />
                     <TabPanel :header="`Cotitzades (${cotitzades.length})`" />
                 </TabView>
             </div>
@@ -44,46 +46,77 @@
                 tableStyle="min-width: 50rem"
             >
                 <template #empty>
-                    <div class="empty-state">
+                    <div v-if="empty" class="empty-state">
                         <ClipboardList :size="40" style="color: #d1d5db" />
                         <p>Cap sol·licitud pendent</p>
                     </div>
                 </template>
                 <Column field="id" header="Ref." sortable style="width: 5rem">
                     <template #body="{ data }">
-                        <strong class="ref-text">SOL-{{ String(data.id).padStart(3, '0') }}</strong>
+                        <strong class="ref-text"
+                            >SOL-{{ String(data.id).padStart(3, '0') }}</strong
+                        >
                     </template>
                 </Column>
                 <Column header="Client" style="min-width: 12rem">
                     <template #body="{ data }">
                         <div class="user-cell">
                             <div class="user-avatar">
-                                {{ initials(data.client?.usuaris?.nom, data.client?.usuaris?.cognoms) }}
+                                {{
+                                    initials(
+                                        data.client?.usuaris?.nom,
+                                        data.client?.usuaris?.cognoms,
+                                    )
+                                }}
                             </div>
                             <div>
-                                <div class="user-name">{{ data.client?.usuaris?.nom }} {{ data.client?.usuaris?.cognoms }}</div>
-                                <div class="user-email">{{ data.client?.usuaris?.correu }}</div>
+                                <div class="user-name">
+                                    {{ data.client?.usuaris?.nom }}
+                                    {{ data.client?.usuaris?.cognoms }}
+                                </div>
+                                <div class="user-email">
+                                    {{ data.client?.usuaris?.correu }}
+                                </div>
                             </div>
                         </div>
                     </template>
                 </Column>
                 <Column header="Ruta" style="min-width: 14rem">
                     <template #body="{ data }">
-                        <span class="route-text">{{ data.port_origen?.nom ?? '—' }} → {{ data.port_desti?.nom ?? '—' }}</span>
+                        <span class="route-text"
+                            >{{ data.port_origen?.nom ?? '—' }} →
+                            {{ data.port_desti?.nom ?? '—' }}</span
+                        >
                     </template>
                 </Column>
                 <Column header="Transport" style="min-width: 9rem">
-                    <template #body="{ data }">{{ data.tipus_transport?.tipus ?? '—' }}</template>
+                    <template #body="{ data }">{{
+                        data.tipus_transport?.tipus ?? '—'
+                    }}</template>
                 </Column>
                 <Column header="Pes (kg)" style="min-width: 7rem">
-                    <template #body="{ data }">{{ data.pes_brut ? Number(data.pes_brut).toLocaleString() : '—' }}</template>
+                    <template #body="{ data }">{{
+                        data.pes_brut
+                            ? Number(data.pes_brut).toLocaleString()
+                            : '—'
+                    }}</template>
                 </Column>
-                <Column header="Data" sortable sortField="data_creacio" style="min-width: 9rem">
+                <Column
+                    header="Data"
+                    sortable
+                    sortField="data_creacio"
+                    style="min-width: 9rem"
+                >
                     <template #body="{ data }">
-                        <span class="date-text">{{ formatDate(data.data_creacio) }}</span>
+                        <span class="date-text">{{
+                            formatDate(data.data_creacio)
+                        }}</span>
                     </template>
                 </Column>
-                <Column header="Accions" style="width: 8rem; text-align: center">
+                <Column
+                    header="Accions"
+                    style="width: 8rem; text-align: center"
+                >
                     <template #body="{ data }">
                         <button class="btn-oferta" @click="obrirModal(data)">
                             <Send :size="13" /> Ofertar
@@ -100,23 +133,46 @@
                 </div>
 
                 <div v-else class="negociacio-list">
-                    <div v-for="sol in enNegociacio" :key="sol.id" class="negociacio-card">
+                    <div
+                        v-for="sol in enNegociacio"
+                        :key="sol.id"
+                        class="negociacio-card"
+                    >
                         <!-- Capçalera sol·licitud -->
                         <div class="negociacio-card__header">
                             <div class="negociacio-card__header-left">
-                                <strong class="ref-text">SOL-{{ String(sol.id).padStart(3, '0') }}</strong>
+                                <strong class="ref-text"
+                                    >SOL-{{
+                                        String(sol.id).padStart(3, '0')
+                                    }}</strong
+                                >
                                 <div class="user-cell">
                                     <div class="user-avatar">
-                                        {{ initials(sol.client?.usuaris?.nom, sol.client?.usuaris?.cognoms) }}
+                                        {{
+                                            initials(
+                                                sol.client?.usuaris?.nom,
+                                                sol.client?.usuaris?.cognoms,
+                                            )
+                                        }}
                                     </div>
                                     <div>
-                                        <div class="user-name">{{ sol.client?.usuaris?.nom }} {{ sol.client?.usuaris?.cognoms }}</div>
-                                        <div class="user-email">{{ sol.client?.usuaris?.correu }}</div>
+                                        <div class="user-name">
+                                            {{ sol.client?.usuaris?.nom }}
+                                            {{ sol.client?.usuaris?.cognoms }}
+                                        </div>
+                                        <div class="user-email">
+                                            {{ sol.client?.usuaris?.correu }}
+                                        </div>
                                     </div>
                                 </div>
-                                <span class="route-text">{{ sol.port_origen?.nom ?? '—' }} → {{ sol.port_desti?.nom ?? '—' }}</span>
+                                <span class="route-text"
+                                    >{{ sol.port_origen?.nom ?? '—' }} →
+                                    {{ sol.port_desti?.nom ?? '—' }}</span
+                                >
                             </div>
-                            <span class="estat-badge estat-negociacio">En Negociació</span>
+                            <span class="estat-badge estat-negociacio"
+                                >En Negociació</span
+                            >
                         </div>
 
                         <!-- Historial d'ofertes -->
@@ -127,34 +183,74 @@
                                     v-for="oferta in sol.ofertes"
                                     :key="oferta.id"
                                     class="history-item"
-                                    :class="oferta.es_contraoferta ? 'history-item--client' : 'history-item--operador'"
+                                    :class="
+                                        oferta.es_contraoferta
+                                            ? 'history-item--client'
+                                            : 'history-item--operador'
+                                    "
                                 >
                                     <div class="history-item__who">
-                                        <span class="who-pill" :class="oferta.es_contraoferta ? 'who-pill--client' : 'who-pill--op'">
-                                            {{ oferta.es_contraoferta ? 'Client' : 'Operador' }}
+                                        <span
+                                            class="who-pill"
+                                            :class="
+                                                oferta.es_contraoferta
+                                                    ? 'who-pill--client'
+                                                    : 'who-pill--op'
+                                            "
+                                        >
+                                            {{
+                                                oferta.es_contraoferta
+                                                    ? 'Client'
+                                                    : 'Operador'
+                                            }}
                                         </span>
-                                        <span class="history-estat">{{ oferta.estat?.estat ?? '—' }}</span>
+                                        <span class="history-estat">{{
+                                            oferta.estat?.estat ?? '—'
+                                        }}</span>
                                     </div>
                                     <div class="history-item__details">
-                                        <span class="history-price">{{ Number(oferta.pressupost).toFixed(2) }} € ({{ oferta.moneda }})</span>
-                                        <span v-if="oferta.comentaris" class="history-comment">{{ oferta.comentaris }}</span>
+                                        <span class="history-price"
+                                            >{{
+                                                Number(
+                                                    oferta.pressupost,
+                                                ).toFixed(2)
+                                            }}
+                                            € ({{ oferta.moneda }})</span
+                                        >
+                                        <span
+                                            v-if="oferta.comentaris"
+                                            class="history-comment"
+                                            >{{ oferta.comentaris }}</span
+                                        >
                                     </div>
 
                                     <!-- Botó acceptar contraoferta -->
                                     <button
-                                        v-if="oferta.es_contraoferta && oferta.estat_oferta_id === 2"
+                                        v-if="
+                                            oferta.es_contraoferta &&
+                                            oferta.estat_oferta_id === 2
+                                        "
                                         class="btn-acceptar"
                                         :disabled="actionLoading"
-                                        @click="acceptarContraoferta(sol.id, oferta.id)"
+                                        @click="
+                                            acceptarContraoferta(
+                                                sol.id,
+                                                oferta.id,
+                                            )
+                                        "
                                     >
-                                        <Check :size="13" /> Acceptar contraoferta
+                                        <Check :size="13" /> Acceptar
+                                        contraoferta
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Alternativa: enviar nova oferta en comptes d'acceptar -->
                             <div class="negociacio-card__footer">
-                                <button class="btn-oferta-secondary" @click="obrirModal(sol)">
+                                <button
+                                    class="btn-oferta-secondary"
+                                    @click="obrirModal(sol)"
+                                >
                                     <Send :size="13" /> Enviar nova cotització
                                 </button>
                             </div>
@@ -181,31 +277,54 @@
                 </template>
                 <Column field="id" header="Ref." sortable style="width: 5rem">
                     <template #body="{ data }">
-                        <strong class="ref-text">SOL-{{ String(data.id).padStart(3, '0') }}</strong>
+                        <strong class="ref-text"
+                            >SOL-{{ String(data.id).padStart(3, '0') }}</strong
+                        >
                     </template>
                 </Column>
                 <Column header="Client" style="min-width: 12rem">
                     <template #body="{ data }">
                         <div class="user-cell">
                             <div class="user-avatar">
-                                {{ initials(data.client?.usuaris?.nom, data.client?.usuaris?.cognoms) }}
+                                {{
+                                    initials(
+                                        data.client?.usuaris?.nom,
+                                        data.client?.usuaris?.cognoms,
+                                    )
+                                }}
                             </div>
                             <div>
-                                <div class="user-name">{{ data.client?.usuaris?.nom }} {{ data.client?.usuaris?.cognoms }}</div>
-                                <div class="user-email">{{ data.client?.usuaris?.correu }}</div>
+                                <div class="user-name">
+                                    {{ data.client?.usuaris?.nom }}
+                                    {{ data.client?.usuaris?.cognoms }}
+                                </div>
+                                <div class="user-email">
+                                    {{ data.client?.usuaris?.correu }}
+                                </div>
                             </div>
                         </div>
                     </template>
                 </Column>
                 <Column header="Ruta" style="min-width: 14rem">
                     <template #body="{ data }">
-                        <span class="route-text">{{ data.port_origen?.nom ?? '—' }} → {{ data.port_desti?.nom ?? '—' }}</span>
+                        <span class="route-text"
+                            >{{ data.port_origen?.nom ?? '—' }} →
+                            {{ data.port_desti?.nom ?? '—' }}</span
+                        >
                     </template>
                 </Column>
                 <Column header="Oferta enviada" style="min-width: 10rem">
                     <template #body="{ data }">
-                        <span v-if="darrereOfertaOperador(data)" class="price-text">
-                            {{ Number(darrereOfertaOperador(data).pressupost).toFixed(2) }} €
+                        <span
+                            v-if="darrereOfertaOperador(data)"
+                            class="price-text"
+                        >
+                            {{
+                                Number(
+                                    darrereOfertaOperador(data).pressupost,
+                                ).toFixed(2)
+                            }}
+                            €
                         </span>
                         <span v-else>—</span>
                     </template>
@@ -217,9 +336,14 @@
                         </span>
                     </template>
                 </Column>
-                <Column header="Accions" style="width: 8rem; text-align: center">
+                <Column
+                    header="Accions"
+                    style="width: 8rem; text-align: center"
+                >
                     <template #body="{ data }">
-                        <span class="oferta-enviada"><Check :size="13" /> Enviada</span>
+                        <span class="oferta-enviada"
+                            ><Check :size="13" /> Enviada</span
+                        >
                     </template>
                 </Column>
             </DataTable>
@@ -229,7 +353,15 @@
             v-model:visible="modalVisible"
             :solicitud="solicitudSeleccionada"
             @ofertaEnviada="onOfertaEnviada"
-            @error="(msg) => toast.add({ severity: 'error', summary: 'Error', detail: msg, life: 4000 })"
+            @error="
+                (msg) =>
+                    toast.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: msg,
+                        life: 4000,
+                    })
+            "
         />
         <Toast />
     </AppLayout>
@@ -252,20 +384,26 @@ import EnviarOfertaModal from '@/components/operador/ofertes/EnviarOfertaModal.v
 
 const toast = useToast();
 
-const solicituds    = ref([]);
-const loading       = ref(false);
+const solicituds = ref([]);
+const loading = ref(false);
 const actionLoading = ref(false);
-const tabActiu      = ref(0);
-const modalVisible  = ref(false);
+const tabActiu = ref(0);
+const modalVisible = ref(false);
 const solicitudSeleccionada = ref(null);
 
 // estat_solicitud_id: 1=nueva, 2=en_revision, 3=cotizada, 4=en_negociacion
-const pendents      = computed(() => solicituds.value.filter(s => [1, 2].includes(s.estat_solicitud_id)));
-const enNegociacio  = computed(() => solicituds.value.filter(s => s.estat_solicitud_id === 4));
-const cotitzades    = computed(() => solicituds.value.filter(s => s.estat_solicitud_id === 3));
+const pendents = computed(() =>
+    solicituds.value.filter((s) => [1, 2].includes(s.estat_solicitud_id)),
+);
+const enNegociacio = computed(() =>
+    solicituds.value.filter((s) => s.estat_solicitud_id === 4),
+);
+const cotitzades = computed(() =>
+    solicituds.value.filter((s) => s.estat_solicitud_id === 3),
+);
 
 const darrereOfertaOperador = (sol) =>
-    [...(sol.ofertes ?? [])].reverse().find(o => !o.es_contraoferta) ?? null;
+    [...(sol.ofertes ?? [])].reverse().find((o) => !o.es_contraoferta) ?? null;
 
 async function carregarSolicituds() {
     loading.value = true;
@@ -273,7 +411,12 @@ async function carregarSolicituds() {
         const { data } = await api.get('/operador/solicituds');
         if (data.status === 'success') solicituds.value = data.data ?? [];
     } catch {
-        toast.add({ severity: 'error', summary: 'Error', detail: "No s'han pogut carregar les sol·licituds", life: 3000 });
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: "No s'han pogut carregar les sol·licituds",
+            life: 3000,
+        });
     } finally {
         loading.value = false;
     }
@@ -282,11 +425,24 @@ async function carregarSolicituds() {
 async function acceptarContraoferta(solicitudId, ofertaId) {
     actionLoading.value = true;
     try {
-        await api.post(`/operador/solicituds/${solicitudId}/ofertes/${ofertaId}/acceptar`);
-        toast.add({ severity: 'success', summary: 'Acceptada', detail: "Contraoferta acceptada. S'ha creat l'operació.", life: 4000 });
+        await api.post(
+            `/operador/solicituds/${solicitudId}/ofertes/${ofertaId}/acceptar`,
+        );
+        toast.add({
+            severity: 'success',
+            summary: 'Acceptada',
+            detail: "Contraoferta acceptada. S'ha creat l'operació.",
+            life: 4000,
+        });
         await carregarSolicituds();
     } catch (e) {
-        toast.add({ severity: 'error', summary: 'Error', detail: e.response?.data?.message ?? 'Error acceptant la contraoferta.', life: 4000 });
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail:
+                e.response?.data?.message ?? 'Error acceptant la contraoferta.',
+            life: 4000,
+        });
     } finally {
         actionLoading.value = false;
     }
@@ -298,24 +454,37 @@ function obrirModal(solicitud) {
 }
 
 function onOfertaEnviada() {
-    toast.add({ severity: 'success', summary: 'Oferta enviada', detail: "L'oferta ha estat enviada al client", life: 3000 });
+    toast.add({
+        severity: 'success',
+        summary: 'Oferta enviada',
+        detail: "L'oferta ha estat enviada al client",
+        life: 3000,
+    });
     carregarSolicituds();
 }
 
 function initials(nom, cognoms) {
-    return ((nom || '').charAt(0) + (cognoms || '').charAt(0)).toUpperCase() || '?';
+    return (
+        ((nom || '').charAt(0) + (cognoms || '').charAt(0)).toUpperCase() || '?'
+    );
 }
 
 function formatDate(dateStr) {
     if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return new Date(dateStr).toLocaleDateString('ca-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
 }
 
 onMounted(carregarSolicituds);
 </script>
 
 <style scoped>
-.mt-4 { margin-top: 1.5rem; }
+.mt-4 {
+    margin-top: 1.5rem;
+}
 
 /* ── Stats ───────────────────────────────── */
 .stats-row {
@@ -333,14 +502,26 @@ onMounted(carregarSolicituds);
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
-.stat-card--green  { border-left: 3px solid #10b981; }
-.stat-card--yellow { border-left: 3px solid #f59e0b; }
+.stat-card--green {
+    border-left: 3px solid #10b981;
+}
+.stat-card--yellow {
+    border-left: 3px solid #f59e0b;
+}
 
-.stat-value { font-size: 1.75rem; font-weight: 700; color: #111827; }
-.stat-label { font-size: 0.8rem; color: #6b7280; font-weight: 500; }
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+}
+.stat-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 500;
+}
 
 /* ── Card ────────────────────────────────── */
 .card {
@@ -348,7 +529,7 @@ onMounted(carregarSolicituds);
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .card-header {
@@ -370,24 +551,52 @@ onMounted(carregarSolicituds);
 }
 
 /* ── Table cells ─────────────────────────── */
-.ref-text   { font-size: 0.85rem; color: #6b7280; }
-.route-text { font-size: 0.875rem; color: #374151; }
-.date-text  { font-size: 0.85rem; color: #6b7280; }
-.price-text { font-weight: 700; color: #1a8a7d; }
+.ref-text {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.route-text {
+    font-size: 0.875rem;
+    color: #374151;
+}
+.date-text {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.price-text {
+    font-weight: 700;
+    color: #1a8a7d;
+}
 
-.user-cell { display: flex; align-items: center; gap: 0.65rem; }
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
 
 .user-avatar {
-    width: 34px; height: 34px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     background: #e6f4f4;
     color: #0a3a40;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.72rem; font-weight: 700; flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex-shrink: 0;
 }
 
-.user-name  { font-weight: 600; font-size: 0.875rem; color: #111827; }
-.user-email { font-size: 0.77rem; color: #9ca3af; }
+.user-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #111827;
+}
+.user-email {
+    font-size: 0.77rem;
+    color: #9ca3af;
+}
 
 /* ── Estat badges ────────────────────────── */
 .estat-badge {
@@ -398,9 +607,18 @@ onMounted(carregarSolicituds);
     border-radius: 4px;
 }
 
-.estat-pendent    { background: #fef9c3; color: #92400e; }
-.estat-cotitzada  { background: #d1fae5; color: #065f46; }
-.estat-negociacio { background: #fff7ed; color: #c2410c; }
+.estat-pendent {
+    background: #fef9c3;
+    color: #92400e;
+}
+.estat-cotitzada {
+    background: #d1fae5;
+    color: #065f46;
+}
+.estat-negociacio {
+    background: #fff7ed;
+    color: #c2410c;
+}
 
 /* ── Action buttons ──────────────────────── */
 .btn-oferta {
@@ -418,7 +636,9 @@ onMounted(carregarSolicituds);
     transition: background 0.2s;
     font-family: inherit;
 }
-.btn-oferta:hover { background: #136a60; }
+.btn-oferta:hover {
+    background: #136a60;
+}
 
 .btn-oferta-secondary {
     display: inline-flex;
@@ -435,7 +655,9 @@ onMounted(carregarSolicituds);
     transition: all 0.2s;
     font-family: inherit;
 }
-.btn-oferta-secondary:hover { background: #f0fdfa; }
+.btn-oferta-secondary:hover {
+    background: #f0fdfa;
+}
 
 .btn-acceptar {
     display: inline-flex;
@@ -453,8 +675,13 @@ onMounted(carregarSolicituds);
     font-family: inherit;
     margin-top: 0.5rem;
 }
-.btn-acceptar:hover:not(:disabled) { background: #dcfce7; }
-.btn-acceptar:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-acceptar:hover:not(:disabled) {
+    background: #dcfce7;
+}
+.btn-acceptar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
 .oferta-enviada {
     display: inline-flex;
@@ -466,7 +693,12 @@ onMounted(carregarSolicituds);
 }
 
 /* ── Negociació cards ────────────────────── */
-.negociacio-list { display: flex; flex-direction: column; gap: 1rem; padding-top: 0.5rem; }
+.negociacio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
 
 .negociacio-card {
     border: 1px solid #e5e7eb;
@@ -514,7 +746,11 @@ onMounted(carregarSolicituds);
 }
 
 /* ── Ofertes history ─────────────────────── */
-.ofertes-history { display: flex; flex-direction: column; gap: 0.6rem; }
+.ofertes-history {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
 
 .history-item {
     padding: 0.75rem 1rem;
@@ -524,10 +760,20 @@ onMounted(carregarSolicituds);
     gap: 0.4rem;
 }
 
-.history-item--operador { background: #f0fdfa; border: 1px solid #99f6e4; }
-.history-item--client   { background: #fffbeb; border: 1px solid #fde68a; }
+.history-item--operador {
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+}
+.history-item--client {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
 
-.history-item__who { display: flex; align-items: center; gap: 0.5rem; }
+.history-item__who {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
 .who-pill {
     font-size: 0.68rem;
@@ -535,15 +781,35 @@ onMounted(carregarSolicituds);
     padding: 0.15rem 0.5rem;
     border-radius: 20px;
 }
-.who-pill--op     { background: #ccfbf1; color: #0f766e; }
-.who-pill--client { background: #fef3c7; color: #92400e; }
+.who-pill--op {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+.who-pill--client {
+    background: #fef3c7;
+    color: #92400e;
+}
 
-.history-estat { font-size: 0.75rem; color: #6b7280; }
+.history-estat {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
 
-.history-item__details { display: flex; flex-direction: column; gap: 0.2rem; }
+.history-item__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
 
-.history-price   { font-weight: 700; color: #111827; font-size: 0.9rem; }
-.history-comment { font-size: 0.82rem; color: #6b7280; }
+.history-price {
+    font-weight: 700;
+    color: #111827;
+    font-size: 0.9rem;
+}
+.history-comment {
+    font-size: 0.82rem;
+    color: #6b7280;
+}
 
 /* ── Tabs ────────────────────────────────── */
 :deep(.header-tabs .p-tabview-nav) {
@@ -559,16 +825,25 @@ onMounted(carregarSolicituds);
     border-bottom: 2px solid transparent;
     background: transparent;
 }
-:deep(.header-tabs .p-tabview-nav-link:focus) { box-shadow: none; }
+:deep(.header-tabs .p-tabview-nav-link:focus) {
+    box-shadow: none;
+}
 :deep(.header-tabs .p-highlight .p-tabview-nav-link) {
     color: #1a8a7d;
     border-bottom-color: #1a8a7d;
 }
-:deep(.header-tabs .p-tabview-panels) { display: none; }
+:deep(.header-tabs .p-tabview-panels) {
+    display: none;
+}
 
 /* ── Empty state ─────────────────────────── */
 .empty-state {
-    text-align: center; padding: 3rem; color: #9ca3af;
-    display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+    text-align: center;
+    padding: 3rem;
+    color: #9ca3af;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
 }
 </style>

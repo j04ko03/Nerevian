@@ -1,0 +1,150 @@
+# Nom del workflow — apareix a la pestanya Actions de GitHub
+name: 🔔 Notificació de Deploy — testdeploy
+
+# Disparadors: s'activa en push directe o quan es tanca una PR contra testdeploy
+on:
+  push:
+    branches:
+      - testdeploy
+  pull_request:
+    types:
+      - closed
+    branches:
+      - testdeploy
+
+jobs:
+  notify-team:
+    name: Enviar notificació a l'equip
+    # Condició de seguretat: pels PRs, només s'executa si s'ha fet merge real
+    # (evita notificacions quan es tanca un PR sense mergejar)
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    steps:
+      # Necessari per poder accedir a .github/scripts/event-info.sh del repo
+      - name: Checkout del repositori
+        uses: actions/checkout@v4
+
+      # Executa el script extern que detecta el tipus d'event i exporta
+      # les variables d'output que usaran els steps posteriors
+      - name: Determinar tipus d'event
+        id: event-info
+        env:
+          # Les expressions ${{ }} només funcionen dins del yml,
+          # per això s'injecten com a variables d'entorn al script
+          EVENT_NAME: ${{ github.event_name }}
+          ACTOR: ${{ github.actor }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+          PR_ACTOR: ${{ github.event.pull_request.merged_by.login }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: bash .github/scripts/event-info.sh
+
+      # Envia l'email via Gmail SMTP usant les credencials dels secrets del repo
+      - name: Enviar email de notificació
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          # Credencials guardades a Settings → Secrets and variables → Actions
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          # Llista de destinataris separats per comes
+          to: ${{ secrets.TEAM_EMAILS }}
+          from: 'Nerevian CI/CD <${{ secrets.GMAIL_USERNAME }}>'
+          # Assumpte dinàmic amb el tipus d'event, autor i SHA curt
+          subject: >
+            [${{ steps.event-info.outputs.event_type }}] testdeploy actualitzat
+            per ${{ steps.event-info.outputs.actor }}
+            (${{ steps.event-info.outputs.short_sha }})
+          # Cos de l'email en HTML amb les dades del commit/PR
+          html_body: |
+            <!DOCTYPE html>
+            <html lang="ca">
+            <head>
+              <meta charset="UTF-8">
+              <style>
+                body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+                .card { background: white; border-radius: 8px; max-width: 600px; margin: 0 auto;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+                .header { background: #1a1a2e; color: white; padding: 24px 28px; }
+                .header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+                .header .badge { display: inline-block; background: #e94560; color: white;
+                                 padding: 3px 10px; border-radius: 20px; font-size: 12px;
+                                 margin-top: 8px; }
+                .body { padding: 24px 28px; }
+                .row { display: flex; margin-bottom: 14px; border-bottom: 1px solid #f0f0f0;
+                       padding-bottom: 14px; }
+                .row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+                .label { color: #888; font-size: 12px; text-transform: uppercase;
+                         letter-spacing: 0.5px; min-width: 120px; padding-top: 2px; }
+                .value { color: #1a1a2e; font-size: 14px; font-weight: 500; word-break: break-all; }
+                .commit { font-family: monospace; background: #f5f5f5; padding: 2px 6px;
+                          border-radius: 4px; font-size: 13px; }
+                .footer { background: #f9f9f9; padding: 14px 28px; font-size: 12px;
+                          color: #aaa; text-align: center; border-top: 1px solid #eee; }
+                .btn { display: inline-block; background: #e94560; color: white;
+                       padding: 10px 20px; border-radius: 6px; text-decoration: none;
+                       font-size: 13px; font-weight: 600; margin-top: 16px; }
+              </style>
+            </head>
+            <body>
+              <div class="card">
+                <div class="header">
+                  <h1>🚀 Actualització a <code>testdeploy</code></h1>
+                  <!-- Badge dinàmic: mostra "Push directe" o "Merge de PR" -->
+                  <span class="badge">${{ steps.event-info.outputs.event_type }}</span>
+                </div>
+                <div class="body">
+                  <div class="row">
+                    <div class="label">Repositori</div>
+                    <div class="value">Nerevian</div>
+                  </div>
+                  <div class="row">
+                    <div class="label">Branch</div>
+                    <div class="value">testdeploy</div>
+                  </div>
+                  <!-- Autor: qui ha fet el push o qui ha aprovat el merge -->
+                  <div class="row">
+                    <div class="label">Autor</div>
+                    <div class="value">${{ steps.event-info.outputs.actor }}</div>
+                  </div>
+                  <!-- SHA curt per identificar ràpidament el commit -->
+                  <div class="row">
+                    <div class="label">Commit</div>
+                    <div class="value">
+                      <span class="commit">${{ steps.event-info.outputs.short_sha }}</span>
+                    </div>
+                  </div>
+                  <!-- Primera línia del commit, o "PR #N: títol" si és merge -->
+                  <div class="row">
+                    <div class="label">Missatge</div>
+                    <div class="value">${{ steps.event-info.outputs.commit_msg }}</div>
+                  </div>
+                  <div class="row">
+                    <div class="label">Data/Hora</div>
+                    <div class="value">${{ github.event.head_commit.timestamp || github.event.pull_request.merged_at }}</div>
+                  </div>
+                  <!-- Botó d'accés directe al commit a GitHub -->
+                  <a class="btn" href="https://github.com/${{ github.repository }}/commit/${{ steps.event-info.outputs.commit_sha }}">
+                    Veure canvis a GitHub →
+                  </a>
+                </div>
+                <div class="footer">
+                  Notificació automàtica generada per GitHub Actions · Nerevian CI/CD
+                </div>
+              </div>
+            </body>
+            </html>
+
+      # Log de verificació a la consola d'Actions per deixar traça de cada execució
+      - name: Confirmar notificació enviada
+        run: |
+          echo "✅ Email de notificació enviat correctament"
+          echo "   Tipus: ${{ steps.event-info.outputs.event_type }}"
+          echo "   Actor: ${{ steps.event-info.outputs.actor }}"
+          echo "   SHA:   ${{ steps.event-info.outputs.short_sha }}"
