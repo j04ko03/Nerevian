@@ -56,20 +56,17 @@
                         <h3>Detalles de Carga</h3>
                         <div class="carga-list">
                             <div class="carga-item">
-                                <span class="label">Contenedor:</span>
-                                <span class="value"><strong>{{ detallesCarga.contenedor }}</strong></span>
-                            </div>
-                            <div class="carga-item">
                                 <span class="label">Tipo:</span>
                                 <span class="value"><strong>{{ detallesCarga.tipo }}</strong></span>
                             </div>
                             <div class="carga-item">
                                 <span class="label">Peso:</span>
-                                <span class="value"><strong>{{ detallesCarga.peso }}</strong></span>
+                                <span class="value"><strong>{{ detallesCarga.peso }} kg</strong></span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- TODO: Documentación (pendiente de implementar en DocumentController)
                     <div class="docs-section">
                         <h3>Documentación</h3>
                         <div class="docs-list">
@@ -78,6 +75,7 @@
                             </button>
                         </div>
                     </div>
+                    -->
                 </div>
             </div>
         </div>
@@ -189,25 +187,26 @@ const tornarAEnrere = () => {
 }
 
 .btn-back {
-    background: transparent;
-    border: 1px solid #d1d5db;
-    color: #6b7280;
-    font-size: 1rem;
+    background: #f0fdfa;
+    border: 1px solid #1a8a7d;
+    color: #1a8a7d;
+    font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     transition: all 0.2s;
     flex-shrink: 0;
 }
 
 .btn-back:hover {
+    background: #1a8a7d;
+    color: white;
     border-color: #1a8a7d;
-    color: #1a8a7d;
-    background: #f0fdfa;
+    box-shadow: 0 2px 8px rgba(26, 138, 125, 0.3);
 }
 
 .tracking-top-info {

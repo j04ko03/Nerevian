@@ -23,16 +23,16 @@ Route::post('/registration-requests', [RegistrationRequestController::class, 'st
 // ── Rutas protegidas (requieren token Sanctum) ──────────────────
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me',      [AuthController::class, 'me']);
+    Route::get('/me', [AuthController::class, 'me']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/dashboard/search', [DashboardController::class, 'buscadorSolicitud']);
 
     // Rutas administrativas (solo para rol_id = 1)
     Route::middleware('admin')->prefix('admin')->group(function () {
         Route::apiResource('/users', UsuariController::class)->except(['store']);
-        Route::get('/registration-requests',                [RegistreController::class, 'index']);
+        Route::get('/registration-requests', [RegistreController::class, 'index']);
         Route::post('/registration-requests/{id}/approve', [RegistreController::class, 'approve']);
-        Route::post('/registration-requests/{id}/reject',  [RegistreController::class, 'reject']);
+        Route::post('/registration-requests/{id}/reject', [RegistreController::class, 'reject']);
     });
 
     // Ruta para obtener los catálogos (lectura simple)
