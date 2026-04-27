@@ -218,7 +218,7 @@ const loadChat = () => {
         script.innerHTML = `
             import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 createChat({
-	webhookUrl: 'http://localhost:5678/webhook/3e2f1022-a06a-40d0-a401-077128195595/chat',
+	webhookUrl: '${import.meta.env.VITE_URL_CHATBOT}',
 	webhookConfig: {
 		method: 'POST',
 		headers: {}
