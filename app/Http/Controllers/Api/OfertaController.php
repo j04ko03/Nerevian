@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class OfertaController extends Controller
 {
     // POST /api/solicitudes/{solicitud}/ofertes/{oferta}/acceptar
-    public function acceptar(Request $request, $solicitudId, $ofertaId): JsonResponse
+    public function acceptar(Request $request, $solicitudId, $ofertaId, \App\Services\DocumentService $documentService): JsonResponse
     {
         $clientId = auth()->user()->clients->id;
         $sol = solicitud::where('client_id', $clientId)->findOrFail($solicitudId);
@@ -28,6 +28,9 @@ class OfertaController extends Controller
             'codi_referencia' => 'OP-' . str_pad($oferta->id, 5, '0', STR_PAD_LEFT),
             'data_inici' => now(),
         ]);
+
+        // Generar el Bill of Lading automáticamente
+        $documentService->generarBL($operacio->id);
 
         return response()->json([
             'status' => 'success',

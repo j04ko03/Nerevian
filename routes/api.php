@@ -48,6 +48,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/tracking/{solicitud_id}', [TrackingController::class, 'show']);
         Route::get('/documentos/{id}/descargar', [DocumentController::class, 'download']);
         Route::apiResource('documentos', DocumentController::class);
+        
+        // Rutas de notificaciones
+        Route::get('notificaciones', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+        Route::post('notificaciones/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
+        Route::delete('notificaciones/{id}', [\App\Http\Controllers\Api\NotificationController::class, 'destroy']);
     });
 
     // Rutas de operador

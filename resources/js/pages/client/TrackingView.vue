@@ -66,16 +66,15 @@
                         </div>
                     </div>
 
-                    <!-- TODO: Documentación (pendiente de implementar en DocumentController)
                     <div class="docs-section">
                         <h3>Documentación</h3>
-                        <div class="docs-list">
-                            <button v-for="(doc, index) in documentos" :key="index" class="btn-outline">
-                                <i class="pi pi-download"></i> {{ doc.nom }}
+                        <div v-if="documentos.length > 0" class="docs-list">
+                            <button v-for="(doc, index) in documentos" :key="index" class="btn-outline" @click="descarregarDoc(doc)">
+                                <i class="pi pi-file-pdf"></i> {{ doc.nom_original }}
                             </button>
                         </div>
+                        <p v-else style="color: #9ca3af; font-size: 0.9rem;">No hay documentos disponibles para esta operación.</p>
                     </div>
-                    -->
                 </div>
             </div>
         </div>
@@ -100,18 +99,18 @@ const detallesCarga = ref({ contenedor: null, tipo: null, peso: null });
 const documentos = ref([]);
 
 const STEP_LABELS = [
-    { label: 'Recogida', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
-    { label: 'Puerto Salida', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
-    { label: 'En Tránsito', icon_pending: 'pi pi-truck', icon_done: 'pi pi-check' },
-    { label: 'Puerto Destino', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
-    { label: 'Entrega Final', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'Recollida en origen', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'Sortida del port d\'origen', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'En trànsit internacional', icon_pending: 'pi pi-truck', icon_done: 'pi pi-check' },
+    { label: 'Arribada al port de destí', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
+    { label: 'Lliurat al client final', icon_pending: 'pi pi-circle', icon_done: 'pi pi-check' },
 ];
 
 const pasoActualMobile = ref('');
 
 const progressSteps = computed(() => {
-    // Orden lógico de los pasos (lo que recibimos de la API)
-    const ORDER = ['Recogida', 'Puerto Salida', 'En Tránsito', 'Puerto Destino', 'Entrega Final'];
+    // Orden lógico de los pasos (lo que recibimos de la API o BD)
+    const ORDER = ['Recollida en origen', 'Sortida del port d\'origen', 'En trànsit internacional', 'Arribada al port de destí', 'Lliurat al client final'];
 
     const currentIndex = ORDER.indexOf(pasoActualMobile.value);
 
@@ -123,7 +122,7 @@ const progressSteps = computed(() => {
 });
 
 const progressPercentage = computed(() => {
-    const ORDER = ['Recogida', 'Puerto Salida', 'En Tránsito', 'Puerto Destino', 'Entrega Final'];
+    const ORDER = ['Recollida en origen', 'Sortida del port d\'origen', 'En trànsit internacional', 'Arribada al port de destí', 'Lliurat al client final'];
     const idx = ORDER.indexOf(pasoActualMobile.value);
     if (idx === -1) return 0;
     return (idx / (ORDER.length - 1)) * 90;
@@ -132,7 +131,7 @@ const progressPercentage = computed(() => {
 onMounted(async () => {
     try {
         const { data } = await api.get(`/tracking/${route.params.id}`);
-        const res = data.data; // Aquí está tu nuevo JSON unificado
+        const res = data.data;
 
         operacioInfo.value = {
             ref: res.ref,
@@ -146,6 +145,7 @@ onMounted(async () => {
         };
         historial.value = res.historial;
         pasoActualMobile.value = res.tracking.paso_nombre;
+        documentos.value = res.documentos || [];
     } catch (e) {
         error.value = 'No s\'ha pogut carregar el seguiment.';
         console.error(e);
@@ -153,6 +153,22 @@ onMounted(async () => {
         carregant.value = false;
     }
 });
+
+const descarregarDoc = async (doc) => {
+    try {
+        const response = await api.get(`/documentos/${doc.id}/descargar`, {
+            responseType: 'blob'
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', doc.nom_original);
+        document.body.appendChild(link);
+        link.click();
+    } catch (e) {
+        console.error("Error descarregant document:", e);
+    }
+};
 
 const tornarAEnrere = () => {
     router.push('/client/operacions');

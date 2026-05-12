@@ -1,9 +1,6 @@
 <template>
     <AppLayout>
-        <Header
-            title="Dashboard Operadora"
-            :subtitle="`Benvinguda, ${user?.nom}`"
-        />
+        <Header title="Dashboard Operadora" :subtitle="`Benvinguda, ${user?.nom}`" />
 
         <!-- ── Welcome card ──────────────────── -->
         <div class="welcome-card">
@@ -28,51 +25,32 @@
                     Cerca ràpida de sol·licituds
                 </span>
                 <div class="search-bar">
-                    <div
-                        class="search-input-wrap"
-                        :class="{ 'search-input-wrap--focus': searchFocused }"
-                    >
+                    <div class="search-input-wrap" :class="{ 'search-input-wrap--focus': searchFocused }">
                         <Search :size="15" class="search-icon" />
-                        <input
-                            v-model="searchQuery"
-                            type="text"
-                            placeholder="Codi o número (ex: REQ-005 o 5)"
-                            class="search-input"
-                            @keydown.enter="doSearch"
-                            @focus="searchFocused = true"
-                            @blur="searchFocused = false"
-                        />
-                        <button
-                            v-if="searchQuery"
-                            class="search-clear"
-                            @click="clearSearch"
-                        >
+                        <input v-model="searchQuery" type="text" placeholder="Codi o número (ex: REQ-005 o 5)"
+                            class="search-input" @keydown.enter="doSearch" @focus="searchFocused = true"
+                            @blur="searchFocused = false" />
+                        <button v-if="searchQuery" class="search-clear" @click="clearSearch">
                             <X :size="13" />
                         </button>
                     </div>
-                    <button
-                        class="search-btn"
-                        :disabled="!searchQuery.trim() || searching"
-                        @click="doSearch"
-                    >
+                    <button class="search-btn" :disabled="!searchQuery.trim() || searching" @click="doSearch">
                         <LoaderCircle v-if="searching" :size="14" class="spin" />
                         <span v-else>Cercar</span>
                     </button>
                 </div>
 
                 <Transition name="result">
-                    <div
-                        v-if="searchResult"
-                        class="search-result"
-                        :class="searchResult.success ? 'result--ok' : 'result--empty'"
-                    >
+                    <div v-if="searchResult" class="search-result"
+                        :class="searchResult.success ? 'result--ok' : 'result--empty'">
                         <template v-if="searchResult.success">
                             <div class="result-left">
                                 <div class="result-icon result-icon--ok">
                                     <CheckCircle :size="16" />
                                 </div>
                                 <div class="result-info">
-                                    <span class="result-code">REQ-{{ String(searchResult.operacion.id).padStart(3, '0') }}</span>
+                                    <span class="result-code">REQ-{{ String(searchResult.operacion.id).padStart(3, '0')
+                                    }}</span>
                                     <span class="result-route">{{ searchResult.operacion.ruta }}</span>
                                 </div>
                             </div>
@@ -96,32 +74,23 @@
 
         <!-- Stats -->
         <StatsGrid :columns="3">
-            <StatCard
-                label="Cotitzacions fredes"
-                :value="cotizacionesFrias.length"
-                compare="requereixen atenció"
-                :color="critiques > 0 ? 'red' : 'yellow'"
-                :loading="loading"
-            >
-                <template #icon><Thermometer :size="18" /></template>
+            <StatCard label="Cotitzacions fredes" :value="cotizacionesFrias.length" compare="requereixen atenció"
+                :color="critiques > 0 ? 'red' : 'yellow'" :loading="loading">
+                <template #icon>
+                    <Thermometer :size="18" />
+                </template>
             </StatCard>
-            <StatCard
-                label="Activitat recent"
-                :value="actividadRecienteMia.length"
-                compare="darreres gestionades"
-                color="green"
-                :loading="loading"
-            >
-                <template #icon><Activity :size="18" /></template>
+            <StatCard label="Activitat recent" :value="actividadRecienteMia.length" compare="darreres gestionades"
+                color="green" :loading="loading">
+                <template #icon>
+                    <Activity :size="18" />
+                </template>
             </StatCard>
-            <StatCard
-                label="Crítiques"
-                :value="critiques"
-                compare="+7 dies sense canvis"
-                :color="critiques > 0 ? 'red' : 'default'"
-                :loading="loading"
-            >
-                <template #icon><AlertOctagon :size="18" /></template>
+            <StatCard label="Crítiques" :value="critiques" compare="+7 dies sense canvis"
+                :color="critiques > 0 ? 'red' : 'default'" :loading="loading">
+                <template #icon>
+                    <AlertOctagon :size="18" />
+                </template>
             </StatCard>
         </StatsGrid>
 
@@ -189,11 +158,7 @@
                 </div>
 
                 <div v-else class="urgency-list">
-                    <div
-                        v-for="item in sortedFrides"
-                        :key="item.id"
-                        class="urgency-item"
-                    >
+                    <div v-for="item in sortedFrides" :key="item.id" class="urgency-item">
                         <!-- Days meter -->
                         <div class="days-meter" :class="urgencyClass(item.dias_sin_cambios)">
                             <span class="days-number">{{ item.dias_sin_cambios }}</span>
@@ -213,11 +178,8 @@
                             </div>
                             <!-- Urgency bar -->
                             <div class="urgency-track">
-                                <div
-                                    class="urgency-bar"
-                                    :class="urgencyClass(item.dias_sin_cambios)"
-                                    :style="{ width: urgencyPct(item.dias_sin_cambios) }"
-                                />
+                                <div class="urgency-bar" :class="urgencyClass(item.dias_sin_cambios)"
+                                    :style="{ width: urgencyPct(item.dias_sin_cambios) }" />
                             </div>
                         </div>
                     </div>
@@ -240,11 +202,7 @@
                 </div>
 
                 <div v-else class="feed">
-                    <div
-                        v-for="(item, i) in actividadRecienteMia"
-                        :key="item.id"
-                        class="feed-item"
-                    >
+                    <div v-for="(item, i) in actividadRecienteMia" :key="item.id" class="feed-item">
                         <div class="feed-left">
                             <div class="feed-dot" :class="statusClass(item.estado_actual)" />
                         </div>
@@ -271,6 +229,18 @@
                 </div>
             </div>
         </div>
+
+        <!-- TEMA SUPERSET -->
+        <div class="superset-section">
+            <div class="card-header">
+                <div class="card-title">
+                    <Activity :size="15" />
+                    Anàlisi de Dades de Comerç
+                </div>
+            </div>
+            <SupersetDashboard :dashboardId="1" height="500px" />
+        </div>
+
     </AppLayout>
 </template>
 
@@ -287,17 +257,18 @@ import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/components/StatsGrid.vue';
 import StatCard from '@/components/dashboard/components/StatCard.vue';
 import api from '@/plugins/axios';
+import SupersetDashboard from './components/SupersetDashboard.vue';
 
 const { user } = useAuthStore();
 
-const loading              = ref(true);
-const cotizacionesFrias    = ref([]);
+const loading = ref(true);
+const cotizacionesFrias = ref([]);
 const actividadRecienteMia = ref([]);
 
 // Search
-const searchQuery  = ref('');
+const searchQuery = ref('');
 const searchFocused = ref(false);
-const searching    = ref(false);
+const searching = ref(false);
 const searchResult = ref(null);
 
 async function doSearch() {
@@ -320,7 +291,7 @@ async function doSearch() {
 }
 
 function clearSearch() {
-    searchQuery.value  = '';
+    searchQuery.value = '';
     searchResult.value = null;
 }
 
@@ -344,12 +315,12 @@ function urgencyClass(days) {
 }
 
 const statusMap = {
-    'Cotizada':       'status--blue',
+    'Cotizada': 'status--blue',
     'En Negociación': 'status--amber',
-    'Nueva':          'status--green',
-    'En Revisión':    'status--purple',
-    'Rechazada':      'status--red',
-    'Desconocido':    'status--gray',
+    'Nueva': 'status--green',
+    'En Revisión': 'status--purple',
+    'Rechazada': 'status--red',
+    'Desconocido': 'status--gray',
 };
 
 function statusClass(estado) {
@@ -360,7 +331,7 @@ onMounted(async () => {
     try {
         const { data } = await api.get('/dashboard');
         if (data.success) {
-            cotizacionesFrias.value    = data.cotizacionesFrias    ?? [];
+            cotizacionesFrias.value = data.cotizacionesFrias ?? [];
             actividadRecienteMia.value = data.actividadRecienteMia ?? [];
         }
     } catch (e) {
@@ -384,7 +355,7 @@ onMounted(async () => {
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -431,8 +402,15 @@ onMounted(async () => {
 }
 
 @keyframes alert-pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.65; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.65;
+    }
 }
 
 /* ── Urgency queue ───────────────────────── */
@@ -455,7 +433,7 @@ onMounted(async () => {
 
 .urgency-item:hover {
     background: #f9fafb;
-    box-shadow: 0 2px 8px -2px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.06);
 }
 
 /* Days meter box */
@@ -472,12 +450,30 @@ onMounted(async () => {
     line-height: 1;
 }
 
-.days-number { font-size: 1.05rem; }
-.days-unit   { font-size: 0.6rem; font-weight: 600; opacity: 0.75; }
+.days-number {
+    font-size: 1.05rem;
+}
 
-.days-meter.urgency--low      { background: #f0fdf4; color: #16a34a; }
-.days-meter.urgency--high     { background: #fffbeb; color: #d97706; }
-.days-meter.urgency--critical { background: #fff1f2; color: #dc2626; }
+.days-unit {
+    font-size: 0.6rem;
+    font-weight: 600;
+    opacity: 0.75;
+}
+
+.days-meter.urgency--low {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.days-meter.urgency--high {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.days-meter.urgency--critical {
+    background: #fff1f2;
+    color: #dc2626;
+}
 
 /* Body */
 .urgency-body {
@@ -530,9 +526,17 @@ onMounted(async () => {
     transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.urgency-bar.urgency--low      { background: linear-gradient(to right, #86efac, #22c55e); }
-.urgency-bar.urgency--high     { background: linear-gradient(to right, #fcd34d, #f59e0b); }
-.urgency-bar.urgency--critical { background: linear-gradient(to right, #fca5a5, #ef4444); }
+.urgency-bar.urgency--low {
+    background: linear-gradient(to right, #86efac, #22c55e);
+}
+
+.urgency-bar.urgency--high {
+    background: linear-gradient(to right, #fcd34d, #f59e0b);
+}
+
+.urgency-bar.urgency--critical {
+    background: linear-gradient(to right, #fca5a5, #ef4444);
+}
 
 /* ── Activity feed ───────────────────────── */
 .feed {
@@ -641,20 +645,60 @@ onMounted(async () => {
     flex-shrink: 0;
 }
 
-.status--blue   { background: #eff6ff; color: #1e40af; }
-.status--amber  { background: #fffbeb; color: #92400e; }
-.status--green  { background: #f0fdf4; color: #166534; }
-.status--purple { background: #f5f3ff; color: #5b21b6; }
-.status--red    { background: #fff1f2; color: #9f1239; }
-.status--gray   { background: #f3f4f6; color: #374151; }
+.status--blue {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.status--amber {
+    background: #fffbeb;
+    color: #92400e;
+}
+
+.status--green {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+.status--purple {
+    background: #f5f3ff;
+    color: #5b21b6;
+}
+
+.status--red {
+    background: #fff1f2;
+    color: #9f1239;
+}
+
+.status--gray {
+    background: #f3f4f6;
+    color: #374151;
+}
 
 /* feed dot colors */
-.feed-dot.status--blue   { color: #3b82f6; }
-.feed-dot.status--amber  { color: #f59e0b; }
-.feed-dot.status--green  { color: #22c55e; }
-.feed-dot.status--purple { color: #8b5cf6; }
-.feed-dot.status--red    { color: #ef4444; }
-.feed-dot.status--gray   { color: #9ca3af; }
+.feed-dot.status--blue {
+    color: #3b82f6;
+}
+
+.feed-dot.status--amber {
+    color: #f59e0b;
+}
+
+.feed-dot.status--green {
+    color: #22c55e;
+}
+
+.feed-dot.status--purple {
+    color: #8b5cf6;
+}
+
+.feed-dot.status--red {
+    color: #ef4444;
+}
+
+.feed-dot.status--gray {
+    color: #9ca3af;
+}
 
 /* ── Empty ───────────────────────────────── */
 .empty-state {
@@ -667,8 +711,13 @@ onMounted(async () => {
     font-size: 0.85rem;
 }
 
-.empty-icon     { color: #d1d5db; }
-.empty-icon--ok { color: #6ee7b7; }
+.empty-icon {
+    color: #d1d5db;
+}
+
+.empty-icon--ok {
+    color: #6ee7b7;
+}
 
 /* ── Skeleton ────────────────────────────── */
 .card-skeleton {
@@ -742,7 +791,9 @@ onMounted(async () => {
     gap: 0.3rem;
 }
 
-.mt-1 { margin-top: 0.25rem; }
+.mt-1 {
+    margin-top: 0.25rem;
+}
 
 /* ── Welcome card ────────────────────────── */
 .welcome-card {
@@ -764,6 +815,7 @@ onMounted(async () => {
     border-radius: 50%;
     pointer-events: none;
 }
+
 .welcome-bg-circle--1 {
     width: 300px;
     height: 300px;
@@ -771,6 +823,7 @@ onMounted(async () => {
     top: -100px;
     left: 30%;
 }
+
 .welcome-bg-circle--2 {
     width: 180px;
     height: 180px;
@@ -860,7 +913,10 @@ onMounted(async () => {
     box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.12);
 }
 
-.search-icon { color: rgba(255, 255, 255, 0.5); flex-shrink: 0; }
+.search-icon {
+    color: rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+}
 
 .search-input {
     flex: 1;
@@ -873,7 +929,9 @@ onMounted(async () => {
     padding: 0.7rem 0;
 }
 
-.search-input::placeholder { color: rgba(255, 255, 255, 0.38); }
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.38);
+}
 
 .search-clear {
     background: none;
@@ -885,7 +943,10 @@ onMounted(async () => {
     padding: 0;
     transition: color 0.15s;
 }
-.search-clear:hover { color: rgba(255, 255, 255, 0.9); }
+
+.search-clear:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
 
 .search-btn {
     font-family: inherit;
@@ -910,10 +971,21 @@ onMounted(async () => {
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(201, 169, 110, 0.4);
 }
-.search-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.spin { animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.search-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.spin {
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 /* ── Search result ───────────────────────── */
 .search-result {
@@ -925,8 +997,15 @@ onMounted(async () => {
     border-radius: 10px;
 }
 
-.result--ok    { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(201, 169, 110, 0.35); }
-.result--empty { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.13); }
+.result--ok {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(201, 169, 110, 0.35);
+}
+
+.result--empty {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+}
 
 .result-left {
     display: flex;
@@ -945,8 +1024,15 @@ onMounted(async () => {
     flex-shrink: 0;
 }
 
-.result-icon--ok    { background: rgba(201, 169, 110, 0.2); color: #c9a96e; }
-.result-icon--empty { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.4); }
+.result-icon--ok {
+    background: rgba(201, 169, 110, 0.2);
+    color: #c9a96e;
+}
+
+.result-icon--empty {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.4);
+}
 
 .result-info {
     display: flex;
@@ -988,8 +1074,32 @@ onMounted(async () => {
 }
 
 /* Transition */
-.result-enter-active { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-.result-leave-active { transition: all 0.15s ease; }
-.result-enter-from  { opacity: 0; transform: translateY(-6px); }
-.result-leave-to    { opacity: 0; transform: translateY(-4px); }
+.result-enter-active {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.result-leave-active {
+    transition: all 0.15s ease;
+}
+
+.result-enter-from {
+    opacity: 0;
+    transform: translateY(-6px);
+}
+
+.result-leave-to {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+
+/* TEMA SUPERSET */
+.superset-section {
+    grid-column: 1 / -1;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1rem;
+}
 </style>

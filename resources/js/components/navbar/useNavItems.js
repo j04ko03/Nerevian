@@ -62,6 +62,11 @@ const navConfig = {
             to: '/client/documents',
             icon: FileText,
         },
+        {
+            label: 'Notificacions',
+            to: '/client/notificacions',
+            icon: Bell,
+        },
         { label: 'Configuració', to: '/client/configuracio', icon: Settings },
     ],
 };

@@ -10,6 +10,10 @@ class notification extends Model
     protected $table = 'notification';
     protected $primaryKey = 'id';
     protected $fillable = [
+        'user_id',
+        'titol',
+        'missatge',
+        'llegida',
         'incoterm_id',
         'solicitud_id',
         'date_update',

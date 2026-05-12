@@ -125,6 +125,12 @@ const routes = [
         meta: { requiresAuth: true, requiresClientActiu: true },
     },
     {
+        path: '/client/notificacions',
+        name: 'client-notificacions',
+        component: () => import('@/pages/client/NotificationsView.vue'),
+        meta: { requiresAuth: true, requiresClientActiu: true },
+    },
+    {
         path: '/client/configuracio',
         name: 'client-configuracio',
         component: () => import('@/pages/Proximamente.vue'),
