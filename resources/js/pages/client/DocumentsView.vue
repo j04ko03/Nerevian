@@ -128,6 +128,7 @@ const colorPerCategoria = (name) => {
     return CATEGORY_ICONS[name]?.color ?? 'icon-teal';
 };
 
+// Para pasar de bytes a MB, que son más comodos de leer.
 const formatSize = (bytes) => {
     if (!bytes) return '—';
     if (bytes < 1024) return bytes + ' B';
