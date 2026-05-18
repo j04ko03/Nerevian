@@ -29,6 +29,9 @@ COPY . .
 # Sin esto, el comando 'php artisan' del plugin fallaría.
 COPY --from=vendor /app/vendor/ ./vendor/
 
+# Limpiamos cualquier caché de bootstrap heredada antes de compilar
+RUN rm -f bootstrap/cache/*.php
+
 # 5. Compilamos.
 RUN npm run build
 
@@ -73,6 +76,9 @@ COPY --from=vendor /app/vendor/ /var/www/vendor/
 # 6. Traemos los assets públicos (js, css de Vue) ya compilados de la Etapa 2
 # (Asegúrate de que la ruta coincida con donde compila tu frontend, usualmente public/build)
 COPY --from=frontend /app/public/ /var/www/public/
+
+# Limpiamos cualquier caché de bootstrap heredada para producción
+RUN rm -f bootstrap/cache/*.php
 
 # Permisos para Laravel
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \

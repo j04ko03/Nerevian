@@ -10,11 +10,11 @@ services:
     image: nginx:alpine
     ports:
       # derecha: contenedor, izquierda: host/internet
-      - "80:80"
+      - "3415:80"
     volumes:
-      # Agarra el nginx.conf de la carpeta nginx y lo monta en el contenedor.
-      # Si hay otro nginx.conf en el contenedor, lo sobreescribe :p
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      # Agarra el proxy.conf de la carpeta nginx y lo monta en el contenedor.
+      # Si hay otro proxy.conf en el contenedor, lo sobreescribe :p
+      - ./nginx/proxy.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       # Un promise de js, sin esto encendido no corras (ah...) el proxy
       - laravel_app
